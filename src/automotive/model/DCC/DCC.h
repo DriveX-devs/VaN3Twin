@@ -73,6 +73,7 @@ public:
   std::string getModality() {return m_modality;}
   void setBitRate(long bitrate) {m_bitrate_bps = bitrate;}
   void setSendCallback(std::function<void(const QueuePacket&)> cb);
+  double getCurrentCBR() {return m_current_cbr;};
 
 private:
 
@@ -172,6 +173,7 @@ private:
   std::string m_log_file = "";
   std::function<void(const QueuePacket&)> m_send_callback;
 
+  double m_current_cbr = 0;
 };
 
 }

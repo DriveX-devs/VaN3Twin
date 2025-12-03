@@ -58,8 +58,31 @@ namespace ns3
 
     //Sequence number
     i.WriteHtonU16 (m_seqNumber);
-    //Reserved
-    i.WriteHtonU16 (0x00);
+
+    if (m_phy == nullptr && m_dcc == nullptr)
+      {
+        //Reserved
+        i.WriteHtonU16 (0x00);
+      }
+    else
+      {
+        float percentage_current_cbr = m_dcc->getCurrentCBR() * 100.0f;
+        int encoded_current_cbr = std::floor(percentage_current_cbr / 6.67f);
+        if (encoded_current_cbr < 0)  encoded_current_cbr = 0;
+        if (encoded_current_cbr > 15) encoded_current_cbr = 15;
+        uint8_t lcbr = encoded_current_cbr & 0x0F; // 4 bits
+        uint8_t ncbr = 0 & 0x0F; // 4 bits
+        int encoded_tx_power = std::round(m_phy->GetTxPowerEnd());
+        if (encoded_tx_power < 0)  encoded_tx_power = 0;
+        if (encoded_tx_power > 31) encoded_tx_power = 31;
+        uint8_t txp  = (encoded_tx_power & 0x1F) << 3;  // 5 bits shifted to bit 7..3
+        uint8_t reserved = 0;                     // lower 3 bits
+        uint8_t dcc_byte0 = (lcbr << 4) | ncbr;
+        uint8_t dcc_byte1 = txp | reserved;
+        i.WriteU8(dcc_byte0);
+        i.WriteU8(dcc_byte1);
+      }
+
     //Source long position vector
     WriteTo (i,m_sourcePV.GnAddress.ConvertTo ());
     i.WriteHtonU32 (m_sourcePV.TST);
@@ -76,6 +99,11 @@ namespace ns3
 
     //Sequence number
     m_seqNumber = i.ReadNtohU16 ();
+
+    uint16_t dcc_field = i.ReadNtohU16();
+    uint8_t lcbr = (dcc_field >> 12) & 0x0F;
+    uint8_t ncbr = (dcc_field >> 8)  & 0x0F;
+    uint8_t txp  = (dcc_field >> 3)  & 0x1F;
 
     //Source long position vector
     uint8_t addr[8];

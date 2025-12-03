@@ -134,6 +134,7 @@ void DCC::reactiveDCC()
       Simulator::Schedule(MilliSeconds(m_dcc_interval), &DCC::reactiveDCC, this);
       return;
     }
+  m_current_cbr = currentCBR;
   // Get the NetDevice
   Ptr<NetDevice> netDevice = m_node->GetDevice (0);
   Ptr<WifiNetDevice> wifiDevice;
@@ -187,6 +188,7 @@ void DCC::adaptiveDCC()
       Simulator::Schedule(MilliSeconds(m_dcc_interval), &DCC::adaptiveDCC, this);
       return;
     }
+  m_current_cbr = currentCBR;
   Time now = Simulator::Now ();
   double time = now.GetSeconds ();
   double delta_offset;
