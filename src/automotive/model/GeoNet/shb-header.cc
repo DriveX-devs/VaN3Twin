@@ -63,8 +63,33 @@ namespace ns3
     i.WriteHtonU32 (m_sourcePV.longitude);
     i.WriteHtonU16 (pai_speed);
     i.WriteHtonU16 (m_sourcePV.heading);
-    //Reserved
-    i.WriteHtonU32 (0x00000000);
+    if (m_dcc == nullptr)
+      {
+        //Reserved
+        i.WriteHtonU32 (0x00000000);
+      }
+    else
+      {
+        double cbr0 = m_dcc->getCBRR0();
+        if (cbr0 < 0.0f) cbr0 = 0.0f;
+        if (cbr0 > 1.0f) cbr0 = 1.0f;
+        uint8_t cbr0_enc = static_cast<uint8_t>(std::floor(cbr0 * 255.0f));
+        double cbr1 = m_dcc->getCBRR1();
+        uint8_t cbr1_enc = static_cast<uint8_t>(std::floor(cbr1 * 255.0f));
+        int tp = 0;
+        if (m_phy != nullptr)
+          {
+            tp = std::round(m_phy->GetTxPowerEnd()); // 0..31
+            if (tp < 0)  tp = 0;
+            if (tp > 31) tp = 31;
+          }
+        uint8_t txp_byte = static_cast<uint8_t>(tp & 0x1F); // bits 0–4
+        uint8_t reserved = 0;
+        i.WriteU8(cbr0_enc);  // Octet 40
+        i.WriteU8(cbr1_enc);  // Octet 41
+        i.WriteU8(txp_byte);  // Octet 42
+        i.WriteU8(reserved);  // Octet 43
+      }
   }
 
   uint32_t
@@ -85,8 +110,22 @@ namespace ns3
     m_sourcePV.speed = pai_speed & 0x7fff;
     m_sourcePV.heading = i.ReadNtohU16 ();
 
+    // ---- DCC/MCO block ----
+    uint8_t cbr0_enc = i.ReadU8();  // Octet 40
+    uint8_t cbr1_enc = i.ReadU8();  // Octet 41
+    uint8_t txp_byte = i.ReadU8();  // Octet 42
+    uint8_t reserved = i.ReadU8();  // Octet 43
+
+    // Decode fields
+    double cbr0 = static_cast<float>(cbr0_enc) / 255.0f;
+    m_CBR_R0_Hop = cbr0;
+    double cbr1 = static_cast<float>(cbr1_enc) / 255.0f;
+    m_CBR_R1_Hop = cbr1;
+    // Tx power in bits 0–4
+    float txPower = static_cast<uint8_t>(txp_byte & 0x1F);
+
     //Reserved
-    m_reserved32 = i.ReadNtohU32 ();
+    // m_reserved32 = i.ReadNtohU32 ();
     return GetSerializedSize ();
   }
 

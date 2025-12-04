@@ -10,6 +10,8 @@
 #include "ns3/basic-header.h"
 #include "ns3/common-header.h"
 #include "ns3/longpositionvector.h"
+#include "ns3/wifi-phy.h"
+#include "ns3/DCC.h"
 
 namespace ns3
 {
@@ -31,11 +33,20 @@ namespace ns3
 
       //Getters
       GNlpv_t GetLongPositionV(void) const {return m_sourcePV;}
+      float GetCBRR0Hop() {return m_CBR_R0_Hop;};
+      float GetCBRR1Hop() {return m_CBR_R1_Hop;};
+
+      void setDCC(Ptr<DCC> dcc) {m_dcc = dcc;};
+      void setPhy(Ptr<WifiPhy> phy) {m_phy = phy;};
 
     private:
       GNlpv_t m_sourcePV;  //!Source long position vector
       uint8_t m_reserved; //! aux variable for reading reserved fields
       uint32_t m_reserved32;
+      Ptr<WifiPhy> m_phy = nullptr;
+      Ptr<DCC> m_dcc = nullptr;
+      double m_CBR_R0_Hop;
+      double m_CBR_R1_Hop;
 
   };
 }

@@ -45,6 +45,11 @@ namespace ns3
   {
     public:
 
+      typedef struct LocationTableExtension{
+        std::vector<std::tuple<int64_t , double>> CBR_R0_Hop;
+        std::vector<std::tuple<int64_t , double>> CBR_R1_Hop;
+      } LocationTableExtension;
+
       typedef struct _LocTableEntry {
         /**
         *   ETSI EN 302 636-4-1 [8.1.2]
@@ -59,6 +64,7 @@ namespace ns3
         std::set<uint16_t> DPL; //! Duplicate packet list
         long timestamp;
         uint32_t PDR;
+        LocationTableExtension cbr_extension;
       } GNLocTE;
 
       typedef struct _egoPositionVector {
@@ -119,7 +125,7 @@ namespace ns3
        * @param rx_callback
        */
 
-      void setDCC(Ptr<DCC> dcc) {m_dcc = dcc;}
+      void setDCC(Ptr<DCC> dcc) {m_dcc = dcc; attachSendFromDCCQueue(); attachGlobalCBRCheck();}
       void addRxCallback(std::function<void(GNDataIndication_t,Address)> rx_callback) {m_ReceiveCallback=rx_callback;}
       /**
        * @brief Create GeoNet PDU with the correct headers (GBC or TSB) and send it.
@@ -150,7 +156,9 @@ namespace ns3
       // It requires as input a pointer to the node to which the socket should be bound
       static Ptr<Socket> createGNPacketSocket(Ptr<Node> node_ptr);
 
-      void attachDCC();
+      void attachSendFromDCCQueue();
+
+      void attachGlobalCBRCheck();
 
   private:
       void LocTE_timeout(GNAddress entry_address);
@@ -246,6 +254,9 @@ namespace ns3
       bool m_EPVupdate_running = true;
       Ptr<DCC> m_dcc = nullptr;
 
+      int64_t m_GNLocTTimerCBR_ms = 1000;
+      double m_CBR_L1_Hop = 0.0;
+      double m_CBR_L2_Hop = 0.0;
   };
 }
 #endif // GEONET_H

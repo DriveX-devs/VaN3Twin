@@ -33,15 +33,10 @@ namespace ns3
       uint16_t GetSeqNumber(void) const {return m_seqNumber;}
       GNlpv_t GetLongPositionV(void) const {return m_sourcePV;}
 
-      void setDCC(Ptr<DCC> dcc) {m_dcc = dcc;};
-      void setPhy(Ptr<WifiPhy> phy) {m_phy = phy;};
-
     private:
       uint16_t m_seqNumber;
       GNlpv_t m_sourcePV;  //!Source long position vector
       uint8_t m_reserved; //! aux variable for reading reserved fields
-      Ptr<WifiPhy> m_phy = nullptr;
-      Ptr<DCC> m_dcc = nullptr;
 
   };
 }

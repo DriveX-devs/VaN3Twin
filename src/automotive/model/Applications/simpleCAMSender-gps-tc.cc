@@ -170,7 +170,6 @@ namespace ns3
         m_dcc = CreateObject<DCC>();
         m_dcc->SetupDCC(m_id, m_met_sup, m_node, m_dcc_modality, m_dcc_time_window);
         m_geoNet->setDCC (m_dcc);
-        m_geoNet->attachDCC();
         m_dcc->StartDCC();
       }
   }

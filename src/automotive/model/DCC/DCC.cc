@@ -91,6 +91,18 @@ void DCC::SetupDCC(std::string item_id, Ptr<MetricSupervisor> met_sup, Ptr<Node>
   m_log_file = log_file;
 }
 
+Ptr<WifiPhy> DCC::GetPhy()
+{
+  Ptr<NetDevice> netDevice = m_node->GetDevice (0);
+  Ptr<WifiNetDevice> wifiDevice = DynamicCast<WifiNetDevice> (netDevice);
+  if (wifiDevice == nullptr)
+    {
+      NS_FATAL_ERROR("WiFi Device object not found.");
+    }
+  // Get the PHY layer
+  return wifiDevice->GetPhy ();
+}
+
 void DCC::StartDCC()
 {
   if (m_modality == "adaptive")
@@ -116,10 +128,13 @@ void DCC::StartDCC()
         file.close();
       }
   }
-  if (m_queue_length > 0)
-    {
+  Simulator::Schedule (MilliSeconds (m_T_DCC_NET_Trig), &DCC::adaptiveDCCcheckCBRG, this);
+}
 
-    }
+void DCC::adaptiveDCCcheckCBRG()
+{
+  m_cbr_g_callback();
+  Simulator::Schedule (MilliSeconds (m_T_DCC_NET_Trig), &DCC::adaptiveDCCcheckCBRG, this);
 }
 
 void DCC::reactiveDCC()
@@ -171,8 +186,9 @@ void DCC::reactiveDCC()
 void DCC::adaptiveDCCcheckCBR()
 {
   NS_ASSERT_MSG (m_metric_supervisor != nullptr, "Metric Supervisor not set");
-  m_previous_cbr = m_metric_supervisor->getCBRPerItem(m_item_id);
-  if (m_previous_cbr == -1) m_previous_cbr = 0;
+  double previous_cbr = m_metric_supervisor->getCBRPerItem(m_item_id);
+  if (previous_cbr == -1) previous_cbr = 0;
+  setNewCBRL0Hop ((float) previous_cbr);
   Simulator::Schedule(MilliSeconds(m_T_CBR), &DCC::adaptiveDCCcheckCBR, this);
 }
 
@@ -189,17 +205,32 @@ void DCC::adaptiveDCC()
       return;
     }
   m_current_cbr = currentCBR;
+  setNewCBRL0Hop (currentCBR);
   Time now = Simulator::Now ();
   double time = now.GetSeconds ();
   double delta_offset;
   // Step 1
   if (m_CBR_its != -1)
     {
-      m_CBR_its = 0.5 * m_CBR_its + 0.25 * ((currentCBR + m_previous_cbr) / 2);
+      if (m_CBR_G[0] == -1 && m_CBR_G[1] == -1)
+        {
+          m_CBR_its = 0.5 * m_CBR_its + 0.25 * ((m_CBR_L0_Hop[0] + m_CBR_L0_Hop[1]) / 2);
+        }
+      else
+        {
+          m_CBR_its = 0.5 * m_CBR_its + 0.25 * ((m_CBR_G[0] + m_CBR_G[1]) / 2);
+        }
     }
   else
     {
-      m_CBR_its = (currentCBR + m_previous_cbr) / 2;
+      if (m_CBR_G[0] == -1 && m_CBR_G[1] == -1)
+        {
+          m_CBR_its = (m_CBR_L0_Hop[0] + m_CBR_L0_Hop[1]) / 2;
+        }
+      else
+        {
+          m_CBR_its = (m_CBR_G[0] + m_CBR_G[1]) / 2;
+        }
     }
   // Step 2
   double factor1 = m_beta * (m_CBR_target - m_CBR_its);
@@ -533,6 +564,11 @@ void DCC::checkQueue ()
 void DCC::setSendCallback(std::function<void(const QueuePacket&)> cb)
 {
   m_send_callback = std::move(cb);
+}
+
+void DCC::setCBRGCallback (std::function<void()> cb)
+{
+  m_cbr_g_callback = std::move(cb);
 }
 
 }

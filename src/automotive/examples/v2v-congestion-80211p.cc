@@ -329,13 +329,12 @@ int main (int argc, char *argv[])
       basicServices.add(bs_container);
 
       // Setup DCC for both internal behavior and GeoNet link
-      if (false && dcc_per_node.find(c.Get(nodeID))!=dcc_per_node.end())
+      if (dcc_per_node.find(c.Get(nodeID))!=dcc_per_node.end())
         {
           std::cout << "DCC enabled for vehicle " << vehicleID << std::endl;
-          dcc_per_node[c.Get(nodeID)]->SetupDCC(vehicleID, metSup, c.Get(nodeID), "reactive", 200);
+          dcc_per_node[c.Get(nodeID)]->SetupDCC(vehicleID, metSup, c.Get(nodeID), "adaptive", 200);
           dcc_per_node[c.Get(nodeID)]->setBitRate (6e6);
           gn->setDCC (dcc_per_node[c.Get(nodeID)]);
-          gn->attachDCC();
           dcc_per_node[c.Get(nodeID)]->StartDCC();
         }
 
