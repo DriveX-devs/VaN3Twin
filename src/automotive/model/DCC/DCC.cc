@@ -143,7 +143,16 @@ void DCC::reactiveDCC()
   NS_ASSERT_MSG (m_metric_supervisor != nullptr, "Metric Supervisor not set");
   NS_ASSERT_MSG (m_dcc_interval != -1, "DCC interval not set");
 
-  double currentCBR = m_metric_supervisor->getCBRPerItem(m_item_id);
+  double currentCBR;
+  if (m_CBR_G[0] == -1 && m_CBR_G[1] == -1)
+    {
+      currentCBR = m_metric_supervisor->getCBRPerItem(m_item_id);
+    }
+  else
+    {
+      currentCBR = 0.5 * (m_CBR_G[0] + m_CBR_G[1]);
+    }
+
   if (currentCBR == -1)
     {
       Simulator::Schedule(MilliSeconds(m_dcc_interval), &DCC::reactiveDCC, this);
