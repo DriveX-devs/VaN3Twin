@@ -975,6 +975,7 @@ namespace ns3 {
     }
     if (dataIndication.GNType != BEACON)
       {
+        // Save the CBR values read from the SHB header
         m_GNLocT[dataIndication.SourcePV.GnAddress].cbr_extension.CBR_R0_Hop.push_back (std::make_tuple(Simulator::Now().GetMilliSeconds(), cbrr0));
         m_GNLocT[dataIndication.SourcePV.GnAddress].cbr_extension.CBR_R1_Hop.push_back (std::make_tuple(Simulator::Now().GetMilliSeconds(), cbrr1));
       }
@@ -1085,6 +1086,7 @@ namespace ns3 {
   {
     if (m_dcc == nullptr) return;
     m_dcc->setCBRGCallback([this](){
+      // Execute the CBR_G computation following the DCC_NET algorithm
       auto now = Simulator::Now().GetMilliSeconds();
       double mean_cbr_r0_hop = 0.0;
       long tot_r0 = 0;
@@ -1096,7 +1098,7 @@ namespace ns3 {
       for(auto it = m_GNLocT.begin(); it != m_GNLocT.end(); ++it)
         {
           auto cbr_data = it->second.cbr_extension;
-          // Clean old data
+          // Clean old data for CBR_R0_Hop
           size_t counter = 0;
           std::vector<size_t> to_delete;
           for (auto it2 = cbr_data.CBR_R0_Hop.begin(); it2 != cbr_data.CBR_R0_Hop.end(); ++it2)
@@ -1104,6 +1106,7 @@ namespace ns3 {
               if(now - m_GNLocTTimerCBR_ms > std::get<0>(*it2)) to_delete.push_back (counter);
               counter ++;
             }
+          // Sort and delete old data
           std::sort(to_delete.begin(), to_delete.end(), std::greater<size_t>());
           for (size_t idx : to_delete) {
               if (idx < cbr_data.CBR_R0_Hop.size()) {
@@ -1111,6 +1114,7 @@ namespace ns3 {
                 }
             }
 
+          // Clean old data for CBR_R1_Hop
           counter = 0;
           to_delete.clear();
           for (auto it2 = cbr_data.CBR_R1_Hop.begin(); it2 != cbr_data.CBR_R1_Hop.end(); ++it2)
@@ -1118,6 +1122,7 @@ namespace ns3 {
               if(now - m_GNLocTTimerCBR_ms > std::get<0>(*it2)) to_delete.push_back (counter);
               counter ++;
             }
+          // Sort and delete old data
           std::sort(to_delete.begin(), to_delete.end(), std::greater<size_t>());
           for (size_t idx : to_delete) {
               if (idx < cbr_data.CBR_R1_Hop.size()) {
@@ -1125,6 +1130,8 @@ namespace ns3 {
                 }
             }
 
+          // Compute the average value of CBR
+          // Search for the maximum value and second maximum values of CBR
           for (auto it2 = cbr_data.CBR_R0_Hop.begin(); it2 != cbr_data.CBR_R0_Hop.end(); ++it2)
             {
               double val = std::get<1>(*it2);
@@ -1181,6 +1188,7 @@ namespace ns3 {
         }
       double CBR_G = std::max(m_dcc->getCBRL0Prev(), CBR_L1_Hop);
       CBR_G = std::max(CBR_G, CBR_L2_Hop);
+      // Set the new CBR_G
       m_dcc->setCBRG(CBR_G);
       m_dcc->setCBRR1(CBR_L1_Hop);
     });

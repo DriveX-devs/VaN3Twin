@@ -70,6 +70,7 @@ namespace ns3
       }
     else
       {
+        // ---- DCC/MCO block ----
         double cbr0 = m_dcc->getCBRR0();
         if (cbr0 < 0.0f) cbr0 = 0.0f;
         if (cbr0 > 1.0f) cbr0 = 1.0f;

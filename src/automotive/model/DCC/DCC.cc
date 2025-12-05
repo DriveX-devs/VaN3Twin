@@ -41,12 +41,14 @@ DCC::~DCC()
 
 void DCC::setNewCBRL0Hop (double cbr)
 {
+  // Set the new value for CBR_L0_Hop and save the previous one
   m_CBR_L0_Hop[1] = m_CBR_L0_Hop[0];
   m_CBR_L0_Hop[0] = cbr;
 }
 
 void DCC::setCBRG(double cbr_g)
 {
+  // Set the new value for CBR_G and save the previous one
   m_CBR_G[1] = m_CBR_G[0];
   m_CBR_G[0] = cbr_g;
 };
@@ -145,6 +147,7 @@ void DCC::StartDCC()
 
 void DCC::DCCcheckCBRG()
 {
+  // Start check CBR from sharing process through GeoNet
   m_cbr_g_callback();
   Simulator::Schedule (MilliSeconds (m_T_DCC_NET_Trig), &DCC::DCCcheckCBRG, this);
 }
@@ -156,6 +159,7 @@ void DCC::reactiveDCC()
   NS_ASSERT_MSG (m_dcc_interval != -1, "DCC interval not set");
 
   double currentCBR;
+  // If CBR sharing is available
   if (m_CBR_G[0] == -1 && m_CBR_G[1] == -1)
     {
       currentCBR = m_metric_supervisor->getCBRPerItem(m_item_id);
@@ -233,6 +237,7 @@ void DCC::adaptiveDCC()
   // Step 1
   if (m_CBR_its != -1)
     {
+      // If CBR sharing is available
       if (m_CBR_G[0] == -1 && m_CBR_G[1] == -1)
         {
           m_CBR_its = 0.5 * m_CBR_its + 0.25 * ((m_CBR_L0_Hop[0] + m_CBR_L0_Hop[1]) / 2);
