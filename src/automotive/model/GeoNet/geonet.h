@@ -255,8 +255,6 @@ namespace ns3
       Ptr<DCC> m_dcc = nullptr;
 
       int64_t m_GNLocTTimerCBR_ms = 1000;
-      double m_CBR_L1_Hop = 0.0;
-      double m_CBR_L2_Hop = 0.0;
   };
 }
 #endif // GEONET_H

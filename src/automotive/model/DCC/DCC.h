@@ -64,7 +64,6 @@ public:
   void enqueue(int priority, QueuePacket p);
   std::tuple<bool, QueuePacket> dequeue(int priority);
 
-  float getTonpp();
   void updateTgoAfterStateCheck(uint32_t Toff);
   void updateTonpp(ssize_t pktSize);
   bool checkGateOpen(int64_t now);
@@ -76,14 +75,8 @@ public:
   void setCBRGCallback(std::function<void()> cb);
   Ptr<WifiPhy> GetPhy();
   double getCBRTarget() const {return m_CBR_target;};
-  void setCBRG(double cbr_g) {
-    m_CBR_G[1] = m_CBR_G[0];
-    m_CBR_G[0] = cbr_g;
-  };
-  void setNewCBRL0Hop (double cbr) {
-    m_CBR_L0_Hop[1] = m_CBR_L0_Hop[0];
-    m_CBR_L0_Hop[0] = cbr;
-  }
+  void setCBRG(double cbr_g);
+  void setNewCBRL0Hop (double cbr);
   double getCBRR0 () {return m_CBR_L0_Hop[0];}
   double getCBRL0Prev () {return m_CBR_L0_Hop[1];}
   void setCBRR1 (double cbr_r1) {m_CBR_R1_Hop = cbr_r1;};
@@ -143,7 +136,7 @@ private:
    */
   void adaptiveDCCcheckCBR();
 
-  void adaptiveDCCcheckCBRG();
+  void DCCcheckCBRG();
 
   void checkQueue();
 

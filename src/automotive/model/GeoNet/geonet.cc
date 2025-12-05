@@ -935,7 +935,7 @@ namespace ns3 {
   {
     SHBheader shbHeader;
     BeaconHeader beaconHeader;
-    float cbrr0, cbrr1;
+    double cbrr0, cbrr1;
     if(dataIndication.GNType == BEACON)
     {
       dataIndication.data->RemoveHeader (beaconHeader, 24);
@@ -1162,26 +1162,27 @@ namespace ns3 {
       m_LocT_Mutex.unlock ();
       mean_cbr_r0_hop /= tot_r0;
       mean_cbr_r1_hop /= tot_r1;
+      double CBR_L1_Hop, CBR_L2_Hop;
       if (mean_cbr_r0_hop > m_dcc->getCBRTarget())
         {
-          m_CBR_L1_Hop = max_cbr_r0;
+          CBR_L1_Hop = max_cbr_r0;
         }
       else
         {
-          m_CBR_L1_Hop = second_max_cbr_r0;
+          CBR_L1_Hop = second_max_cbr_r0;
         }
       if (mean_cbr_r1_hop > m_dcc->getCBRTarget())
         {
-          m_CBR_L2_Hop = max_cbr_r1;
+          CBR_L2_Hop = max_cbr_r1;
         }
       else
         {
-          m_CBR_L2_Hop = second_max_cbr_r1;
+          CBR_L2_Hop = second_max_cbr_r1;
         }
-      double CBR_G = std::max(m_dcc->getCBRL0Prev(), m_CBR_L1_Hop);
-      CBR_G = std::max(CBR_G, m_CBR_L2_Hop);
+      double CBR_G = std::max(m_dcc->getCBRL0Prev(), CBR_L1_Hop);
+      CBR_G = std::max(CBR_G, CBR_L2_Hop);
       m_dcc->setCBRG(CBR_G);
-      m_dcc->setCBRR1(m_CBR_L1_Hop);
+      m_dcc->setCBRR1(CBR_L1_Hop);
     });
   }
 

@@ -39,6 +39,18 @@ DCC::DCC ()
 DCC::~DCC()
 = default;
 
+void DCC::setNewCBRL0Hop (double cbr)
+{
+  m_CBR_L0_Hop[1] = m_CBR_L0_Hop[0];
+  m_CBR_L0_Hop[0] = cbr;
+}
+
+void DCC::setCBRG(double cbr_g)
+{
+  m_CBR_G[1] = m_CBR_G[0];
+  m_CBR_G[0] = cbr_g;
+};
+
 std::unordered_map<DCC::ReactiveState, DCC::ReactiveParameters> DCC::getConfiguration(double Ton, double currentCBR)
 {
     std::unordered_map<DCC::ReactiveState, DCC::ReactiveParameters> map;
@@ -128,13 +140,13 @@ void DCC::StartDCC()
         file.close();
       }
   }
-  Simulator::Schedule (MilliSeconds (m_T_DCC_NET_Trig), &DCC::adaptiveDCCcheckCBRG, this);
+  Simulator::Schedule (MilliSeconds (m_T_DCC_NET_Trig), &DCC::DCCcheckCBRG, this);
 }
 
-void DCC::adaptiveDCCcheckCBRG()
+void DCC::DCCcheckCBRG()
 {
   m_cbr_g_callback();
-  Simulator::Schedule (MilliSeconds (m_T_DCC_NET_Trig), &DCC::adaptiveDCCcheckCBRG, this);
+  Simulator::Schedule (MilliSeconds (m_T_DCC_NET_Trig), &DCC::DCCcheckCBRG, this);
 }
 
 void DCC::reactiveDCC()
@@ -197,7 +209,7 @@ void DCC::adaptiveDCCcheckCBR()
   NS_ASSERT_MSG (m_metric_supervisor != nullptr, "Metric Supervisor not set");
   double previous_cbr = m_metric_supervisor->getCBRPerItem(m_item_id);
   if (previous_cbr == -1) previous_cbr = 0;
-  setNewCBRL0Hop ((float) previous_cbr);
+  setNewCBRL0Hop (previous_cbr);
   Simulator::Schedule(MilliSeconds(m_T_CBR), &DCC::adaptiveDCCcheckCBR, this);
 }
 
@@ -367,7 +379,6 @@ void DCC::updateTonpp(ssize_t pktSize)
   double total_duration_s = tx_duration_s + (68e-6); // 68 µs extra
   m_Ton_pp = total_duration_s * 1000.0;
 }
-
 
 void DCC::updateTgoAfterStateCheck(uint32_t Toff)
 {

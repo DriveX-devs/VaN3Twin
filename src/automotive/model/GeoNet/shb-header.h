@@ -33,8 +33,8 @@ namespace ns3
 
       //Getters
       GNlpv_t GetLongPositionV(void) const {return m_sourcePV;}
-      float GetCBRR0Hop() {return m_CBR_R0_Hop;};
-      float GetCBRR1Hop() {return m_CBR_R1_Hop;};
+      double GetCBRR0Hop() {return m_CBR_R0_Hop;};
+      double GetCBRR1Hop() {return m_CBR_R1_Hop;};
 
       void setDCC(Ptr<DCC> dcc) {m_dcc = dcc;};
       void setPhy(Ptr<WifiPhy> phy) {m_phy = phy;};

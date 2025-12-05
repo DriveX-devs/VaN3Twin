@@ -117,9 +117,9 @@ namespace ns3
     uint8_t reserved = i.ReadU8();  // Octet 43
 
     // Decode fields
-    double cbr0 = static_cast<float>(cbr0_enc) / 255.0f;
+    double cbr0 = static_cast<double>(cbr0_enc) / 255.0f;
     m_CBR_R0_Hop = cbr0;
-    double cbr1 = static_cast<float>(cbr1_enc) / 255.0f;
+    double cbr1 = static_cast<double>(cbr1_enc) / 255.0f;
     m_CBR_R1_Hop = cbr1;
     // Tx power in bits 0–4
     float txPower = static_cast<uint8_t>(txp_byte & 0x1F);
