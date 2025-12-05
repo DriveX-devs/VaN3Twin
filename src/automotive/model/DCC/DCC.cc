@@ -159,10 +159,12 @@ void DCC::reactiveDCC()
   NS_ASSERT_MSG (m_dcc_interval != -1, "DCC interval not set");
 
   double currentCBR;
+  m_current_cbr =  m_metric_supervisor->getCBRPerItem(m_item_id);
+  setNewCBRL0Hop (m_current_cbr);
   // If CBR sharing is available
   if (m_CBR_G[0] == -1 && m_CBR_G[1] == -1)
     {
-      currentCBR = m_metric_supervisor->getCBRPerItem(m_item_id);
+      currentCBR = m_current_cbr;
     }
   else
     {
@@ -174,7 +176,6 @@ void DCC::reactiveDCC()
       Simulator::Schedule(MilliSeconds(m_dcc_interval), &DCC::reactiveDCC, this);
       return;
     }
-  m_current_cbr = currentCBR;
   // Get the NetDevice
   Ptr<NetDevice> netDevice = m_node->GetDevice (0);
   Ptr<WifiNetDevice> wifiDevice;
