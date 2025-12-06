@@ -427,7 +427,11 @@ namespace ns3 {
   {
     SHBheader header;
     header.setDCC (m_dcc);
-    header.setPhy (m_dcc->GetPhy ());
+    if (m_dcc != nullptr)
+      {
+        header.setPhy (m_dcc->GetPhy ());
+      }
+
     //1) Create SHB GN-PDU with SHB header setting according to ETSI EN 302 636-4-1 [10.3.10.2]
     //a) and b) already done
     //c) SHB extended header
@@ -557,6 +561,8 @@ namespace ns3 {
     double T_beacon = m_GnBeaconServiceRetransmitTimer + (rand()% m_GnBeaconServiceMaxJItter);
     m_event_Beacon = Simulator::Schedule(MilliSeconds(T_beacon),&GeoNet::setBeacon,this);
 
+    size_t pktSize = dataRequest.data->GetSize () + IEEE80211_DATA_PKT_HDR_LEN + IEEE80211_FCS_LEN + 8; // 8 = bytes layer LLC
+    if (m_dcc != nullptr) m_dcc->updateTonpp(pktSize);
     //Update sequence number
     m_seqNumber = (m_seqNumber+1)% SN_MAX;
     return ACCEPTED;
