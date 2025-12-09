@@ -83,6 +83,31 @@ The user is also encouraged to use the `sumo_files_v2v_map` and `sumo_files_v2i_
 
 **The version of CAM and DENM messages (v1 or v2)** can be easily switched by relying on the `switch_ETSI_version.sh` script. This script relies on the `ns-3-dev/src/automotive/model/ASN1/currmode.txt` file. Please **never** modify it manually or delete it!
 
+# Working with an IDE
+
+Although not necessarily required, you can also configure an IDE in order to more comfortably work with VaN3Twin.
+The suggested IDEs, which has also been used for the development of VaN3Twin, are _QtCreator_ and _CLion_.
+
+## QtCreator
+
+You can find all the instructions for setting up QtCreator with ns-3 (and the same applies to VaN3Twin, as it is based on ns-3) on the [official ns-3 Wiki](https://www.nsnam.org/wiki/HOWTO_configure_QtCreator_with_ns-3).
+
+QtCreator can be installed on Debian/Ubuntu with:
+`sudo apt install qtcreator`
+
+You need also to install the `libclang-common-8-dev` package (the command for Debian/Ubuntu is reported below):
+`sudo apt install libclang-common-8-dev`
+
+Not installing `libclang-common-8-dev` may result in QtCreator wrongly highlighting several errors and not recognizing some types, when opening any source or header file, even if the code compiles correctly.
+
+**Important**: if `libclang-common-8-dev` is not available, you can try installing a newer version. For example, on Ubuntu 22, we verified that `libclang-common-15-dev` works well too.
+
+## CLion
+
+CLion can be easily installed with the [JetBrains Toolbox App](https://www.jetbrains.com/toolbox-app/).
+
+You can find all the instructions for setting up CLion with ns-3 (and the same applies to VaN3Twin, as it is based on ns-3) on our [documentation](https://ms-van3ts-documentation.readthedocs.io/en/master/IDE.html#clion).
+
 # VaN3Twin-CARLA extension
 
 In addition to SUMO and GPS traces VaN3Twin supports the use of CARLA for mobility and sensor perception simulation. This extension leverages the [OpenCDA framework](https://github.com/ucla-mobility/OpenCDA) to develop an LDM module and extend the gRPC adapter devised [here](https://github.com/veins/veins_carla) to be able to extract not only localization information from CARLA but also perception information from the LDM module. The developed client module on ns-3 queries the information to use it for the mobility of each of the ns-3 simulated nodes and to update the LDM module with all perception data sent over the simulated vehicular network. 
@@ -206,31 +231,6 @@ To enable this specific feature of the simulator, it is important to **follow th
 
 For more details on how to manage the co-channel coexistence simulations, such as how to pass the necessary parameters to the `TxTracker` module, you can refer to the example `src/automotive/examples/v2v-coexistence-80211p-nrv2x.cc`.
 
-# Working with an IDE
-
-Although not necessarily required, you can also configure an IDE in order to more comfortably work with VaN3Twin.
-The suggested IDEs, which has also been used for the development of VaN3Twin, are _QtCreator_ and _CLion_.
-
-## QtCreator
-
-You can find all the instructions for setting up QtCreator with ns-3 (and the same applies to VaN3Twin, as it is based on ns-3) on the [official ns-3 Wiki](https://www.nsnam.org/wiki/HOWTO_configure_QtCreator_with_ns-3).
-
-QtCreator can be installed on Debian/Ubuntu with:
-`sudo apt install qtcreator`
-
-You need also to install the `libclang-common-8-dev` package (the command for Debian/Ubuntu is reported below):
-`sudo apt install libclang-common-8-dev`
-
-Not installing `libclang-common-8-dev` may result in QtCreator wrongly highlighting several errors and not recognizing some types, when opening any source or header file, even if the code compiles correctly.
-
-**Important**: if `libclang-common-8-dev` is not available, you can try installing a newer version. For example, on Ubuntu 22, we verified that `libclang-common-15-dev` works well too.
-
-## CLion
-
-CLion can be easily installed with the [JetBrains Toolbox App](https://www.jetbrains.com/toolbox-app/).
-
-You can find all the instructions for setting up CLion with ns-3 (and the same applies to VaN3Twin, as it is based on ns-3) on our [documentation](https://ms-van3ts-documentation.readthedocs.io/en/master/IDE.html#clion).
-
 # Supported ETSI C-ITS messages
 
 *VaN3Twin* currently supports the following ETSI C-ITS messages:
@@ -242,6 +242,95 @@ You can find all the instructions for setting up CLion with ns-3 (and the same a
 
 For the transmission and reception of IVIMs (from an RSU to vehicles), you can refer to the `v2i-emergencyVehicleWarning-80211p` example.
 
+# Introduction of ETSI DCC (DCC_NET, DCC_CROSS, DCC_ACC – Reactive & Adaptive)
+
+*VaN3Twin* now includes a full implementation of the **ETSI Decentralized Congestion Control (DCC)** mechanism, enabling realistic modeling of channel access regulation and cooperative congestion management for ITS-G5 / ITS-G5-like stacks.
+The implemented DCC framework follows the [ETSI TS 102 687](https://www.etsi.org/deliver/etsi_ts/102600_102699/102687/01.02.01_60/ts_102687v010201p.pdf) specification and supports all three control components:
+
+* **DCC_NET (Network Layer DCC)**
+  Handles the Channel Busy Ratio (CBR) sharing through the GeoNetworking header. Based on that, the receiver cna compute the Global CBR (CBR_G) to take into account not just the one sensed locally, but also the one received from neighbors.
+
+* **DCC_CROSS (Cross-Layer DCC)**
+  Acts as the coordination plane between layers, ensuring coherent transitions across application, networking, and MAC layers based on the observed channel load.
+
+* **DCC_ACC (Access Layer DCC)**
+  Implements the PHY/MAC-level congestion control. This includes both:
+
+    * **Reactive DCC**: immediate adaptations to sudden changes in Channel Busy Ratio (CBR), following the fast-timescale state machine.
+    * **Adaptive DCC**: long-term regulation based on smoothed CBR estimates, using timers and thresholds to prevent oscillations.
+
+### Key Features of the DCC Integration
+
+* **Standards-compliant state machines**
+  The **Relaxed**, **Active**, and **Restrictive** DCC states are fully supported, driving transmission rate, Tx power, and CBR threshold adjustments as per ETSI requirements.
+
+* **Cross-layer coordination hooks**
+  Applications, BTP, and GeoNetworking modules transparently receive updated DCC parameters and do not need to manually manage state transitions.
+
+* **Channel load monitoring**
+  The PHY layers (IEEE 802.11p) export real-time channel occupancy metrics to the DCC engine, allowing accurate CBR-based congestion estimation.
+
+* **Compatible with all VaN3Twin ITS-G5 scenarios**
+  DCC logic can be automatically enabled for all ETSI ITS-G5 simulations (CAM, DENM, CPM, VAM, IVIM) with few lines of code in user applications.
+
+### How DCC Is Enabled in VaN3Twin
+
+DCC is **not implicitly enabled by default**. Instead, each vehicle that should run ETSI DCC explicitly receives its own DCC instance during the setup phase:
+
+* The `MetricSupervisor` object should be configured to initiate the CBR checking for the nodes that will include DCC in their features:
+    ```cpp
+    metSup->startCheckCBR(dcc_nodes);
+    metSup->setCBRWindowValue(100);
+    metSup->setCBRAlphaValue(0.1);
+    ```
+* A `DCC` object is created for each vehicle that should use congestion control.
+    ```cpp
+    std::unordered_map<Ptr<Node>, Ptr<DCC>> dcc_per_node;
+    for (uint8_t i = 0; i < dcc_nodes; i++)
+    {
+    dcc_per_node[c.Get(i)] = CreateObject<DCC>();
+    }
+    ```
+
+* The instance is initialized inside the `setupNewWiFiNode` callback through:
+
+  ```cpp
+  dcc->SetupDCC(vehicleID, metSup, node, "adaptive", 200);
+  dcc->setBitRate(6e6);
+  gn->setDCC(dcc); // GeoNetworking binding
+  dcc->StartDCC();
+  ```
+
+This design provides **per-vehicle control** instead of global automatic activation.
+
+#### Main Parameters in the DCC Setup
+
+The most relevant parameters configured during setup are:
+
+* **DCC Modality** (`"adaptive"`):
+  Selects the congestion control algorithm. `"adaptive"` enables the long-term ETSI Adaptive DCC logic, while other mode (i.e., `"reactive"`) can be selected by the user.
+
+* **Initial Beaconing Rate (200 ms)**:
+  The fourth argument of `SetupDCC()` sets the initial DCC check interval (in milliseconds).
+
+* **Bit Rate (`6e6` bps)**:
+  `setBitRate()` configures the PHY-layer nominal data rate used by the ITS-G5 station for the transmission.
+
+* **Node Binding (`node` and `vehicleID`)**:
+  Associates each DCC instance with the specific ns-3 node and its vehicle identifier.
+
+Together, these parameters allow DCC to be configured with realistic, ETSI-compliant behavior, while still giving the user full control over **which vehicles**, **which algorithms**, and **which PHY parameters** are used.
+
+### Supported DCC Modes at a Glance
+
+| DCC Component          | Supported | Notes                                 |
+| ---------------------- | --------- |---------------------------------------|
+| **DCC_NET**            | ✔️        | GeoNetworking CBR sharing             |
+| **DCC_CROSS**          | ✔️        | Coordinated state transitions across the ITS-G5 stack |
+| **DCC_ACC – Reactive** | ✔️        | Fast-timescale state machine triggered by instant CBR |
+| **DCC_ACC – Adaptive** | ✔️        | Slow-timescale smoothing + stable congestion mitigation |
+
+This integration provides a realistic, standards-aligned congestion control behavior, enabling *VaN3Twin* to simulate dense ITS scenarios with high fidelity, including edge cases such as large-scale beaconing, clustered traffic, and multi-technology coexistence (e.g., when combined with the coexistence module).
 
 # Sample V2I example and V2I/V2N applications
 
