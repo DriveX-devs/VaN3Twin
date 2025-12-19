@@ -23,6 +23,8 @@
 #include "ns3/socket.h"
 #include "ns3/network-module.h"
 #include "ns3/gn-utils.h"
+#include "ns3/vrudpOpenCDA.h"
+#include <memory>
 
 #define DEG_2_RAD(val) ((val)*M_PI/180.0)
 
@@ -91,7 +93,17 @@ namespace ns3
            "To enable/disable the visualization of the sensor",
            BooleanValue(false),
            MakeBooleanAccessor (&cooperativePerception::m_vis_sensor),
-           MakeBooleanChecker ());
+           MakeBooleanChecker ())
+        .AddAttribute ("itsType",
+                     "To identify the type of actor",
+                       StringValue(""),
+                     MakeStringAccessor (&cooperativePerception::m_type),
+                       MakeStringChecker ())
+        .AddAttribute ("SendVAM",
+                       "To enable/disable the transmission of VAM messages",
+                       BooleanValue(true),
+                       MakeBooleanAccessor (&cooperativePerception::m_send_vam),
+                       MakeBooleanChecker ());
         return tid;
   }
 
@@ -104,9 +116,11 @@ namespace ns3
     m_already_print = false;
     m_send_cam = true;
     m_vis_sensor = false;
+    m_metric_supervisor = nullptr;
 
     m_cam_received = 0;
     m_cpm_received = 0;
+    m_vam_received = 0;
 
     m_distance_threshold = 75; // Distance used in GeoNet to determine the radius of the circumference arounf the emergency vehicle where the DENMs are valid
     m_heading_threshold = 45; // Max heading angle difference between the normal vehicles and the emergenecy vehicle, that triggers a reaction in the normal vehicles
@@ -130,25 +144,26 @@ namespace ns3
     NS_LOG_FUNCTION(this);
 
     /* Save the vehicles informations */
-    VDP* vdp;
+
     if(m_traci_client != nullptr)
       {
         // SUMO mobility
         m_id = m_traci_client->GetVehicleId (this->GetNode ());
         m_type = m_traci_client->TraCIAPI::vehicle.getVehicleClass (m_id);
 
-        vdp = new VDPTraCI(m_traci_client,m_id);
+        m_vdp = std::make_unique<VDPTraCI>(m_traci_client,m_id);
+        //vrudp = new VRUdp(m_traci_client,m_id);
 
         //Create LDM and sensor object
         m_LDM = CreateObject<LDM>();
         m_LDM->setStationID(m_id);
         m_LDM->setTraCIclient(m_traci_client);
-        m_LDM->setVDP(vdp);
+        m_LDM->setVDP(m_vdp.get());
 
         m_sumo_sensor = CreateObject<SUMOSensor>();
         m_sumo_sensor->setStationID(m_id);
         m_sumo_sensor->setTraCIclient(m_traci_client);
-        m_sumo_sensor->setVDP(vdp);
+        m_sumo_sensor->setVDP(m_vdp.get());
         m_sumo_sensor->setLDM (m_LDM);
 
       }
@@ -156,20 +171,24 @@ namespace ns3
       {
         int stationID = m_opencda_client->getVehicleID (this->GetNode ());
         m_id = std::to_string (stationID);
-        m_type = StationType_passengerCar; //TODO: add support for multiple vehicle types
+        m_type = m_type;//StationType_passengerCar; //TODO: add support for multiple vehicle types
 
-        vdp = new VDPOpenCDA(m_opencda_client, m_id);
+        m_vdp = std::make_unique<VDPOpenCDA>(m_opencda_client, m_id);
+        m_vrudp = std::make_unique<VRUdpOpenCDA>(m_opencda_client, m_id);
+
         m_LDM = CreateObject<LDM>();
         m_LDM->setStationID(stationID);
-        m_LDM->setVDP(vdp);
+        m_LDM->setVDP(m_vdp.get());
         //m_LDM->enableOutputFile (m_id);
+
 
         m_opencda_sensor = CreateObject<OpenCDASensor>();
         m_opencda_sensor->setStationID(stationID);
         m_opencda_sensor->setOpenCDAClient (m_opencda_client);
-        m_opencda_sensor->setVDP(vdp);
+        m_opencda_sensor->setVDP(m_vdp.get());
         m_opencda_sensor->setLDM (m_LDM);
         m_opencda_sensor->enableGUI(m_vis_sensor);
+        m_opencda_sensor->setClustering(false);
       }
     else
       {
@@ -182,7 +201,8 @@ namespace ns3
 
     if(m_metric_supervisor!=nullptr)
     {
-      m_geoNet->setMetricSupervisor(m_metric_supervisor);
+        m_geoNet->setMetricSupervisor(m_metric_supervisor);
+//      m_metric_supervisor->startCheckCBR();
     }
 
     m_btp->setGeoNet(m_geoNet);
@@ -191,6 +211,8 @@ namespace ns3
     m_cpService.setBTP(m_btp);
     m_caService.setLDM(m_LDM);
     m_cpService.setLDM(m_LDM);
+    m_vruService.setBTP(m_btp);
+    m_vruService.setLDM(m_LDM);
 
     /* Create the Sockets for TX and RX */
     TypeId tid;
@@ -230,21 +252,23 @@ namespace ns3
 
     /* Set Station Type in DENBasicService */
     StationType_t stationtype;
-    if (m_type=="passenger")
+    if (m_type=="StationType_passengerCar") //"StationType_passengerCar" or StationType_pedestrian
       stationtype = StationType_passengerCar;
-    else if (m_type=="emergency"){
-      stationtype = StationType_specialVehicle;
+    else if (m_type=="StationType_pedestrian"){
+      stationtype = StationType_pedestrian;
       //m_LDM->enablePolygons (); // Uncomment to enable detected object polygon visualization for this specific vehicle
       }
     else
       stationtype = StationType_unknown;
 
+
     /* Set sockets, callback, station properties and TraCI VDP in CABasicService */
-    m_caService.setSocketTx (m_socket);
-    m_caService.setSocketRx (m_socket);
-    m_caService.setStationProperties (std::stol(m_id), (long)stationtype);
-    m_caService.addCARxCallback (std::bind(&cooperativePerception::receiveCAM,this,std::placeholders::_1,std::placeholders::_2));
-    m_caService.setRealTime (m_real_time);
+    m_caService.setSocketTx(m_socket);
+    m_caService.setSocketRx(m_socket);
+    m_caService.setStationProperties(std::stol(m_id), (long) stationtype);
+    m_caService.addCARxCallback(
+            std::bind(&cooperativePerception::receiveCAM, this, std::placeholders::_1, std::placeholders::_2));
+    m_caService.setRealTime(m_real_time);
 
     /* Set sockets, callback, station properties and TraCI VDP in CPBasicService */
     m_cpService.setSocketTx (m_socket);
@@ -252,15 +276,34 @@ namespace ns3
     m_cpService.setStationProperties (std::stol(m_id), (long)stationtype);
     m_cpService.addCPRxCallback (std::bind(&cooperativePerception::receiveCPM,this,std::placeholders::_1,std::placeholders::_2));
     m_cpService.setRealTime (m_real_time);
-    m_cpService.setRedundancyMitigation (false);
+    m_cpService.setRedundancyMitigation (true);
+    m_cpService.setClustering(true);
 
-    /* Set VDP for GeoNet object */
-    m_caService.setVDP(vdp);
-    m_denService.setVDP(vdp);
-    m_cpService.setVDP(vdp);
+    /* Set sockets, callback, station properties and TraCI VDP in VRUBasicService */
+    m_vruService.setSocketTx(m_socket);
+    m_vruService.setSocketRx(m_socket);
+    m_vruService.setStationProperties(std::stol(m_id), (long) stationtype);
+    m_vruService.addVAMRxCallback(
+            std::bind(&cooperativePerception::receiveVAM, this, std::placeholders::_1, std::placeholders::_2));
 
+
+    m_vruService.setRoleAndClustState();
+    m_vruService.setVAMmetricsfile(std::string("Ped"), (bool) true);
+
+    /* Schedule CPM dissemination */
+    if( stationtype == StationType_passengerCar){
+        m_caService.setVDP(m_vdp.get());
+        m_denService.setVDP(m_vdp.get());
+        m_cpService.setVDP(m_vdp.get());
+
+        m_cpService.startCpmDissemination ();
+    }
+    else if(stationtype == StationType_pedestrian){
+        /* Set VRUdp for GeoNet object */
+        m_vruService.setVRUdp(m_vrudp.get());
+    }
     /* Schedule CAM dissemination */
-    if(m_send_cam == true)
+    if(m_send_cam == true && stationtype == StationType_passengerCar)
     {
         Ptr<UniformRandomVariable> desync_rvar = CreateObject<UniformRandomVariable> ();
         desync_rvar->SetAttribute ("Min", DoubleValue (0.0));
@@ -268,9 +311,15 @@ namespace ns3
         double desync = desync_rvar->GetValue ();
         m_caService.startCamDissemination(desync);
     }
-
-    /* Schedule CPM dissemination */
-    m_cpService.startCpmDissemination ();
+    /* Schedule VAM dissemination */
+    if(m_send_vam == true && stationtype == StationType_pedestrian)
+    {
+        Ptr<UniformRandomVariable> desync_rvar = CreateObject<UniformRandomVariable> ();
+        desync_rvar->SetAttribute ("Min", DoubleValue (0.0));
+        desync_rvar->SetAttribute ("Max", DoubleValue (1.0));
+        double desync = desync_rvar->GetValue ();
+        m_vruService.startVamDissemination(desync);
+    }
 
     if (!m_csv_name.empty ())
     {
@@ -285,7 +334,7 @@ namespace ns3
     NS_LOG_FUNCTION(this);
     Simulator::Cancel(m_send_cam_ev);
 
-    uint64_t cam_sent, cpm_sent;
+    uint64_t cam_sent, cpm_sent, vam_sent;
 
     if (!m_csv_name.empty ())
     {
@@ -294,18 +343,25 @@ namespace ns3
 
     cam_sent = m_caService.terminateDissemination ();
     cpm_sent = m_cpService.terminateDissemination ();
+    vam_sent = m_vruService.terminateDissemination ();
     m_denService.cleanup();
 
     if (m_print_summary && !m_already_print)
     {
       std::cout << "INFO-" << m_id
-                << ",CAM-SENT:" << cam_sent
-                << ",CAM-RECEIVED:" << m_cam_received
-                << ",CPM-SENT: " << cpm_sent
-                << ",CPM-RECEIVED" << m_cpm_received
+                << ", CAM-SENT: " << cam_sent
+                << ", CAM-RECEIVED: " << m_cam_received
+                << ", CPM-SENT: " << cpm_sent
+                << ", CPM-RECEIVED: " << m_cpm_received
+                << ", VAM-SENT: " << vam_sent
+                << ", VAM-RECEIVED: " << m_vam_received
                 << std::endl;
       m_already_print=true;
     }
+    if(true){
+        m_opencda_sensor->logPerceivedPedestrians();
+    }
+
   }
 
   void
@@ -320,14 +376,42 @@ namespace ns3
   {
     /* Implement CAM strategy here */
    m_cam_received++;
+   LDM::returnedVehicleData_t retveh;
    double fromLon = asn1cpp::getField(cam->cam.camParameters.basicContainer.referencePosition.longitude,double)/DOT_ONE_MICRO;
    double fromLat = asn1cpp::getField(cam->cam.camParameters.basicContainer.referencePosition.latitude,double)/DOT_ONE_MICRO;
+   double fromID = asn1cpp::getField(cam->header.stationId,long);
    if(m_opencda_client)
-     {
+     { if(m_type == "StationType_pedestrian"){
+         return;
+     }
        carla::Vector carlaPosition = m_opencda_client->getCartesian (fromLon,fromLat);
-       std::cout << "["<< Simulator::Now ().GetSeconds ()<<"] " << m_id <<" received a new CAM from vehicle "
-                 << asn1cpp::getField(cam->header.stationId,long) << " --> GeoPosition: [" << fromLon << ", " << fromLat << "]"
-                 << " CartesianPosition: [" << carlaPosition.x () << ", " << carlaPosition.y () << "]" <<std::endl;
+//       std::cout << "["<< Simulator::Now ().GetSeconds ()<<"] " << m_id <<" received a new CAM from vehicle "
+//                 << fromID << " --> GeoPosition: [" << fromLon << ", " << fromLat << "]"
+//                 << " CartesianPosition: [" << carlaPosition.x () << ", " << carlaPosition.y () << "]" <<std::endl;
+
+         LDM::LDM_error_t retval = m_LDM->lookup(fromID,retveh);
+         VDP::VDP_position_cartesian_t objectPosition;
+         if (m_traci_client != nullptr) {
+             libsumo::TraCIPosition traciPosition = m_traci_client->TraCIAPI::simulation.convertLonLattoXY(
+                     fromLon, fromLat);
+             objectPosition.x = traciPosition.x;
+             objectPosition.y = traciPosition.y;
+         } else {
+             carla::Vector carlaPosition = m_opencda_client->getCartesian(fromLon, fromLat);
+             objectPosition.x = carlaPosition.x();
+             objectPosition.y = carlaPosition.y();
+
+             carla::Actor CV = m_opencda_client->GetActorById(std::stoi(m_id));
+             carla::Vector CVpos = m_opencda_client->getCartesian(CV.longitude(),CV.latitude());
+             retveh.vehData.xDistAbs = long(objectPosition.x - CVpos.x())*CENTI;
+             retveh.vehData.yDistAbs = long(objectPosition.y - CVpos.y())*CENTI;
+         }
+         retveh.vehData.x = objectPosition.x;
+         retveh.vehData.y = objectPosition.y;
+
+         if (retval == LDM::LDM_OK){
+             retval = m_LDM->insert(retveh.vehData);
+         }
      }
 
    if (!m_csv_name.empty ())
@@ -489,15 +573,139 @@ namespace ns3
   }
 
   void
+  cooperativePerception::receiveVAM (asn1cpp::Seq<VAM> vam, Address from)
+  {
+      //! /* Implement VAM strategy here */
+      m_vam_received++;
+      Ptr<Packet> packet;
+      asn1cpp::Seq<VAM> decoded_vam;
+      uint8_t *buffer;
+      auto stationtype = asn1cpp::getField(vam->vam.vamParameters.basicContainer.stationType, StationType_t);
+      auto stationID = asn1cpp::getField(vam->header.stationId,StationID_t);
+
+
+      if (m_LDM != NULL) {
+          if (m_type == "StationType_passengerCar") {
+//              std::cout << "["<< Simulator::Now ().GetSeconds ()<<"] " << m_id <<" received a new VAM from " << stationID << std::endl;
+              //if a car is receiving a VAM, update its LDM with "ground truth" information
+              vehicleData_t vehdata;
+              LDM::LDM_error_t db_retval;
+              LDM::returnedVehicleData_t retVehicleData;
+              bool lowFreq_ok;
+
+
+              // detected = true, so we can send CPM about this pedestrian
+              vehdata.detected = false;
+              vehdata.VAM = true;
+              vehdata.stationType = asn1cpp::getField(vam->vam.vamParameters.basicContainer.stationType, long);
+              vehdata.stationID = asn1cpp::getField(vam->header.stationId, StationID_t);
+              vehdata.lat =
+                      asn1cpp::getField(vam->vam.vamParameters.basicContainer.referencePosition.latitude, double) /
+                      (double) DOT_ONE_MICRO;
+              vehdata.lon =
+                      asn1cpp::getField(vam->vam.vamParameters.basicContainer.referencePosition.longitude, double) /
+                      (double) DOT_ONE_MICRO;
+              vehdata.elevation =
+                      asn1cpp::getField(vam->vam.vamParameters.basicContainer.referencePosition.altitude.altitudeValue,
+                                        double) / (double) CENTI;
+              vehdata.heading =
+                      asn1cpp::getField(vam->vam.vamParameters.vruHighFrequencyContainer.heading.value, double) /
+                      (double) DECI;
+              vehdata.speed_ms =
+                      asn1cpp::getField(vam->vam.vamParameters.vruHighFrequencyContainer.speed.speedValue, double) /
+                      (double) CENTI;
+              vehdata.vamTimestamp = asn1cpp::getField(vam->vam.generationDeltaTime, long);
+              vehdata.itsType = itsType_pedestrian;
+              vehdata.timestamp_us = Simulator::Now().GetMicroSeconds();
+
+              VDP::VDP_position_cartesian_t objectPosition;
+              if (m_traci_client != nullptr) {
+                  libsumo::TraCIPosition traciPosition = m_traci_client->TraCIAPI::simulation.convertLonLattoXY(
+                          vehdata.lon, vehdata.lat);
+                  objectPosition.x = traciPosition.x;
+                  objectPosition.y = traciPosition.y;
+              } else {
+                  carla::Vector carlaPosition = m_opencda_client->getCartesian(vehdata.lon, vehdata.lat);
+                  objectPosition.x = carlaPosition.x();
+                  objectPosition.y = carlaPosition.y();
+
+                  carla::Actor CV = m_opencda_client->GetActorById(std::stoi(m_id));
+                  carla::Vector CVpos = m_opencda_client->getCartesian(CV.longitude(),CV.latitude());
+                  vehdata.xDistAbs = long(objectPosition.x - CVpos.x())*CENTI;
+                  vehdata.yDistAbs = long(objectPosition.y - CVpos.y())*CENTI;
+              }
+              vehdata.x = objectPosition.x;
+              vehdata.y = objectPosition.y;
+
+              // width and length are arbitrarily set,
+              // otherwise it breaks IoU when matching LDM on CARLA side
+              vehdata.vehicleWidth = OptionalDataItem<long>(long(6)) ;
+              vehdata.vehicleLength = OptionalDataItem<long>(long(5));
+
+
+              vehdata.perceivedBy = (long) -1;
+//              if (m_LDM->lookup(vehdata.stationID,retVehicleData) == LDM::LDM_OK){
+//                  vehdata.detected = retVehicleData.vehData.detected;
+//              }
+//              else {
+//                  vehdata.detected = false;
+//              }
+
+              db_retval = m_LDM->insert(vehdata);
+              if (db_retval != LDM::LDM_OK && db_retval != LDM::LDM_UPDATED) {
+                  std::cerr << "Warning! Insert on the database for pedestrian "
+                            << asn1cpp::getField(vam->header.stationId, int) << "failed!" << std::endl;
+              }
+          }
+      }
+//      if(m_VRU_role != VRU_ROLE_OFF){
+//          buffer=(uint8_t *)malloc((dataIndication.data->GetSize ())*sizeof(uint8_t));
+//          dataIndication.data->CopyData (buffer, dataIndication.data->GetSize ());
+//          std::string packetContent((char *)buffer,(int) dataIndication.data->GetSize ());
+//
+//          /* Try to check if the received packet is really a VAM */
+//          if (buffer[1]!=FIX_VAMID)
+//          {
+//              NS_LOG_ERROR("Warning: received a message which has messageID '"<<buffer[1]<<"' but '16' was expected.");
+//              free(buffer);
+//              return;
+//          }
+//
+//          free(buffer);
+//
+//          /** Decoding **/
+//          decoded_vam = asn1cpp::uper::decodeASN(packetContent, VAM);
+//
+//          if(bool(decoded_vam)==false) {
+//              NS_LOG_ERROR("Warning: unable to decode a received VAM.");
+//              return;
+//          }
+//
+//          if(m_LDM != NULL){
+//              //Update LDM
+//              vLDM_handler(decoded_vam);
+//          }
+//
+//          if(m_VAMReceiveCallback!=nullptr) {
+//              m_VAMReceiveCallback(decoded_vam,from);
+//          }
+//      }
+  }
+
+  void
   cooperativePerception::receiveCPM (asn1cpp::Seq<CollectivePerceptionMessage> cpm, Address from)
   {
+      if (m_type == "StationType_pedestrian"){
+          return;
+      }
    /* Implement CPM strategy here */
    m_cpm_received++;
    (void) from;
    int fromID = asn1cpp::getField(cpm->header.stationId,long);
-   if (m_recvCPMmap.find(fromID) == m_recvCPMmap.end())
-     m_recvCPMmap[fromID] = std::map<int,int>(); // First CPM from this vehicle
-
+   if (m_recvCPMmap.find(fromID) == m_recvCPMmap.end()) {
+       m_recvCPMmap[fromID] = std::map<int, int>(); // First CPM from this vehicle
+   }
+      m_cluster_map_cp.clear();
    //For every PO inside the CPM, if any
    bool POs_ok;
    //auto wrappedContainer = asn1cpp::makeSeq(WrappedCpmContainer);
@@ -516,13 +724,25 @@ namespace ns3
               LDM::returnedVehicleData_t PO_data;
               auto PO_seq = asn1cpp::makeSeq(PerceivedObject);
               PO_seq = asn1cpp::sequenceof::getSeq(POcontainer->perceivedObjects,PerceivedObject,j);
-              //If PO is already in local copy of vLDM
+
+              auto ClassificationList = asn1cpp::sequenceof::getSeq(PO_seq->classification, ObjectClassWithConfidence, 0);
+              auto objectClass = asn1cpp::getSeq(ClassificationList->objectClass,ObjectClass);
+              ObjectClass_PR present = asn1cpp::getField(ClassificationList->objectClass.present,ObjectClass_PR);
+              if (present == ObjectClass_PR_groupSubClass){
+                  auto groupClass = asn1cpp::getSeq(objectClass->choice.groupSubClass,VruClusterInformation);
+                  UpdateClusterInformation(cpm, PO_seq);
+                  continue;
+
+              }
+                // First time we have received this object from this vehicle
               if(m_recvCPMmap[fromID].find(asn1cpp::getField(PO_seq->objectId,long)) == m_recvCPMmap[fromID].end())
                 {
-                  // First time we have received this object from this vehicle
                   //If PO id is already in local copy of LDM
+                  //(if two diff cavs send the same PO ID)
                   if(m_LDM->lookup(asn1cpp::getField(PO_seq->objectId,long),PO_data) == LDM::LDM_OK)
                     {
+                      //todo: we should try to merge the PO before assigning a new ID
+
                       // We need a new ID for object
                       std::set<int> IDs;
                       m_LDM->getAllIDs (IDs);
@@ -549,12 +769,15 @@ namespace ns3
                 }
               else
                 {
-                  // We have already receive this object from this vehicle
+                  // We have already received this object from this vehicle
                   m_LDM->insert(translateCPMdata(cpm,PO_seq,i,m_recvCPMmap[fromID][asn1cpp::getField(PO_seq->objectId,long)]));
                 }
             }
         }
      }
+   if (!m_cluster_map_cp.empty()) {
+       m_LDM->updateClusterMap(m_cluster_map_cp, false);
+   }//
   }
   vehicleData_t
   cooperativePerception::translateCPMdata (asn1cpp::Seq<CollectivePerceptionMessage> cpm,
@@ -562,6 +785,7 @@ namespace ns3
   {
    vehicleData_t retval;
    retval.detected = true;
+   retval.VAM = false;
    if(newID == -1)
      retval.stationID = asn1cpp::getField(object->objectId,long);
    else
@@ -616,15 +840,84 @@ namespace ns3
    retval.stationType = StationType_passengerCar;
    retval.perceivedBy.setData(asn1cpp::getField(cpm->header.stationId,long));
 
+
+   auto ClassificationList = asn1cpp::sequenceof::getSeq(object->classification, ObjectClassWithConfidence, 0);
+   auto objectClass = asn1cpp::getSeq(ClassificationList->objectClass,ObjectClass);
+   ObjectClass_PR present = asn1cpp::getField(ClassificationList->objectClass.present,ObjectClass_PR);
+
+    if (present == ObjectClass_PR_vehicleSubClass){
+        TrafficParticipantType_t VehicleSubclass = asn1cpp::getField(objectClass->choice.vehicleSubClass,TrafficParticipantType_t);
+        if (VehicleSubclass == TrafficParticipantType_passengerCar){
+            retval.itsType = itsType_vehicle;
+        }
+        else if (VehicleSubclass == TrafficParticipantType_unknown){
+            retval.itsType = itsType_motorcycle;
+        }
+    }
+    else if (present == ObjectClass_PR_vruSubClass){
+        auto VRUclassification = asn1cpp::getSeq(objectClass->choice.vruSubClass, VruProfileAndSubprofile);
+        VruProfileAndSubprofile_PR vruSubClass_present = asn1cpp::getField(VRUclassification->present,VruProfileAndSubprofile_PR);
+        if (vruSubClass_present == VruProfileAndSubprofile_PR_pedestrian){
+            retval.itsType = itsType_pedestrian;
+        }
+        else if (vruSubClass_present == VruProfileAndSubprofile_PR_bicyclistAndLightVruVehicle){
+            retval.itsType = itsType_bicycle;
+        }
+    }
+
     // FOR DEBUGGING
     if(m_opencda_client != nullptr)
       {
         carla::Vector pos = m_opencda_client->getCartesian (retval.lon, retval.lat);
         std::cout << "[OBJECT " << retval.stationID << "] -->" << "GeoPostiion" << "[" << retval.lon << ", " << retval.lat << "]" <<
-        "  CartesianPosition: [" << pos.x ()<<", "<< pos.y () << "]" << std::endl;
+        "  CartesianPosition: [" << pos.x ()<<", "<< pos.y () << "]" << "  CartPositionfromCPM: [" << retval.x<<", "<< retval.y << "]" << std::endl;
       }
 
    return retval;
+  }
+
+  bool
+  cooperativePerception::UpdateClusterInformation(asn1cpp::Seq<CollectivePerceptionMessage> cpm,asn1cpp::Seq<PerceivedObject>object){
+      std::map<size_t, ClusterInfo> cluster_map;
+      ClusterInfo info;
+      int fromID = asn1cpp::getField(cpm->header.stationId,long);
+      float x {0};
+      float y {0};
+      auto ClassificationList = asn1cpp::sequenceof::getSeq(object->classification, ObjectClassWithConfidence, 0);
+      auto objectClass = asn1cpp::getSeq(ClassificationList->objectClass,ObjectClass);
+
+      auto groupClass = asn1cpp::getSeq(objectClass->choice.groupSubClass,VruClusterInformation);
+      Identifier1B_t clusterID = asn1cpp::getField(groupClass->clusterId,Identifier1B_t);
+      CardinalNumber1B_t clusterCardinality = asn1cpp::getField(groupClass->clusterCardinalitySize, CardinalNumber1B_t );
+      auto shape_present = asn1cpp::getField(groupClass->clusterBoundingBoxShape->present, Shape_PR );
+      if (shape_present == Shape_PR_circular)
+      {
+          auto circular_shape = asn1cpp::getSeq(groupClass->clusterBoundingBoxShape->choice.circular, CircularShape);
+          CartesianCoordinate_t center_x = asn1cpp::getField(circular_shape->shapeReferencePoint->xCoordinate, CartesianCoordinate_t);
+          CartesianCoordinate_t center_y = asn1cpp::getField(circular_shape->shapeReferencePoint->yCoordinate, CartesianCoordinate_t);
+          StandardLength12b_t radius = asn1cpp::getField(circular_shape->radius, StandardLength12b_t);
+          float cluster_center_x = static_cast<float>(center_x) /10;
+          float cluster_center_y = static_cast<float>(center_y) /10;
+          float cluster_radius = static_cast<float>(radius) /10;
+          info.center = cv::Point2f(cluster_center_x,cluster_center_y);
+          info.radius = cluster_radius;
+          //debug
+          x= cluster_center_x;
+          y= cluster_center_y;
+      }
+      auto xSpeedAbs = (asn1cpp::getField(object->velocity->choice.cartesianVelocity.xVelocity.value,long));
+      auto ySpeedAbs = (asn1cpp::getField(object->velocity->choice.cartesianVelocity.yVelocity.value,long));
+      info.speed_ms = (sqrt (pow(xSpeedAbs,2) + pow(ySpeedAbs,2)))/CENTI;
+      info.heading = asn1cpp::getField(object->angles->zAngle.value, double) / DECI;
+      info.cardinality = clusterCardinality;
+      info.timestamp_us = Simulator::Now().GetMicroSeconds () - (asn1cpp::getField(object->measurementDeltaTime,long)*1000);
+      info.perceivedBy = asn1cpp::getField(cpm->header.stationId,long);
+      cluster_map[clusterID] = info;
+      std::cout << "---FROM CPM MESSAGES---\n Cluster ID: " << clusterID << " (x ="<< x<<",y ="<< y<<")\n"
+      <<" Size: "<< clusterCardinality << "\n Speed: " << info.speed_ms << "m/s\n Heading: " << info.heading << std::endl;
+      m_recvCPMmap[fromID][clusterID] = clusterID;
+      m_cluster_map_cp.insert({clusterID,info});
+
   }
 
 }

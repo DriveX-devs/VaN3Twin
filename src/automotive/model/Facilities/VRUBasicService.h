@@ -14,6 +14,7 @@
 #include "ns3/Seq.hpp"
 #include "ns3/Getter.hpp"
 #include "ns3/LDM.h"
+#include "ns3/vrudpOpenCDA.h"
 
 extern "C" {
   #include "ns3/VAM.h"
@@ -52,11 +53,13 @@ typedef enum{
     SAFE_DISTANCES = 5,
   } triggcond_t;
 
+    const char* triggerCondToString(triggcond_t triggerCond);
+
 class VRUBasicService: public Object
 {
 public:
     VRUBasicService();
-    VRUBasicService(unsigned long fixed_stationid,long fixed_stationtype,VRUdp* VRUdp,bool real_time);
+    VRUBasicService(unsigned long fixed_stationid,long fixed_stationtype,VRUdpOpenCDA* VRUdp,bool real_time);
     ~VRUBasicService();
 
     void setStationProperties(unsigned long fixed_stationid,long fixed_stationtype);
@@ -67,15 +70,17 @@ public:
     void setLDM(Ptr<LDM> LDM){m_LDM = LDM;}
     void setBTP(Ptr<btp> btp){m_btp = btp;}
     void setVRUdp(VRUdp* VRUdp) {m_VRUdp=VRUdp;}
+    void setVRUdp(VRUdpOpenCDA* VRUdp) {m_VRUdpOCDA=VRUdp;}
     void setT_GenVam(long T_GenVam) {m_T_GenVam_ms = T_GenVam;}
     void setSafeLateralDistance(double safe_lat_d) {m_lat_safe_d = safe_lat_d;}
     void setSafeVerticalDistance(double safe_vert_d) {m_vert_safe_d = safe_vert_d;}
+    void setRoleAndClustState(VRURole_t VRU_role, VRUClusteringstate_t ClustState);
+    void setRoleAndClustState();
 
     void setVAMmetricsfile(std::string file_name, bool collect_metrics);
 
     void receiveVam(BTPDataIndication_t dataIndication, Address from);
     void addVAMRxCallback(std::function<void(asn1cpp::Seq<VAM>, Address)> rx_callback) {m_VAMReceiveCallback=rx_callback;}
-    void addVAMRxCallbackExtended(std::function<void(asn1cpp::Seq<VAM>, Address, StationID_t, StationType_t)> rx_callback) {m_VAMReceiveCallbackExtended=rx_callback;}
 
     void startVamDissemination();
     void startVamDissemination(double desync_s);
@@ -87,15 +92,24 @@ public:
     const long T_GenVamMin_ms = 100;
     const long T_GenVamMax_ms = 5000;
 
-    void SetLogTriggering(bool log, std::string log_filename) {m_log_triggering = log; m_log_filename = log_filename;};
+    /**
+     * @brief Set the next time to check VAM condition
+     * @param nextVAM The next time to check VAM condition
+     */
+    void setCheckVamGenMs(long nextVAM) {m_T_CheckVamGen_ms = nextVAM;};
 
-    void write_log_triggering(bool condition_verified, bool vamredmit_verified, float head_diff, float pos_diff, float speed_diff, long time_difference, std::string data_head, std::string data_pos, std::string data_speed, std::string data_safed, std::string data_time, std::string data_vamredmit, std::string data_dcc);
+    /**
+     * @brief Used for DCC Adaptive approach to set the future time to check VAM condition after an update of delta value
+     * @param delta new delta value calculated through DCC adaptive approach
+     */
+    void toffUpdateAfterDeltaUpdate(double delta);
 
-    std::string printMinDist(double minDist) {
-      return ((minDist>-DBL_MAX && minDist<MAXFLOAT) ? std::to_string(minDist) : "unavailable");
-    }
-
-
+    /**
+     * @brief Used for DCC Adaptive approach to set the future time to check VAM condition after a transmission
+     * @param delta new delta value calculated through DCC adaptive approach
+     */
+    void toffUpdateAfterTransmission();
+    
 private:
     void initDissemination();
     void checkVamConditions();
@@ -105,8 +119,7 @@ private:
     int64_t computeTimestampUInt64();
     void vLDM_handler(asn1cpp::Seq<VAM> decodedVAM);
 
-    std::function<void(asn1cpp::Seq<VAM>, Address)> m_VAMReceiveCallback;
-    std::function<void(asn1cpp::Seq<VAM>, Address, StationID_t, StationType_t)> m_VAMReceiveCallbackExtended;
+    std::function<void(asn1cpp::Seq<VAM>, Address)> m_VAMReceiveCallback; //! Callback function for received VAMs
 
     Ptr<btp> m_btp;
 
@@ -127,12 +140,12 @@ private:
     bool m_real_time;
 
     VRUdp* m_VRUdp;
+    VRUdpOpenCDA* m_VRUdpOCDA;
 
     // Previous VAM relevant values
     double m_prev_heading;
-    libsumo::TraCIPosition m_prev_position;
-    double m_prev_lat;
-    double m_prev_lon;
+    //libsumo::TraCIPosition m_prev_position;
+    VDP::VDP_position_cartesian_t m_prev_position;
     double m_prev_speed;
 
     // Safe distances
@@ -152,6 +165,7 @@ private:
 
     // File containing all the VAM metrics of interest
     std::string m_csv_file_name;
+    std::ofstream csv_VAM_ofstream;
     bool m_VAM_metrics;
 
     // Triggering condition
@@ -167,25 +181,18 @@ private:
     EventId m_event_computeLongAcceleration;
 
     // VRU state variables
-    int m_VRU_role;
-    int m_VRU_clust_state;
+    VRURole_t m_VRU_role;
+    VRUClusteringstate_t m_VRU_clust_state;
 
     // Boolean/Enum variables to enable/disable the presence of certain optional containers in the VAM messages
     bool m_lowFreqContainerEnabled;
 
     double m_last_transmission = 0;
+    double m_Ton_pp = 0;
+    double m_last_delta = 0;
 
-    bool m_log_triggering = false;
-    std::string m_log_filename;
-
-    // Statistics: number of VAMs sent per triggering conditions
-    uint64_t m_pos_sent = 0;
-    uint64_t m_speed_sent = 0;
-    uint64_t m_head_sent = 0;
-    uint64_t m_safedist_sent = 0;
-    uint64_t m_time_sent = 0;
-
-    long m_T_next_dcc = -1;
+    int test;
+    bool testbool;
 };
 
 }

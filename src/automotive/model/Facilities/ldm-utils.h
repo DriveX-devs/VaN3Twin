@@ -47,8 +47,18 @@ namespace ns3 {
    *
    * This structure contains all the data stored in the database for each vehicle (except for the PHPoints)
    */
+
+  typedef enum {
+      itsType_vehicle = 0,
+      itsType_pedestrian = 1 ,
+      itsType_bicycle = 2,
+      itsType_motorcycle = 3,
+      itsType_unknown = 4
+  } itsType_t;
+
   typedef struct _vehicleData {
           bool detected;
+          itsType_t itsType;
           uint64_t stationID;
           std::string ID;
           double lat;
@@ -90,6 +100,7 @@ namespace ns3 {
 
           OptionalDataItem<std::vector<long>> associatedCVs;
           OptionalDataItem<long> perceivedBy;
+          bool VAM;
   } vehicleData_t;
 
   /**

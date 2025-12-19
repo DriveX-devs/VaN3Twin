@@ -27,13 +27,12 @@
 #include "grpcpp/grpcpp.h"
 #include <signal.h>
 #include <unistd.h>
-#include "ns3/sionna-connection-handler.h"
 
 
 #include "ns3/carla.grpc.pb.h"
 
-#define STARTUP_OPENCDA_FCN std::function<Ptr<Node>(std::string)>
-#define SHUTDOWN_OPENCDA_FCN std::function<void(Ptr<Node>,std::string)>
+#define STARTUP_FCN std::function<Ptr<Node>(std::string)>
+#define SHUTDOWN_FCN std::function<void(Ptr<Node>,std::string)>
 
 namespace ns3
 {
@@ -43,7 +42,7 @@ namespace ns3
       static TypeId GetTypeId (void);
       OpenCDAClient (void);
       ~OpenCDAClient (void);
-      void startCarlaAdapter(STARTUP_OPENCDA_FCN includeNode, SHUTDOWN_OPENCDA_FCN excludeNode);
+      void startCarlaAdapter(STARTUP_FCN includeNode, SHUTDOWN_FCN excludeNode);
       void startSimulation();
       void testInsertVehicle();
 
@@ -51,6 +50,8 @@ namespace ns3
 
       carla::ActorIds GetManagedHostIds();
       carla::Vehicle GetManagedActorById(int actorId);
+      carla::Actor GetActorById(int actorId);
+      carla::ActorIds GetAllActorsIds();
       carla::Transform getRandomSpawnPoint();
 
       carla::Vector getCartesian(double lon, double lat);
@@ -72,9 +73,10 @@ namespace ns3
       bool InsertObject(carla::ObjectIn object);
 
       std::vector<int> getManagedConnectedIds();
-      std::map<std::string,std::string> getManagedConnectedNodes();
+      std::map<std::string,std::string> getManagedConnectedNodes();//returns map < obj_id, node_id >
 
-      void SetSionnaUp() {m_sionna = true;};
+      std::string getObjectIdByNodeId(uint32_t targetNodeId);
+
 
     private:
       void executeOneTimestep();
@@ -115,12 +117,14 @@ namespace ns3
       std::map<int, Ptr<Node>> m_vehMap;
       std::vector<int> m_nonCVIDs;
 
+      std::map<uint32_t, int> m_nodeIdToObjectIdMap;
 
-      EventId m_executeOneTimestepTrigger;
+
+        EventId m_executeOneTimestepTrigger;
 
       // function pointers to node include/exclude functions
-      STARTUP_OPENCDA_FCN m_includeNode;
-      SHUTDOWN_OPENCDA_FCN m_excludeNode;
+      STARTUP_FCN m_includeNode;
+      SHUTDOWN_FCN m_excludeNode;
 
       pid_t m_pid;
       pid_t m_carla_pid;
@@ -128,13 +132,11 @@ namespace ns3
       bool m_adapter_debug; // Flag for toggle execution of adapter within ms-van3t or from outside (for debugging purposes)
 
       double m_penetration_rate;
+      double m_penetration_rate_vru;
       Ptr<UniformRandomVariable> m_randVar; // For penetration rate
 
       // map every vehicle to an output file
       std::map<std::string, std::ofstream> m_fileMap;
-
-      bool m_sionna = false;
-
     };
 
 }

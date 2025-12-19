@@ -24,7 +24,7 @@
 #include "ns3/longpositionvector.h"
 #include "ns3/btpdatarequest.h"
 #include "ns3/VRUdp.h"
-#include "ns3/DCC.h"
+#include "ns3/vrudpOpenCDA.h"
 
 extern "C" {
   #include "ns3/CAM.h"
@@ -45,11 +45,6 @@ namespace ns3
   {
     public:
 
-      typedef struct LocationTableExtension{
-        std::vector<std::tuple<int64_t , double>> CBR_R0_Hop;
-        std::vector<std::tuple<int64_t , double>> CBR_R1_Hop;
-      } LocationTableExtension;
-
       typedef struct _LocTableEntry {
         /**
         *   ETSI EN 302 636-4-1 [8.1.2]
@@ -64,7 +59,6 @@ namespace ns3
         std::set<uint16_t> DPL; //! Duplicate packet list
         long timestamp;
         uint32_t PDR;
-        LocationTableExtension cbr_extension;
       } GNLocTE;
 
       typedef struct _egoPositionVector {
@@ -115,6 +109,7 @@ namespace ns3
        */
       void setVDP(VDP* vdp);
       void setVRUdp(VRUdp* vrudp);
+      void setVRUdpOCDA(VRUdpOpenCDA* vrudpOpenCDA);
       /**
        * @brief Set the socket to transmit packets.
        * @param socket_tx
@@ -124,15 +119,13 @@ namespace ns3
        * @brief Set the callback function to receive packets.
        * @param rx_callback
        */
-
-      void setDCC(Ptr<DCC> dcc) {m_dcc = dcc; attachSendFromDCCQueue(); attachGlobalCBRCheck();}
       void addRxCallback(std::function<void(GNDataIndication_t,Address)> rx_callback) {m_ReceiveCallback=rx_callback;}
       /**
        * @brief Create GeoNet PDU with the correct headers (GBC or TSB) and send it.
        * @param dataRequest
        * @return
        */
-      std::tuple<GNDataConfirm_t, MessageId_t> sendGN (GNDataRequest_t dataRequest, int priority, MessageId_t message_id);
+      GNDataConfirm_t sendGN(GNDataRequest_t dataRequest);
       /**
        * @brief Receive a GeoNet PDU and send a data indication to BTP layer.
        * @param socket
@@ -155,10 +148,6 @@ namespace ns3
       // This static method creates a new GeoNetworking socket, starting from the ns-3 PacketSocket and properly binding/connecting it
       // It requires as input a pointer to the node to which the socket should be bound
       static Ptr<Socket> createGNPacketSocket(Ptr<Node> node_ptr);
-
-      void attachSendFromDCCQueue();
-
-      void attachGlobalCBRCheck();
 
   private:
       void LocTE_timeout(GNAddress entry_address);
@@ -190,7 +179,7 @@ namespace ns3
 
       std::mutex m_LocT_Mutex;
 
-      GNegoPV m_egoPV; //! Ego Position Vector ETSI EN 302 636-4-1 [8.2]
+      GNegoPV m_egoPV{}; //! Ego Position Vector ETSI EN 302 636-4-1 [8.2]
       void EPVupdate();
 
       uint16_t m_seqNumber; //! Sequence Number ETSI EN 302 636-4-1 [8.3]
@@ -202,8 +191,10 @@ namespace ns3
       std::function<void(GNDataIndication_t,Address)> m_ReceiveCallback;
 
 
-      VDP* m_vdp; //! Pointer to the VDP object
-      VRUdp* m_vrudp; //! Pointer to the VRUdp object
+      VDP* m_vdp{}; //! Pointer to the VDP object
+      VRUdp* m_vrudp{}; //! Pointer to the VRUdp object
+      VRUdpOpenCDA* m_vrudpOCDA{}; //! Pointer to the VRUdp object from OpenCDA
+
       StationID_t m_station_id; //! Station ID
       StationType_t m_stationtype; //! Station Type
 
@@ -252,9 +243,7 @@ namespace ns3
       bool m_PRRsupervisor_beacons = true;
 
       bool m_EPVupdate_running = true;
-      Ptr<DCC> m_dcc = nullptr;
 
-      int64_t m_GNLocTTimerCBR_ms = 1000;
   };
 }
 #endif // GEONET_H

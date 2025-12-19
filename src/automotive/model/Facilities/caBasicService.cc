@@ -132,97 +132,6 @@ namespace ns3
     m_vehicle=is_vehicle;
   }
 
-  void CABasicService::write_log_triggering(bool condition_verified, float head_diff, float pos_diff, float speed_diff, long time_difference, std::string data_head, std::string data_pos, std::string data_speed, std::string data_time, std::string data_dcc)
-  {
-    if (m_log_triggering && m_log_filename != "")
-      {
-        std::string data = "";
-        std::string sent = "false";
-        std::string motivation;
-        std::string joint = "";
-        int numConditions = 0;
-        motivation = "";
-
-        long time = Simulator::Now().GetMilliSeconds();
-
-        // Check the motivation of the CAM sent
-        if (!condition_verified)
-          {
-            motivation = "none";
-          }
-        else
-          {
-            data = "[CAM] CAM sent\n";
-            sent = "true";
-
-            if (head_diff > 4.0 || head_diff < -4.0)
-              {
-                motivation = "heading";
-                joint = joint + "H";
-                numConditions++;
-              }
-
-            if ((pos_diff > 4.0 || pos_diff < -4.0))
-              {
-                motivation = "position";
-                joint = joint + "P";
-                numConditions++;
-              }
-
-            if (speed_diff > 0.5 || speed_diff < -0.5)
-              {
-                motivation = "speed";
-                joint = joint + "S";
-                numConditions++;
-              }
-
-            if (abs (time_difference - m_T_GenCam_ms) <= 10 ||
-                (m_T_GenCam_ms - time_difference) <= 0)
-              {
-                motivation = "time";
-                joint = joint + "T";
-                numConditions++;
-              }
-
-            // When joint with a single other motivation, the joint motivation should not be considered
-            if (numConditions > 1)
-              {
-                motivation = "joint(" + joint + ")";
-                if (joint == "HT")
-                  {
-                    motivation = "heading";
-                  }
-                if (joint == "PT")
-                  {
-                    motivation = "position";
-                  }
-                if (joint == "ST")
-                  {
-                    motivation = "speed";
-                  }
-              }
-
-            if (condition_verified && motivation.empty ())
-              {
-                motivation = "numPkt";
-              }
-          }
-
-        // Create the data for the log print
-        data += "[LOG] Timestamp=" + std::to_string (time) + " CAMSend=" + sent +
-                " Motivation=" + motivation + " HeadDiff=" + std::to_string (head_diff) +
-                " PosDiff=" + std::to_string (pos_diff) +
-                " SpeedDiff=" + std::to_string (speed_diff) +
-                " TimeDiff=" + std::to_string (time_difference) + "\n";
-        data = data + data_head + data_pos + data_speed + data_time + data_dcc;
-
-        data = data + "\n";
-
-        std::ofstream file (m_log_filename, std::ios::app);
-        file << data;
-      }
-  }
-
   CABasicService::CABasicService(unsigned long fixed_stationid,long fixed_stationtype,VDP* vdp, bool real_time, bool is_vehicle, Ptr<Socket> socket_tx)
   {
     CABasicService(fixed_stationid,fixed_stationtype,vdp,real_time,is_vehicle);
@@ -378,8 +287,7 @@ namespace ns3
 
     if(m_CAReceiveCallback!=nullptr) {
       m_CAReceiveCallback(decoded_cam,from);
-    }
-    if(m_CAReceiveCallbackExtended!=nullptr) {
+    } else if(m_CAReceiveCallbackExtended!=nullptr) {
       m_CAReceiveCallbackExtended(decoded_cam,from,m_station_id,m_stationtype,GetSignalInfo());
     }
   }
@@ -391,6 +299,7 @@ namespace ns3
       LDM::LDM_error_t db_retval;
       bool lowFreq_ok;
       vehdata.detected = false;
+      vehdata.itsType = itsType_vehicle;
       vehdata.stationType = asn1cpp::getField(decodedCAM->cam.camParameters.basicContainer.stationType,long);
       vehdata.stationID = asn1cpp::getField(decodedCAM->header.stationId,uint64_t);
       vehdata.lat = asn1cpp::getField(decodedCAM->cam.camParameters.basicContainer.referencePosition.latitude,double)/(double)DOT_ONE_MICRO;
@@ -400,8 +309,11 @@ namespace ns3
       vehdata.speed_ms = asn1cpp::getField(decodedCAM->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.speed.speedValue,double)/(double)CENTI;
       vehdata.camTimestamp = asn1cpp::getField(decodedCAM->cam.generationDeltaTime,long);
       vehdata.timestamp_us = Simulator::Now ().GetMicroSeconds ();
+      vehdata.VAM = false;
 
       vehdata.vehicleWidth = OptionalDataItem<long>(asn1cpp::getField(decodedCAM->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.vehicleWidth,long));
+      if(vehdata.vehicleWidth.getData() == VehicleWidth_unavailable)
+          vehdata.vehicleWidth = OptionalDataItem<long>((long) 10);
       vehdata.vehicleLength = OptionalDataItem<long>(asn1cpp::getField(decodedCAM->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.vehicleLength.vehicleLengthValue,long));
 
 
@@ -450,12 +362,6 @@ namespace ns3
     bool condition_verified=false;
     static bool dyn_cond_verified=false;
 
-    std::string data_head;
-    std::string data_pos;
-    std::string data_speed;
-    std::string data_time;
-    std::string data_dcc;
-
     // If no initial CAM has been triggered before checkCamConditions() has been called, throw an error
     if(m_prev_heading==-1 || m_prev_speed==-1 || m_prev_distance==-1)
       {
@@ -473,26 +379,17 @@ namespace ns3
     */
     double head_diff = m_vdp->getHeadingValue () - m_prev_heading;
     head_diff += (head_diff>180.0) ? -360.0 : (head_diff<-180.0) ? 360.0 : 0.0;
-    data_head="[HEADING] HeadingUnavailable="+std::to_string((float)HeadingValue_unavailable/10)+" PrevHead="+std::to_string(m_prev_heading/10)+" CurrHead="+std::to_string(m_vdp->getHeadingValue ())+" HeadDiff="+std::to_string(head_diff)+"\n";
     if (head_diff > 4.0 || head_diff < -4.0)
       {
-        if (m_T_next_dcc == -1 || now - lastCamGen >= m_T_next_dcc)
-        {
-          cam_error=generateAndEncodeCam ();
-          if(cam_error==CAM_NO_ERROR)
-            {
-              m_N_GenCam=0;
-              condition_verified=true;
-              dyn_cond_verified=true;
-            } else {
-              NS_LOG_ERROR("Cannot generate CAM. Error code: "<<cam_error);
-            }
-        }
-        else
-        {
-          data_dcc += "[HEADING] verified but [DCC] doesn't allow sending\n";
-        }
-        
+        cam_error=generateAndEncodeCam ();
+        if(cam_error==CAM_NO_ERROR)
+          {
+            m_N_GenCam=0;
+            condition_verified=true;
+            dyn_cond_verified=true;
+          } else {
+            NS_LOG_ERROR("Cannot generate CAM. Error code: "<<cam_error);
+          }
       }
 
     /* 1b)
@@ -501,25 +398,17 @@ namespace ns3
      * ITS-S exceeds 4 m;
     */
     double pos_diff = m_vdp->getTravelledDistance () - m_prev_distance;
-    data_pos="[DISTANCE] PrevLat="+std::to_string(m_prev_position.lat)+" PrevLon="+std::to_string(m_prev_position.lon)+" CurrLat="+std::to_string(m_vdp->getPosition().lat)+" CurrLon="+std::to_string(m_vdp->getPosition().lon)+" PosDiff="+std::to_string(pos_diff)+"\n";
     if (!condition_verified && (pos_diff > 4.0 || pos_diff < -4.0))
       {
-        if (m_T_next_dcc == -1 || now - lastCamGen >= m_T_next_dcc)
-        {
-          cam_error=generateAndEncodeCam ();
-          if(cam_error==CAM_NO_ERROR)
-            {
-              m_N_GenCam=0;
-              condition_verified=true;
-              dyn_cond_verified=true;
-            } else {
-              NS_LOG_ERROR("Cannot generate CAM. Error code: "<<cam_error);
-            }
-        }
-        else
-        {
-          data_dcc += "[DISTANCE] verified but [DCC] doesn't allow sending\n";
-        }
+        cam_error=generateAndEncodeCam ();
+        if(cam_error==CAM_NO_ERROR)
+          {
+            m_N_GenCam=0;
+            condition_verified=true;
+            dyn_cond_verified=true;
+          } else {
+            NS_LOG_ERROR("Cannot generate CAM. Error code: "<<cam_error);
+          }
       }
 
     /* 1c)
@@ -528,61 +417,42 @@ namespace ns3
      * ITS-S exceeds 0,5 m/s.
     */
     double speed_diff = m_vdp->getSpeedValue () - m_prev_speed;
-    data_speed="[SPEED] SpeedUnavailable="+std::to_string((float)SpeedValue_unavailable)+" PrevSpeed="+std::to_string(m_prev_speed)+" CurrSpeed="+std::to_string(m_vdp->getSpeedValue ())+" SpeedDiff="+std::to_string(speed_diff)+"\n";
     if (!condition_verified && (speed_diff > 0.5 || speed_diff < -0.5))
       {
-        if (m_T_next_dcc == -1 || now - lastCamGen >= m_T_next_dcc)
-        {
-          cam_error=generateAndEncodeCam ();
-          if(cam_error==CAM_NO_ERROR)
-            {
-              m_N_GenCam=0;
-              condition_verified=true;
-              dyn_cond_verified=true;
-            } else {
-              NS_LOG_ERROR("Cannot generate CAM. Error code: "<<cam_error);
-            }
-        }
-        else
-        {
-          data_dcc += "[SPEED] verified but [DCC] doesn't allow sending\n";
-        }
+        cam_error=generateAndEncodeCam ();
+        if(cam_error==CAM_NO_ERROR)
+          {
+            m_N_GenCam=0;
+            condition_verified=true;
+            dyn_cond_verified=true;
+          } else {
+            NS_LOG_ERROR("Cannot generate CAM. Error code: "<<cam_error);
+          }
       }
 
     /* 2)
      * The time elapsed since the last CAM generation is equal to or greater than T_GenCam
     */
-    long time_difference = now - lastCamGen;
-    data_time="[TIME] Timestamp="+std::to_string(now)+" LastCAMSend="+std::to_string(lastCamGen)+" NumThreshold="+std::to_string(m_N_GenCamMax)+" NumCAM="+std::to_string(m_N_GenCam)+" TimeThreshold="+std::to_string(m_T_GenCam_ms)+" TimeDiff="+std::to_string(time_difference)+" TimeNextCAM="+std::to_string(m_T_GenCam_ms - time_difference)+"\n";
     if(!condition_verified && (now-lastCamGen>=m_T_GenCam_ms))
       {
-        if (m_T_next_dcc == -1 || now - lastCamGen >= m_T_next_dcc)
-        {
-          cam_error=generateAndEncodeCam ();
-          if(cam_error==CAM_NO_ERROR)
-            {
-              condition_verified = true;
-              if(dyn_cond_verified==true)
-                {
-                  m_N_GenCam++;
-                  if(m_N_GenCam>=m_N_GenCamMax)
-                    {
-                      m_N_GenCam=0;
-                      m_T_GenCam_ms=T_GenCamMax_ms;
-                      dyn_cond_verified=false;
-                    }
-                }
-            } else {
-              NS_LOG_ERROR("Cannot generate CAM. Error code: "<<cam_error);
-            }
-        }
-        else
-        {
-          data_dcc += "[TIME] verified but [DCC] doesn't allow sending\n";
-        }
-      }
+         cam_error=generateAndEncodeCam ();
+         if(cam_error==CAM_NO_ERROR)
+           {
 
-    write_log_triggering (condition_verified, head_diff, pos_diff, speed_diff, time_difference, data_head, data_pos, data_speed, data_time, data_dcc);
+             if(dyn_cond_verified==true)
+               {
+                 m_N_GenCam++;
+                 if(m_N_GenCam>=m_N_GenCamMax)
+                   {
+                     m_N_GenCam=0;
+                     m_T_GenCam_ms=T_GenCamMax_ms;
+                     dyn_cond_verified=false;
+                   }
+               }
+           } else {
+             NS_LOG_ERROR("Cannot generate CAM. Error code: "<<cam_error);
+           }
+      }
 
     m_event_camCheckConditions = Simulator::Schedule (MilliSeconds(m_T_CheckCamGen_ms), &CABasicService::checkCamConditions, this);
   }
@@ -708,7 +578,6 @@ namespace ns3
 
         // Store all the "previous" values used in checkCamConditions()
         m_prev_distance=m_vdp->getTravelledDistance ();
-        m_prev_position=m_vdp->getPosition();
         m_prev_speed=m_vdp->getSpeedValue ();
         m_prev_heading=m_vdp->getHeadingValue ();
 
@@ -784,7 +653,7 @@ namespace ns3
 
           for(size_t i=1;i<m_refPositions.size ();i++)
             {
-              curr_ph = asn1cpp::makeSeq(PathPoint);
+              auto curr_ph = asn1cpp::makeSeq(PathPoint);
 
               asn1cpp::setField(curr_ph->pathPosition.deltaAltitude,m_refPositions[i].first.altitude.altitudeValue - m_refPositions[i-1].first.altitude.altitudeValue);
               asn1cpp::setField(curr_ph->pathPosition.deltaLatitude,m_refPositions[i].first.latitude - m_refPositions[i-1].first.latitude);
@@ -995,16 +864,17 @@ namespace ns3
     dataRequest.GNTraClass = 0x02; // Store carry foward: no - Channel offload: no - Traffic Class ID: 2
     dataRequest.lenght = packet->GetSize ();
     dataRequest.data = packet;
-    std::tuple<GNDataConfirm_t, MessageId_t> status = m_btp->sendBTP(dataRequest, 0, MessageId_cam);
-    GNDataConfirm_t dataConfirm = std::get<0>(status);
-    MessageId_t message_id = std::get<1>(status);
-    /* Update the CAM statistics */
-    if(dataConfirm == ACCEPTED) {
-        if (message_id == MessageId_cam) m_cam_sent++;
-      }
+    m_btp->sendBTP(dataRequest);
+
+    m_cam_sent++;
 
     // Estimation of the transmission time
     m_last_transmission = (double) Simulator::Now().GetMilliSeconds();
+    uint32_t packetSize = packet->GetSize();
+    m_Ton_pp = (double) (NanoSeconds((packetSize * 8) / 0.006) + MicroSeconds(68)).GetNanoSeconds();
+    m_Ton_pp = m_Ton_pp / 1e6;
+
+    toffUpdateAfterTransmission();
 
     // Store the time in which the last CAM (i.e. this one) has been generated and successfully sent
     now=computeTimestampUInt64 ()/NANO_TO_MILLI;
@@ -1090,4 +960,27 @@ namespace ns3
     return int_tstamp;
   }
 
+  void
+  CABasicService::toffUpdateAfterDeltaUpdate(double delta)
+  {
+    if (m_last_transmission == 0)
+      return;
+    double waiting = Simulator::Now().GetMilliSeconds() - m_last_transmission;
+    double aux = m_Ton_pp / delta * (m_T_CheckCamGen_ms - waiting) / m_T_CheckCamGen_ms + waiting;
+    aux = std::max (aux, 25.0);
+    double new_gen_time = std::min (aux, 1000.0);
+    setCheckCamGenMs ((long) new_gen_time);
+    m_last_delta = delta;
+  }
+
+  void
+  CABasicService::toffUpdateAfterTransmission()
+  {
+    if (m_last_delta == 0)
+      return;
+    double aux = m_Ton_pp / m_last_delta;
+    double new_gen_time = std::max(aux, 25.0);
+    new_gen_time = std::min(new_gen_time, 1000.0);
+    setCheckCamGenMs ((long) new_gen_time);
+  }
 }

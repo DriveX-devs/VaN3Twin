@@ -66,6 +66,11 @@ namespace ns3
                   DoubleValue (1.0),
                   MakeDoubleAccessor (&OpenCDAClient::m_penetration_rate),
                   MakeDoubleChecker <double>())
+    .AddAttribute ("VRUPenetrationRate",
+                   "Rate of vulnerable road users, equipped with wireless communication devices",
+                   DoubleValue (1.0),
+                   MakeDoubleAccessor (&OpenCDAClient::m_penetration_rate_vru),
+                   MakeDoubleChecker <double>())
     .AddAttribute ("OpenCDA_HOME",
                    "OpenCDA",
                    StringValue("ms_van3t_example"),
@@ -457,30 +462,58 @@ namespace ns3
       }
 
       // Add all the Actors that are already part of the simulation
-      carla::ActorIds actorIds = GetManagedHostIds();
+      //carla::ActorIds actorIds = GetManagedHostIds();
+      carla::ActorIds actorIds = GetAllActorsIds();
       for (int i = 0; i < actorIds.actorid_size(); i++) {
+          int actorId = actorIds.actorid(i);
+          carla::Actor actor = GetActorById(actorId);
+          if (actor.itstype() == 0){
+              if (m_randVar->GetValue() <= m_penetration_rate_vru || hasCARLALDM (actorIds.actorid(i)))
+              {
+                  //printVehicle(vehicle);
+                  Vector location;
+                  location.x = actor.location().x();
+                  location.y = actor.location().y();
+                  location.z = actor.location().z();
 
-          if (m_randVar->GetValue() <= m_penetration_rate || hasCARLALDM (actorIds.actorid(i)))
-            {
-              int actorId = actorIds.actorid(i);
-              carla::Vehicle vehicle = GetManagedActorById(actorId);
-              //printVehicle(vehicle);
-              Vector location;
-              location.x = vehicle.location().x();
-              location.y = vehicle.location().y();
-              location.z = vehicle.location().z();
-              //std::cout << "Adding vehicle with location x = " << location.x << " y = " << location.y << " z = " << location.z << std::endl;
+                  std::cout << "Adding pedestrian (" << actorId << ") node with location x = " << location.x
+                            << " y = " << location.y << " z = " << location.z << " YAW = " << actor.transform().rotation().yaw() << std::endl;
 
-              Ptr<ns3::Node> inNode = m_includeNode(std::to_string(actorId));
-              m_vehMap.insert(std::pair<int, Ptr<Node>>(actorId, inNode));
-              Ptr<MobilityModel> mob = m_vehMap.at(actorId)->GetObject<MobilityModel>();
-              // set ns3 node position
-              mob->SetPosition(Vector(location.x, location.y, 1.5));
-            }
-          else
-            {
-              m_nonCVIDs.push_back (actorIds.actorid(i));  // To keep track of non Connected Vehicles
-            }
+                  Ptr<ns3::Node> inNode = m_includeNode("ped" + std::to_string(actorId));
+                  m_vehMap.insert(std::pair<int, Ptr<Node>>(actorId, inNode));
+                  m_nodeIdToObjectIdMap.insert(std::pair<uint32_t, int>(inNode->GetId(), actorId));
+
+                  Ptr<MobilityModel> mob = m_vehMap.at(actorId)->GetObject<MobilityModel>();
+                  // set ns3 node position
+                  mob->SetPosition(Vector(location.x, location.y, 1.5));
+              }
+              else
+              {
+                  m_nonCVIDs.push_back (actorIds.actorid(i));  // To keep track of non Connected Vehicles
+              }
+          }
+          else {
+              if (m_randVar->GetValue() <= m_penetration_rate || hasCARLALDM(actorIds.actorid(i))) {
+                  //printVehicle(vehicle);
+                  Vector location;
+                  location.x = actor.location().x();
+                  location.y = actor.location().y();
+                  location.z = actor.location().z();
+
+                  std::cout << "Adding vehicle (" << actorId << ") node with location x = " << location.x << " y = "
+                            << location.y << " z = " << location.z << std::endl;
+
+                  Ptr<ns3::Node> inNode = m_includeNode("veh" + std::to_string(actorId));
+                  m_vehMap.insert(std::pair<int, Ptr<Node>>(actorId, inNode));
+                  m_nodeIdToObjectIdMap.insert(std::pair<uint32_t, int>(inNode->GetId(), actorId));
+
+                  Ptr<MobilityModel> mob = m_vehMap.at(actorId)->GetObject<MobilityModel>();
+                  // set ns3 node position
+                  mob->SetPosition(Vector(location.x, location.y, 1.5));
+              } else {
+                  m_nonCVIDs.push_back(actorIds.actorid(i));  // To keep track of non Connected Vehicles
+              }
+          }
       }
       executeOneTimestep();
       //this->testInsertVehicle ();
@@ -580,7 +613,22 @@ namespace ns3
           NS_FATAL_ERROR((std::string("OpenCDAClient::GetManagedActorById() failed with error: " + std::string(status.error_message())).c_str()));
       }
   }
+  carla::Actor
+  OpenCDAClient::GetActorById(int actorId)
+  {
+     carla::Actor actor;
+     carla::Number vehicleId;
+     grpc::ClientContext clientContext;
+     vehicleId.set_num(actorId);
 
+     grpc::Status status = m_stub->GetActorById(&clientContext, vehicleId, &actor);
+     if (status.ok()) {
+         return actor;
+     }
+     else {
+         NS_FATAL_ERROR((std::string("OpenCDAClient::GetActorById() failed with error: " + std::string(status.error_message())).c_str()));
+     }
+  }
   void
   OpenCDAClient::insertVehicle(carla::Vehicle request)
   {
@@ -601,6 +649,7 @@ namespace ns3
 
       Ptr<ns3::Node> inNode = m_includeNode(std::to_string(vehicleId.num()));
       m_vehMap.insert(std::pair<int, Ptr<Node>>(vehicleId.num(), inNode));
+      m_nodeIdToObjectIdMap.insert(std::pair<uint32_t, int>(inNode->GetId(), vehicleId.num()));
       Ptr<MobilityModel> mob = m_vehMap.at(vehicleId.num())->GetObject<MobilityModel>();
       // set ns3 node position
       mob->SetPosition(Vector(pos.x, pos.y, pos.z));
@@ -641,26 +690,24 @@ namespace ns3
         }
       if (retval.value ()) {
 
-          carla::ActorIds actors = GetManagedHostIds();
+          //carla::ActorIds actors = GetManagedHostIds(); //get only vehicles
+          carla::ActorIds actors = GetAllActorsIds(); //
           for (int i = 0; i < actors.actorid_size(); i++) {
               auto actorId = actors.actorid(i);
-              carla::Vehicle v = GetManagedActorById(actorId);
+              //carla::Vehicle v = GetManagedActorById(actorId);
+              carla::Actor a = GetActorById(actorId);
               Vector location;
-              location.x = v.location().x();
-              location.y = v.location().y();
-              location.z = v.location().z();
+              location.x = a.location().x();
+              location.y = a.location().y();
+              location.z = a.location().z();
+//              double speed = 0; // speed and angle not considered by current ms-van3t channel models
+//              double angle = 0;
               double speed = std::sqrt (
-                  std::pow(v.speed().x(), 2) + std::pow(v.speed().y(), 2) + std::pow(v.speed().z(), 2)
-                  ); // speed and angle not considered by current ms-van3t channel models
-              double angle = v.heading();
-              processVehicleSubscription(v.id(), location, speed, angle);
-              if (m_sionna == true)
-                {
-                  Vector pos_for_sionna = Vector(location.x, location.y, location.z);
-                  double angle_for_sionna = angle;
-                  Vector vel_for_sionna = Vector(speed * cos(angle_for_sionna), speed * sin(angle_for_sionna), 0.0);
-                  updateLocationInSionna(std::to_string (actorId), pos_for_sionna, angle_for_sionna, vel_for_sionna);
-                }
+                      std::pow(a.speed().x(), 2) + std::pow(a.speed().y(), 2) + std::pow(a.speed().z(), 2)
+              ); // speed and angle not considered by current ms-van3t channel models
+              double angle = a.heading();
+              if (a.itstype()==0){}
+              processVehicleSubscription(a.id(), location, speed, angle);
           }
           UpdateVehicleFileMap();
           m_executeOneTimestepTrigger = Simulator::Schedule(Seconds(m_updateInterval), &OpenCDAClient::executeOneTimestep, this);
@@ -710,6 +757,8 @@ namespace ns3
 
                   Ptr<ns3::Node> inNode = m_includeNode(std::to_string(actorId));
                   m_vehMap.insert(std::pair<int, Ptr<Node>>(actorId, inNode));
+                    m_nodeIdToObjectIdMap.insert(std::pair<uint32_t, int>(inNode->GetId(), actorId));
+
                   Ptr<MobilityModel> mob = m_vehMap.at(actorId)->GetObject<MobilityModel>();
                   // set ns3 node position
                   mob->SetPosition(Vector(location.x, location.y, location.z));
@@ -739,6 +788,20 @@ namespace ns3
 
       if (!status.ok()) {
           NS_FATAL_ERROR((std::string("OpenCDAClient::GetManagedHostIds() failed with error: " + std::string(status.error_message())).c_str()));
+      }
+      return actorIds;
+  }
+
+  carla::ActorIds
+  OpenCDAClient::GetAllActorsIds()
+  {
+      carla::ActorIds actorIds;
+      google::protobuf::Empty empty;
+      grpc::ClientContext clientContext;
+      grpc::Status status = m_stub->GetAllActorsIds(&clientContext, empty, &actorIds);
+
+      if (!status.ok()) {
+          NS_FATAL_ERROR((std::string("OpenCDAClient::GetAllActorsIds() failed with error: " + std::string(status.error_message())).c_str()));
       }
       return actorIds;
   }
@@ -999,15 +1062,26 @@ OpenCDAClient::getNextWaypoint(Vector location) {
   std::map<std::string,std::string>
   OpenCDAClient::getManagedConnectedNodes()
   {
-    std::map<std::string,std::string> ret_map;
+      std::map<std::string,std::string> ret_map;
 
-    for(auto it = m_vehMap.begin (); it != m_vehMap.end (); it++)
-      {
-        ret_map.insert({std::to_string(it->first), std::to_string (it->second->GetId())});
+      for(auto it = m_vehMap.begin (); it != m_vehMap.end (); it++){
+          ret_map.insert({std::to_string(it->first), std::to_string (it->second->GetId())});
       }
 
-    return ret_map;
+      return ret_map;
   }
+  std::string
+  OpenCDAClient::getObjectIdByNodeId(uint32_t targetNodeId) {
+        // Using m_nodeIdToObjectIdMap for efficient lookup
+        auto it = m_nodeIdToObjectIdMap.find(targetNodeId);
 
+        if (it != m_nodeIdToObjectIdMap.end()) {
+            // Found: it->first is the node ID, it->second is the object ID
+            return std::to_string(it->second);
+        }
+
+        // Not found
+        return std::to_string(-1);
+    }
 }
 

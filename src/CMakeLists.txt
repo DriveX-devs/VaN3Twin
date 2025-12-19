@@ -79,8 +79,16 @@ if(${NS3_MONOLIB})
                               "${lib-ns3-static-objs}"
           automotive/model/DCC/DCC.h
           automotive/model/DCC/DCC.cc
-          automotive/model/LOS-NLOS/los_nlos.h
-          automotive/model/LOS-NLOS/los_nlos.cc
+          automotive/model/utilities/dbscan.h
+          automotive/model/utilities/dbscan.h
+          automotive/model/utilities/dbscan.cc
+          automotive/model/utilities/nanoflann.h
+          automotive/model/utilities/nanoflann.h
+          automotive/model/Facilities/vrudpOpenCDA.cc
+          automotive/model/Facilities/vrudpOpenCDA.cc
+          automotive/model/Facilities/vrudpOpenCDA.h
+          automotive/model/Facilities/vrudpOpenCDA.h
+          automotive/model/Facilities/VRUdp.cc
   )
   set_target_properties(
     ${lib-ns3-monolib} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE

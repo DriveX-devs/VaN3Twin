@@ -2,16 +2,22 @@ find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 link_libraries(${OpenCV_LIBS})
 
-Set(source_files
-    model/LOS-NLOS/los_nlos.cc
+#if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+#    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+#endif()
+#if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+#    add_definitions(-DASN_DEBUG=1)
+#    add_definitions(ASN_EMIT_DEBUG=1)
+#endif()
+set(source_files
     helper/areaSpeedAdvisorClient80211p-helper.cc
     helper/areaSpeedAdvisorServer80211p-helper.cc
     helper/areaSpeedAdvisorClientLTE-helper.cc
     helper/areaSpeedAdvisorServerLTE-helper.cc
     helper/emergencyVehicleAlert-helper.cc
-    helper/v2xEmulator-helper.cc
-    helper/simpleCAMSender-helper.cc
-    helper/simpleVAMSender-helper.cc
+#     helper/v2xEmulator-helper.cc
+#     helper/simpleCAMSender-helper.cc
     helper/emergencyVehicleWarningServer80211p-helper.cc
     helper/emergencyVehicleWarningClient80211p-helper.cc
     helper/trafficManagerClient80211p-helper.cc
@@ -19,17 +25,17 @@ Set(source_files
     helper/trafficManagerClientLTE-helper.cc
     helper/trafficManagerServerLTE-helper.cc
 
-     helper/cooperativePerception-helper.cc
-     model/Applications/cooperativePerception.cc
-     model/Facilities/vdpopencda.cc
-     model/utilities/opencda-sensor.cc
+    helper/cooperativePerception-helper.cc
+    model/Applications/cooperativePerception.cc
+    model/Facilities/vdpopencda.cc
+    model/utilities/opencda-sensor.cc
+    model/utilities/dbscan.cc
 
     model/Applications/areaSpeedAdvisorClient80211p.cc
     model/Applications/areaSpeedAdvisorServer80211p.cc
     model/Applications/areaSpeedAdvisorClientLTE.cc
     model/Applications/areaSpeedAdvisorServerLTE.cc
-    model/Applications/simpleCAMSender-gps-tc.cc
-    model/Applications/simpleVAMSender-gps-tc.cc
+#     model/Applications/simpleCAMSender-gps-tc.cc
     model/Applications/trafficManagerClient80211p.cc
     model/Applications/trafficManagerServer80211p.cc
     model/Applications/trafficManagerClientLTE.cc
@@ -45,10 +51,9 @@ Set(source_files
     model/Facilities/asn_utils.cc
     model/Facilities/vdpTraci.cc
     model/Facilities/vdpGPSTraceClient.cc
-    model/Facilities/vrudpGPSTraceClient.cc
     model/Facilities/caBasicService.cc
     model/utilities/sumo_xml_parser.cc
-    model/Applications/v2xEmulator.cc
+#     model/Applications/v2xEmulator.cc
     model/Measurements/MetricSupervisor.cc
         model/Facilities/ividata.cc
     model/Facilities/iviService.cc
@@ -59,13 +64,13 @@ Set(source_files
     model/Facilities/phPoints.cc
     model/utilities/sumo-sensor.cc
     model/DCC/DCC.cc
-    model/TxTracker/txTracker.cc
 
     model/Facilities/caBasicService_v1.cc
     model/Facilities/denBasicService_v1.cc
     model/Facilities/cpBasicService_v1.cc
-    model/Facilities/VRUdp.cc
     model/Facilities/VRUBasicService.cc
+    model/Facilities/vrudpOpenCDA.cc
+    model/Facilities/VRUdp.cc
 
     model/BTP/btp.cc
     model/BTP/btpHeader.cc
@@ -1325,21 +1330,21 @@ Set(source_files
     )
 
 set(header_files
-    model/LOS-NLOS/los_nlos.h
     model/Measurements/MetricSupervisor.h
     helper/areaSpeedAdvisorClientLTE-helper.h
     helper/areaSpeedAdvisorServerLTE-helper.h
     helper/areaSpeedAdvisorClient80211p-helper.h
     helper/areaSpeedAdvisorServer80211p-helper.h
     helper/emergencyVehicleAlert-helper.h
-    helper/v2xEmulator-helper.h
-    helper/simpleCAMSender-helper.h
-    helper/simpleVAMSender-helper.h
+#     helper/v2xEmulator-helper.h
+#     helper/simpleCAMSender-helper.h
 
-     helper/cooperativePerception-helper.h
-     model/utilities/opencda-sensor.h
-     model/Applications/cooperativePerception.h
-     model/Facilities/vdpopencda.h
+    helper/cooperativePerception-helper.h
+    model/utilities/opencda-sensor.h
+    model/Applications/cooperativePerception.h
+    model/Facilities/vdpopencda.h
+    model/utilities/dbscan.h
+    model/utilities/nanoflann.h
 
 
     model/Applications/areaSpeedAdvisorClient80211p.h
@@ -1347,8 +1352,7 @@ set(header_files
     model/Applications/areaSpeedAdvisorClientLTE.h
     model/Applications/areaSpeedAdvisorServerLTE.h
     model/Applications/emergencyVehicleAlert.h
-    model/Applications/simpleCAMSender-gps-tc.h
-    model/Applications/simpleVAMSender-gps-tc.h
+#     model/Applications/simpleCAMSender-gps-tc.h
 
     model/Facilities/denBasicService.h
     model/Facilities/denData.h
@@ -1357,7 +1361,6 @@ set(header_files
     model/Facilities/ITSSReceivingTableEntry.h
     model/Facilities/vdpTraci.h
     model/Facilities/vdpGPSTraceClient.h
-    model/Facilities/vrudpGPSTraceClient.h
     model/Facilities/vdp.h
     model/Facilities/caBasicService.h
     model/utilities/sumo_xml_parser.h
@@ -1371,7 +1374,6 @@ set(header_files
 
     model/Facilities/signalInfoUtils.h
     model/DCC/DCC.h
-    model/TxTracker/txTracker.h
     
     helper/emergencyVehicleWarningServer80211p-helper.h
     helper/emergencyVehicleWarningClient80211p-helper.h
@@ -1393,13 +1395,14 @@ set(header_files
     model/Facilities/caBasicService_v1.h
     model/Facilities/denBasicService_v1.h
     model/Facilities/cpBasicService_v1.h
-    model/Facilities/VRUdp.h
     model/Facilities/VRUBasicService.h
+    model/Facilities/vrudpOpenCDA.h
+    model/Facilities/VRUdp.h
 
     # BTP
     model/BTP/btp.h
     model/BTP/btpHeader.h
-    model/BTP/simple-btp-application.h
+#     model/BTP/simple-btp-application.h
     model/BTP/btpdatarequest.h
 
     #GeoNet
@@ -3810,12 +3813,9 @@ build_lib(
     ${libstats}
     ${libgps-tc}
     ${libnr}
-    ${libcv2x}
-    ${libwave}
     ${libinternet}
     ${libvehicle-visualizer}
     ${libtraci}
     ${libcarla}
-    ${libsionna}
   TEST_SOURCES ${test_sources}
 )

@@ -15,11 +15,13 @@
 #include "ns3/caBasicService.h"
 #include "ns3/cpBasicService.h"
 #include "ns3/cpBasicService_v1.h"
+#include "ns3/VRUBasicService.h"
 #include "ns3/vdpTraci.h"
 #include "ns3/socket.h"
 
 #include "ns3/sumo-sensor.h"
 #include "ns3/LDM.h"
+#include "ns3/geonet.h"
 
 namespace ns3 {
 
@@ -65,6 +67,7 @@ class cooperativePerception : public Application
      * \param the ASN.1 CPM structure containing the info of the packet that was received.
      */
     void receiveCPMV1 (asn1cpp::Seq<CPMV1> cpm, Address from);
+    void receiveVAM (asn1cpp::Seq<VAM> vam, Address from);
 
   protected:
     virtual void DoDispose (void);
@@ -74,6 +77,8 @@ class cooperativePerception : public Application
     DENBasicService m_denService; //!< DEN Basic Service object
     CABasicService m_caService; //!< CA Basic Service object
     CPBasicService m_cpService; //!< CP Basic Service object
+    VRUBasicService m_vruService; //!< VRU Basic Service object
+    //
     CPBasicServiceV1 m_cpService_v1; //!< CP Basic Service object version 1 (for CPMv1)
     Ptr<btp> m_btp; //! BTP object
     Ptr<GeoNet> m_geoNet; //! GeoNetworking Object
@@ -84,8 +89,12 @@ class cooperativePerception : public Application
     Ptr<Socket> m_socket; //!< Socket TX/RX for everything
     std::string m_model; //!< Communication Model (possible values: 80211p and cv2x)
 
+    std::unique_ptr<VDP> m_vdp;
+    std::unique_ptr<VRUdpOpenCDA> m_vrudp;
+
     vehicleData_t translateCPMdata(asn1cpp::Seq<CollectivePerceptionMessage> cpm, asn1cpp::Seq<PerceivedObject>, int objectIndex, int newID);
     vehicleData_t translateCPMV1data (asn1cpp::Seq<CPMV1> cpm, int objectIndex, int newID);
+    bool UpdateClusterInformation(asn1cpp::Seq<CollectivePerceptionMessage> cpm,asn1cpp::Seq<PerceivedObject>object);
 
     virtual void StartApplication (void);
     virtual void StopApplication (void);
@@ -105,19 +114,22 @@ class cooperativePerception : public Application
     std::string m_csv_name; //!< CSV log file name
     std::ofstream m_csv_ofstream_cam; //!< CSV log stream (CAM), created using m_csv_name
     std::map<int, std::map<int,int>> m_recvCPMmap;  //! Structure mapping, for each CV that we have received a CPM from, the CPM's PO ids with the ego LDM's PO ids
+    std::map<size_t, ClusterInfo> m_cluster_map_cp {};
 
     bool m_vis_sensor = false; //!< To visualize the sensor from ns-3 side
 
     /* Counters */
     int m_cam_received;
     int m_cpm_received;
+    int m_vam_received;
 
     EventId m_send_cam_ev; //!< Event to send the CAM
 
 
     bool m_send_cam;
+    bool m_send_vam;
 
-    Ptr<MetricSupervisor> m_metric_supervisor = nullptr;
+    Ptr<MetricSupervisor> m_metric_supervisor;
 
   };
 

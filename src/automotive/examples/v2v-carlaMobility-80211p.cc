@@ -17,9 +17,7 @@
  *  Carlos Mateo Risma Carletti, Politecnico di Torino (carlosrisma@gmail.com)
 */
 #include "ns3/carla-module.h"
-//#include "ns3/automotive-module.h"
-#include "ns3/cooperativePerception-helper.h"
-#include "ns3/cooperativePerception.h"
+#include "ns3/automotive-module.h"
 #include "ns3/traci-module.h"
 #include "ns3/internet-module.h"
 #include "ns3/wave-module.h"
@@ -29,7 +27,6 @@
 #include "ns3/vehicle-visualizer-module.h"
 #include "ns3/MetricSupervisor.h"
 #include <unistd.h>
-#include "ns3/sionna-helper.h"
 
 using namespace ns3;
 
@@ -54,6 +51,7 @@ main (int argc, char *argv[])
   //std::string opencda_config ="ms_van3t_example";
   //bool opencda_ml = false;
   //Same mobility example but with active perception (using ML models for OpenCDA's perception module)
+//  std::string opencda_config ="ms_van3t_example_ml";
   std::string opencda_config ="ms_van3t_example_ml";
   bool opencda_ml = true;
 
@@ -93,27 +91,24 @@ main (int argc, char *argv[])
   bool verbose = true;
   bool realtime = false;
   std::string csv_name;
-  std::string csv_name_cumulative;
-  int txPower=23;
+  std::string csv_name_cumulative = "Metrics_PRR";
+  std::string csv_name_CBR = "Metrics_CBR"; //CBR log of all nodes and moving average
+  int txPower=30; //set to 30
   double penetrationRate = 0.7;
+  double VRUpenetrationRate = 0.0;
 
-  float datarate=12;
+  float datarate = 3;
   bool vehicle_vis = false;
 
   // Disabling this option turns off the whole V2X application (useful for comparing the situation when the application is enabled and the one in which it is disabled)
   bool send_cam = true;
-  double m_baseline_prr = 150.0;
-  bool m_metric_sup = false;
+  double m_baseline_prr = 150.0; //set to 100
+  bool m_metric_sup = true;
 
-  double simTime = 20;
+  double simTime = 15;
 
   int numberOfNodes;
   uint32_t nodeCounter = 0;
-
-  bool sionna = false;
-  std::string server_ip = "";
-  bool local_machine = false;
-  bool verb = false;
 
   CommandLine cmd;
 
@@ -149,10 +144,6 @@ main (int argc, char *argv[])
   cmd.AddValue("carla-gpu", "CARLA server GPU ID (Default: 0)", carla_gpu);
   cmd.AddValue("vis-sensor", "Visualize OpenCDA sensor from ns-3 side (i.e., LDM)", visualize_sensor);
 
-  cmd.AddValue ("sionna", "Enable SIONNA usage", sionna);
-  cmd.AddValue ("sionna-server-ip", "SIONNA server IP address", server_ip);
-  cmd.AddValue ("sionna-local-machine", "SIONNA will be executed on local machine", local_machine);
-  cmd.AddValue ("sionna-verbose", "SIONNA server IP address", verb);
 
   cmd.Parse (argc, argv);
 
@@ -181,15 +172,6 @@ main (int argc, char *argv[])
       LogComponentEnable ("DENBasicService", LOG_LEVEL_INFO);
     }
 
-  SionnaHelper& sionnaHelper = SionnaHelper::GetInstance();
-
-  if (sionna)
-    {
-      sionnaHelper.SetSionna(sionna);
-      sionnaHelper.SetServerIp(server_ip);
-      sionnaHelper.SetLocalMachine(local_machine);
-      sionnaHelper.SetVerbose(verb);
-    }
 
   /* Use the realtime scheduler of ns3 */
   if(realtime)
@@ -227,7 +209,7 @@ main (int argc, char *argv[])
       }
 
   /***
-   * 0.c Read from OpenCDA config file the number of vehicles
+   * 0.c Read from OpenCDA config file the number of vehicles and pedestrians
    * */
   std::string config_yaml = OpenCDA_HOME+"/opencda/scenario_testing/config_yaml/" +opencda_config+ ".yaml";
 
@@ -235,10 +217,13 @@ main (int argc, char *argv[])
       int spawnPositionCount = 0;
       int vehicleNum = 0;
       bool foundVehicleNum = false;
+      bool foundPedNum = false;
+      int pedestriansNum = 0;
+      bool pedestrianbyradius = false;
 
       if (file.is_open()) {
           while (getline(file, line)) {
-              // Count occurrences of "spawn_position"
+              // Count occurrences of "spawn_position" why???
               if (line.find("spawn_position") != std::string::npos) {
                   spawnPositionCount++;
               }
@@ -252,15 +237,40 @@ main (int argc, char *argv[])
                       vehicleNum = std::stoi(value);
                   }
               }
+              // Find and process "pedestrian_by_radius" bool
+              if (!foundPedNum && line.find("pedestrian_by_radius") != std::string::npos) {
+                  if (line.find("true") != std::string::npos){
+                      pedestrianbyradius = true;
+                  }
+//
+                  std::istringstream iss(line);
+                  std::string key, value;
+                  if (std::getline(iss, key, ':') && std::getline(iss, value)) {
+                      pedestrianbyradius = (value == " true");
+                  }
+              }
+              // Find and process "n_pedestrian"
+              if (pedestrianbyradius == true) {
+                  if (line.find("n_pedestrian") != std::string::npos) {
+                      std::istringstream iss(line);
+                      std::string key, value;
+                      if (std::getline(iss, key, ':') && std::getline(iss, value)) {
+                          pedestriansNum += std::stoi(value);
+                      }
+                  }
+              }
           }
           file.close();
       } else {
           NS_FATAL_ERROR("Error: cannot open file '"<< config_yaml << "'.");
       }
 
-  numberOfNodes = spawnPositionCount + vehicleNum;
-  std::cout<< "Number of vehicles: " << numberOfNodes << std::endl;
-//  numberOfNodes = 30;
+  numberOfNodes = spawnPositionCount + std::ceil(vehicleNum*penetrationRate) + std::ceil(pedestriansNum*VRUpenetrationRate)+10;
+  std::cout<< "Number of spawn_position: " << spawnPositionCount << std::endl;
+    std::cout<< "Number of vehicles: " << vehicleNum << " - penetration rate: " << penetrationRate << std::endl;
+    std::cout<< "Number of pedestrians: " << pedestriansNum << " - penetration rate: " << VRUpenetrationRate << std::endl;
+    std::cout<< "Number of nodes: " << numberOfNodes << std::endl;
+  numberOfNodes = std::ceil(150*VRUpenetrationRate)+20;
 
 
   /* Set the simulation time (in seconds) */
@@ -298,7 +308,7 @@ main (int argc, char *argv[])
                                       "NonUnicastMode",StringValue (datarate_config));
   NetDeviceContainer netDevices = wifi80211p.Install (wifiPhy, wifi80211pMac, obuNodes);
 
-  //wifiPhy.EnablePcap ("v2v-EVA",netDevices);
+  wifiPhy.EnablePcap ("v2v-EVA",netDevices);
 
   /*** 4. Give packet socket powers to nodes (otherwise, if the app tries to create a PacketSocket, CreateSocket will end up with a segmentation fault */
   PacketSocketHelper packetSocket;
@@ -310,12 +320,9 @@ main (int argc, char *argv[])
 
   /*** 6. Setup OpenCDA client ***/
   Ptr<OpenCDAClient> opencda_client = CreateObject<OpenCDAClient> ();
-  if (sionna)
-    {
-      opencda_client->SetSionnaUp();
-    }
   opencda_client->SetAttribute ("UpdateInterval", DoubleValue (0.05));
   opencda_client->SetAttribute ("PenetrationRate",DoubleValue(penetrationRate));
+  opencda_client->SetAttribute ("VRUPenetrationRate",DoubleValue(VRUpenetrationRate));
   opencda_client->SetAttribute ("OpenCDA_config", StringValue(opencda_config));
   opencda_client->SetAttribute ("OpenCDA_HOME", StringValue(OpenCDA_HOME));
   opencda_client->SetAttribute ("CARLA_HOME", StringValue(CARLA_HOME));
@@ -338,12 +345,22 @@ main (int argc, char *argv[])
   opencda_client->SetAttribute ("ApplyML", BooleanValue(opencda_ml));
 
 
-  Ptr<MetricSupervisor> metSup = NULL;
-  MetricSupervisor metSupObj(m_baseline_prr);
+  Ptr<MetricSupervisor> metSup = nullptr;
+//  MetricSupervisor metSupObj(m_baseline_prr);
+//  metSup = &metSupObj;
+    metSup = CreateObject<MetricSupervisor>(m_baseline_prr);
   if(m_metric_sup)
     {
-      metSup = &metSupObj;
       metSup->setOpenCDACLient (opencda_client);
+      metSup->setChannelTechnology("80211p");
+      metSup->enableCBRVerboseOnStdout();
+//      metSup->enablePRRVerboseOnStdout();
+      metSup->enableCBRWriteToFile();
+      metSup->setCBRWindowValue(200);
+      metSup->setCBRAlphaValue(0.1);
+      metSup->setSimulationTimeValue(simTime);
+      metSup->setNodeContainer(obuNodes);
+      metSup->startCheckCBR();
     }
 
   /*** 7. Setup interface and application for dynamic nodes ***/
@@ -354,15 +371,38 @@ main (int argc, char *argv[])
   cooperativePerceptionHelper.SetAttribute ("CSV", StringValue(csv_name));
   cooperativePerceptionHelper.SetAttribute ("Model", StringValue ("80211p"));
   cooperativePerceptionHelper.SetAttribute("VisualizeSensor", BooleanValue(visualize_sensor));
-  /* callback function for node creation */
-  STARTUP_OPENCDA_FCN setupNewWifiNode = [&] (std::string vehicleID) -> Ptr<Node>
-    {
-      if (nodeCounter >= obuNodes.GetN())
-        NS_FATAL_ERROR("Node Pool empty!: " << nodeCounter << " nodes created.");
+  cooperativePerceptionHelper.SetAttribute("MetricSupervisor", PointerValue(metSup));
 
-      Ptr<Node> includedNode = obuNodes.Get(nodeCounter);
+  /* callback function for node creation */
+  STARTUP_FCN setupNewWifiNode = [&] (std::string actorID) -> Ptr<Node>
+    {
+      if (nodeCounter >= obuNodes.GetN()) {
+          NS_FATAL_ERROR("Node Pool empty!: " << nodeCounter << " nodes created.");
+      }
+        Ptr<Node> includedNode;
+        std::string number_str;
+        //get actor id from string and assign to node
+//        for (char c : actorID) {
+//            if (isdigit(c)) {
+//                number_str += c;
+//            }
+//        }
+//        if (!number_str.empty()) {
+//            uint32_t number = std::stoi(number_str);
+//            includedNode = obuNodes.Get(number);
+//        } else {
+//            includedNode = obuNodes.Get(nodeCounter);
+//            }
+
+        includedNode = obuNodes.Get(nodeCounter);
       ++nodeCounter; // increment counter for next node
 
+        if (actorID.find("ped") != std::string::npos){
+            cooperativePerceptionHelper.SetAttribute("itsType", StringValue("StationType_pedestrian"));
+        }
+        else {
+            cooperativePerceptionHelper.SetAttribute("itsType", StringValue("StationType_passengerCar"));
+        }
       /* Install Application */
       ApplicationContainer AppSample = cooperativePerceptionHelper.Install (includedNode);
 
@@ -372,8 +412,9 @@ main (int argc, char *argv[])
       return includedNode;
     };
 
+
   /* Callback function for node shutdown */
-  SHUTDOWN_OPENCDA_FCN shutdownWifiNode = [] (Ptr<Node> exNode,std::string vehicleID)
+  SHUTDOWN_FCN shutdownWifiNode = [] (Ptr<Node> exNode,std::string actorID)
     {
       /* stop all applications */
       Ptr<cooperativePerception> appSample_ = exNode->GetApplication(0)->GetObject<cooperativePerception>();
@@ -394,40 +435,105 @@ main (int argc, char *argv[])
   Simulator::Stop (simulationTime);
 
   Simulator::Run ();
-  Simulator::Destroy ();
+
 
   /* stop OpenCDA and CARLA simulation */
-  opencda_client->stopSimulation ();
+  std::vector<int> IDs = opencda_client->getManagedConnectedIds();
 
-  if(m_metric_sup)
-    {
-      if(csv_name_cumulative!="")
-      {
-        std::ofstream csv_cum_ofstream;
-        std::string full_csv_name = csv_name_cumulative + ".csv";
 
-        if(access(full_csv_name.c_str(),F_OK)!=-1)
+    if(m_metric_sup)
+    {   //CBR log of all nodes and moving average
+        if(csv_name_CBR!="")
         {
-          // The file already exists
-          csv_cum_ofstream.open(full_csv_name,std::ofstream::out | std::ofstream::app);
+            std::unordered_map<std::string, std::vector<double>> cbr_values;
+            cbr_values = metSup->getCBRValues();
+            std::ofstream file;
+            std::string file_name = csv_name_CBR + ".csv";
+
+            file.open (file_name);
+            file << "Time";
+            for (const auto& [node_id, cbr_vector] : cbr_values) {
+                file << "," << "NodeID_" << node_id;
+            }
+            // 2. Find the maximum number of CBR values (time steps) among all nodes.
+            size_t max_cbr_size = 0;
+            for (const auto& [node_id, cbr_vector] : cbr_values) {
+                max_cbr_size = std::max(max_cbr_size, cbr_vector.size());
+            }
+            file << "\n";
+
+            // 3. Write the time and CBR values for each node, iterating up to the maximum size.
+            for (size_t i = 0; i < max_cbr_size; ++i) {
+                double current_time = i * 0.2; // Calculate time based on the index
+                file << std::fixed << std::setprecision(3) << current_time;
+                for (const auto& [node_id, cbr_vector] : cbr_values) {
+                    if (i < cbr_vector.size()) {
+                        file << "," << std::fixed << std::setprecision(6) << cbr_vector[i];
+                    } else {
+                        file << ",";
+                    }
+                }
+                file << "\n";
+            }
+
+            file.close();
         }
-        else
+
+        //PRR and latency
+        if(csv_name_cumulative!="")
         {
-          // The file does not exist yet
-          csv_cum_ofstream.open(full_csv_name);
-          csv_cum_ofstream << "current_txpower_dBm,avg_PRR,avg_latency_ms" << std::endl;
+            std::ofstream csv_cum_ofstream;
+            std::string full_csv_name = csv_name_cumulative + ".csv";
+
+            if(access(full_csv_name.c_str(),F_OK)!=-1)
+            {
+                // The file already exists
+                csv_cum_ofstream.open(full_csv_name,std::ofstream::out | std::ofstream::app);
+            }
+            else
+            {
+                // The file does not exist yet
+                csv_cum_ofstream.open(full_csv_name);
+                csv_cum_ofstream << "current_txpower_dBm,avg_PRR,avg_latency_ms" << std::endl;
+            }
+
+            csv_cum_ofstream << txPower << "," << metSup->getAveragePRR_overall () << "," << metSup->getAverageLatency_overall () << std::endl;
         }
+        std::cout << "Overall:"<< std::endl;
+        std::cout << "Average PRR: " << metSup->getAveragePRR_overall () << std::endl;
+        std::cout << "Average latency (ms): " << metSup->getAverageLatency_overall () << std::endl;
 
-        csv_cum_ofstream << txPower << "," << metSup->getAveragePRR_overall () << "," << metSup->getAverageLatency_overall () << std::endl;
-      }
-      std::cout << "Average PRR: " << metSup->getAveragePRR_overall () << std::endl;
-      std::cout << "Average latency (ms): " << metSup->getAverageLatency_overall () << std::endl;
 
-      for(int i=1;i<numberOfNodes+1;i++) {
-          std::cout << "Average latency of vehicle " << i << " (ms): " << metSup->getAverageLatency_vehicle (i) << std::endl;
-          std::cout << "Average PRR of vehicle " << i << " (%): " << metSup->getAveragePRR_vehicle (i) << std::endl;
-      }
+        std::ofstream csv_prr;
+        csv_prr.open("Metrics_PRR_perNode.csv");
+        csv_prr << "Node_ID,Avg_latency,Avg_PRR" << std::endl;
+        for(size_t i=0;i<IDs.size();++i) {
+            std::cout << "Actor " << IDs[i] << std::endl;
+            carla::Actor actor = opencda_client->GetActorById(IDs[i]);
+            std::cout << "  Average latency (ms): " << metSup->getAverageLatency_vehicle(IDs[i]) << std::endl;
+            std::cout << "  Average PRR (%): " << metSup->getAveragePRR_vehicle(IDs[i]) << std::endl;
+            csv_prr << IDs[i] << "," << metSup->getAverageLatency_vehicle(IDs[i]) << ","
+                    << metSup->getAveragePRR_vehicle(IDs[i]) << std::endl;
+            //if differentiate between ped and vehicle on metric supervisor use below
+//            if (actor.itstype() == 2) {
+//                std::cout << "  Average latency (ms): " << metSup->getAverageLatency_vehicle(IDs[i]) << std::endl;
+//                std::cout << "  Average PRR (%): " << metSup->getAveragePRR_vehicle(IDs[i]) << std::endl;
+//                csv_prr << IDs[i] << "," << metSup->getAverageLatency_vehicle(IDs[i]) << ","
+//                        << metSup->getAveragePRR_vehicle(IDs[i]) << std::endl;
+//            } else if (actor.itstype() == 0) {
+//                std::cout << "  Average latency (ms): " << metSup->getAverageLatency_pedestrian(IDs[i]) << std::endl;
+//                std::cout << "  Average PRR (%): " << metSup->getAveragePRR_pedestrian(IDs[i]) << std::endl;
+//                csv_prr << IDs[i] << "," << metSup->getAverageLatency_pedestrian(IDs[i]) << ","
+//                        << metSup->getAveragePRR_pedestrian(IDs[i]) << std::endl;
+//            }
+        }
     }
+    opencda_client->stopSimulation ();
+
+
+    Simulator::Destroy ();
+
+
 
 
   return 0;

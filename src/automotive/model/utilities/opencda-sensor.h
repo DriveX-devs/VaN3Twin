@@ -32,6 +32,10 @@ namespace ns3 {
     void setLDM(Ptr<LDM> ldm){m_LDM=ldm;}
     void enableGUI(bool visualize);
     void updateGUI();
+    void createCluster();
+    void logPerceivedPedestrians();
+    double get_circular_mean_heading(const std::vector<double>& headings_deg);
+//    double get_angular_difference(double heading1_deg, double heading2_deg);
 
   private:
 
@@ -56,6 +60,8 @@ namespace ns3 {
     bool m_visualize;
     cv::Mat m_cv_image;
     uint64_t m_count;
+    bool m_clustering;
+    std::map<std::string, std::vector<int>> g_perceived_pedestrians;
 
   };
 }

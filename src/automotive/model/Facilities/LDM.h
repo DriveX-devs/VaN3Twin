@@ -16,8 +16,7 @@
 
 #define DB_CLEANER_INTERVAL_SECONDS 0.5
 #define DB_DELETE_OLDER_THAN_SECONDS 1
-#define LOG_FREQ 100
-
+#define DB_DELETE_OLDER_THAN_SECONDS_CLUSTER 1
 namespace ns3 {
 
 
@@ -219,16 +218,6 @@ public:
     void drawPolygon(vehicleData_t data);
     void enablePolygons(){m_polygons=true;m_event_updatePolygons = Simulator::Schedule(MilliSeconds (100),&LDM::updatePolygons,this);}
 
-    void setWriteContents(bool write) {
-      if (write)
-        {
-          std::srand(Simulator::Now().GetNanoSeconds ());
-          double desync = ((double)std::rand()/RAND_MAX);
-          m_event_writeContents = Simulator::Schedule(MilliSeconds(LOG_FREQ+(desync*100)),&LDM::writeAllContents,this);
-        }
-
-    }
-
     libsumo::TraCIPosition boost2TraciPos(point_type point_type);
 
 private:
@@ -256,6 +245,23 @@ private:
 	double m_avg_dwell = 0.0;
 	int m_dwell_count = 0;
         StationType_t m_station_type;
+    std::map<size_t, ClusterInfo> m_cluster_map {};
+
+    std::unordered_map<int, uint64_t> m_grace_time_ids {};
+    bool getAllPOs_TypeA(std::vector<returnedVehicleData_t> &selectedVehicles);
+    bool getAllCVRUs(std::vector<returnedVehicleData_t> &selectedVehicles);
+
+    bool updateClusterMap(std::map<size_t, ClusterInfo>& cluster_map, bool fromPerception);
+    bool getClusterMap(std::map<size_t, ClusterInfo> &cluster_map);
+    void findMECForClusters(const ClusterInfo& cluster1, const ClusterInfo& cluster2,
+                                 cv::Point2f& new_center, double& new_radius);
+    double calculateCircleIoU(const ClusterInfo& new_cluster, const ClusterInfo& stored_cluster);
+    void findMatchCluster(std::map<size_t, ClusterInfo> &cluster_map, std::set<size_t> &matched_new_clusters, bool findDuplicates=false);
+    double get_circular_mean_heading(const std::vector<double> &headings_deg);
+    LDM_error_t updateClusterCPMincluded(uint64_t stationID, uint64_t timestamp);
+
+    std::unordered_map<uint64_t, vehicleData_t> m_last_stored;
+
 
 };
 }

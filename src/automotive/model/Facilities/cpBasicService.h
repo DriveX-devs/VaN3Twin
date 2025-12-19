@@ -15,6 +15,7 @@
 #include "ns3/ldm-utils.h"
 #include "signalInfoUtils.h"
 
+
 extern "C" {
   #include "ns3/CollectivePerceptionMessage.h"
 }
@@ -121,10 +122,26 @@ public:
   void setRedundancyMitigation(bool choice){m_redundancy_mitigation = choice;}
   void disableRedundancyMitigation(){m_redundancy_mitigation = false;}
 
+  void setCheckCpmGenMs(long nextCPM) {m_N_GenCpm=nextCPM;};
+
   const long T_GenCpmMin_ms = 100;
   const long T_GenCpm_ms = 100;
   const long T_GenCpmMax_ms = 1000;
   const long m_T_AddSensorInformation = 1000;
+
+  /**
+     * @brief Used for DCC Adaptive approach to set the future time to check CPM condition after an update of delta value
+     * @param delta new delta value calculated through DCC adaptive approach
+     */
+  void toffUpdateAfterDeltaUpdate(double delta);
+
+  /**
+     * @brief Used for DCC Adaptive approach to set the future time to check CPM condition after a transmission
+     * @param delta new delta value calculated through DCC adaptive approach
+     */
+  void toffUpdateAfterTransmission();
+    std::pair <double, double>  calculateHeadingAndVelocity(double lat1, double lon1, double timestamp1,
+                                                            double lat2, double lon2, double timestamp2);
 
 
 private:
@@ -142,7 +159,8 @@ private:
    * @param it  The iterator of the vehicle data to be checked.
    * @return
    */
-  bool checkCPMconditions(std::vector<LDM::returnedVehicleData_t>::iterator it);
+  bool checkCPMconditionsTypeB(std::vector<LDM::returnedVehicleData_t>::iterator it);
+  bool checkCPMconditionsTypeA(std::vector<LDM::returnedVehicleData_t>::iterator it);
   double cartesian_dist(double lon1, double lat1, double lon2, double lat2);
 
   std::function<void(asn1cpp::Seq<CollectivePerceptionMessage>, Address)> m_CPReceiveCallback;  //! Callback function for received CPMs
@@ -168,6 +186,8 @@ private:
   VDP* m_vdp; //! VDP object
   Ptr<TraciClient> m_client;
 
+  bool m_clustering;
+
   Ptr<Socket> m_socket_tx; // Socket TX
 
   Ptr<LDM> m_LDM; //! LDM object
@@ -189,9 +209,17 @@ private:
   EventId m_event_cpmDisseminationStart;
   EventId m_event_cpmSend;
 
-  double m_last_transmission = 0;
+  std::string m_csv_name; //!< CSV log file name
+  std::ofstream m_csv_ofstream_cpm; //!< CSV log stream (CPM), created using m_csv_name
 
-  long m_T_next_dcc = -1;
+  bool m_send_all_typeA;
+
+  double m_last_transmission = 0;
+  double m_Ton_pp = 0;
+  double m_last_delta = 0;
+
+    int test;
+    bool testbool;
 };
 }
 #endif // CPBASICSERVICE_H
