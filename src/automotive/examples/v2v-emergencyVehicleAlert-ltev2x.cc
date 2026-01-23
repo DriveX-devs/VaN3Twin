@@ -33,6 +33,10 @@
 #include "ns3/vehicle-visualizer-module.h"
 #include "ns3/MetricSupervisor.h"
 #include <unistd.h>
+#include <nlohmann/json.hpp>
+#include <fstream>
+
+using json = nlohmann::json;
 
 using namespace ns3;
 NS_LOG_COMPONENT_DEFINE("v2v-cv2x");
@@ -89,38 +93,41 @@ main (int argc, char *argv[])
 
   xmlDocPtr rou_xml_file;
 
-  CommandLine cmd;
+  // === JSON CONFIG PARSER ===
+  std::ifstream f("src/automotive/examples/config.json");
+  if (!f.is_open())
+  {
+    NS_FATAL_ERROR("Cannot open config.json");
+  }
 
-  /* Cmd Line option for application */
-  cmd.AddValue ("realtime", "Use the realtime scheduler or not", realtime);
-  cmd.AddValue ("sumo-gui", "Use SUMO gui or not", sumo_gui);
-  cmd.AddValue ("sumo-updates", "SUMO granularity", sumo_updates);
-  cmd.AddValue ("sumo-folder","Position of sumo config files",sumo_folder);
-  cmd.AddValue ("mob-trace", "Name of the mobility trace file", mob_trace);
-  cmd.AddValue ("sumo-config", "Location and name of SUMO configuration file", sumo_config);
-  cmd.AddValue ("csv-log", "Name of the CSV log file", csv_name);
-  cmd.AddValue ("vehicle-visualizer", "Activate the web-based vehicle visualizer for ms-van3t", vehicle_vis);
-  cmd.AddValue ("csv-log-cumulative", "Name of the CSV log file for the cumulative (average) PRR and latency data", csv_name_cumulative);
-  cmd.AddValue ("netstate-dump-file", "Name of the SUMO netstate-dump file containing the vehicle-related information throughout the whole simulation", sumo_netstate_file_name);
-  cmd.AddValue ("penetrationRate", "Rate of vehicles equipped with wireless communication devices", penetrationRate);
+  json config = json::parse(f);
 
-  /* Cmd Line option for C-V2X */
-  cmd.AddValue ("tx-power", "UEs transmission power [dBm]", ueTxPower);
-  cmd.AddValue ("adjacencyPscchPssch", "Scheme for subchannelization", adjacencyPscchPssch);
-  cmd.AddValue ("sizeSubchannel", "Number of RBs per Subchannel", sizeSubchannel);
-  cmd.AddValue ("numSubchannel", "Number of Subchannels", numSubchannel);
-  cmd.AddValue ("startRbSubchannel", "Index of first subchannel index", startRbSubchannel);
-  cmd.AddValue ("T1", "T1 Value of Selection Window", t1);
-  cmd.AddValue ("T2", "T2 Value of Selection Window", t2);
-  cmd.AddValue ("mcs", "Modulation and Coding Scheme", mcs);
-  cmd.AddValue ("pRsvp", "Resource Reservation Interval", pRsvp);
-  cmd.AddValue ("probResourceKeep", "Probability for selecting previous resource again", probResourceKeep);
-  cmd.AddValue ("baseline", "Baseline for PRR calculation", m_baseline_prr);
-  cmd.AddValue ("met-sup","Use the Metric supervisor or not",m_metric_sup);
+  // App options
+  realtime = config.value("realtime", false);
+  sumo_gui = config.value("sumo_gui", true); 
+  sumo_updates = config.value("sumo_updates", 0.01);
+  sumo_folder = config.value("sumo_folder", sumo_folder);
+  mob_trace = config.value("mob_trace", mob_trace);
+  sumo_config = config.value("sumo_config", sumo_config);
+  vehicle_vis = config.value("vehicle_visualizer", false);
+  penetrationRate = config.value("penetrationRate", 0.7);
+  simTime = config.value("sim_time", 100.0);
 
-  cmd.AddValue("sim-time", "Total duration of the simulation [s])", simTime);
+  // C-V2X options
+  ueTxPower = config.value("tx_power", ueTxPower);
+  adjacencyPscchPssch = config.value("adjacencyPscchPssch", adjacencyPscchPssch);
+  sizeSubchannel = config.value("sizeSubchannel", sizeSubchannel);
+  numSubchannel = config.value("numSubchannel", numSubchannel);
+  startRbSubchannel = config.value("startRbSubchannel", startRbSubchannel);
+  t1 = config.value("T1", t1);
+  t2 = config.value("T2", t2);
+  mcs = config.value("mcs", mcs);
+  pRsvp = config.value("pRsvp", pRsvp);
+  probResourceKeep = config.value("probResourceKeep", probResourceKeep);
+  m_baseline_prr = config.value("baseline", m_baseline_prr);
+  m_metric_sup = config.value("metric_supervisor", m_metric_sup);
 
-  cmd.Parse (argc, argv);
+  NS_LOG_INFO("Configuration loaded from JSON");
 
   if (verbose)
     {

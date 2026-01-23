@@ -1,0 +1,26 @@
+{
+  "realtime": false,
+  "sumo_gui": true,
+  "sumo_updates": 0.01,
+
+  "sumo_folder": "src/automotive/examples/sumo_files_v2v_accident/",
+  "mob_trace": "simple.rou.xml",
+  "sumo_config": "src/automotive/examples/sumo_files_v2v_accident/simple.sumo.cfg",
+
+  "vehicle_visualizer": false,
+  "penetrationRate": 0.7,
+  "sim_time": 100.0,
+
+  "tx_power": 23.0,
+  "adjacencyPscchPssch": true,
+  "sizeSubchannel": 10,
+  "numSubchannel": 3,
+  "startRbSubchannel": 0,
+  "T1": 4,
+  "T2": 100,
+  "mcs": 20,
+  "pRsvp": 20,
+  "probResourceKeep": 0.0,
+  "baseline": 150.0,
+  "metric_supervisor": false
+}
