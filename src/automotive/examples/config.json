@@ -17,9 +17,9 @@
   "numSubchannel": 3,
   "startRbSubchannel": 0,
   "T1": 4,
-  "T2": 100,
+  "T2": 40,
   "mcs": 20,
-  "pRsvp": 20,
+  "pRsvp": 100,
   "probResourceKeep": 0.0,
   "baseline": 150.0,
   "metric_supervisor": false
