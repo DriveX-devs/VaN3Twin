@@ -1,0 +1,6 @@
+<viewsettings>
+<scheme name="NetSim_VANET">
+<vehicles vehicleQuality="2" vehicle_exaggeration="2.00"> </vehicles>
+</scheme>
+<delay value="500"/>
+</viewsettings>
