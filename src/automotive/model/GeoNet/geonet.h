@@ -2,6 +2,7 @@
 #define GEONET_H
 
 #include "ns3/MetricSupervisor.h"
+#include "ns3/security.h"
 #include <stdint.h>
 #include <string>
 #include <map>
@@ -156,6 +157,7 @@ namespace ns3
       // It requires as input a pointer to the node to which the socket should be bound
       static Ptr<Socket> createGNPacketSocket(Ptr<Node> node_ptr);
 
+      void setSecurity(bool security){enableSecurity = security; m_security = CreateObject<Security>();}
       void attachSendFromDCCQueue();
 
       void attachGlobalCBRCheck();
@@ -199,9 +201,13 @@ namespace ns3
 
       Ptr<Socket> m_socket_tx;
 
+      Ptr<Security> m_security;
+
       std::function<void(GNDataIndication_t,Address)> m_ReceiveCallback;
 
 
+      bool enableSecurity;
+      int discard_packet;
       VDP* m_vdp; //! Pointer to the VDP object
       VRUdp* m_vrudp; //! Pointer to the VRUdp object
       StationID_t m_station_id; //! Station ID

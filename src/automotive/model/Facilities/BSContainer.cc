@@ -118,7 +118,7 @@ namespace ns3
   }
 
   void
-  BSContainer::setupContainer(bool CABasicService_enabled,bool DENBasicService_enabled,bool VRUBasicService_enabled,bool CPMBasicService_enabled,bool MCMBasicService_enabled) {
+  BSContainer::setupContainer(bool CABasicService_enabled,bool DENBasicService_enabled,bool VRUBasicService_enabled,bool CPMBasicService_enabled,bool MCMBasicService_enabled,bool security_enabled) {
     if(CABasicService_enabled==false && DENBasicService_enabled==false && VRUBasicService_enabled==false && CPMBasicService_enabled==false && MCMBasicService_enabled) {
       NS_FATAL_ERROR("Error. Called setupContainer() asking for enabling zero Basic Services. Aborting simulation.");
     }
@@ -147,6 +147,8 @@ namespace ns3
     if(m_metric_sup_ptr!=nullptr) {
       m_gn->setMetricSupervisor (m_metric_sup_ptr);
     }
+
+    m_gn->setSecurity(security_enabled);
 
     if(m_prrsup_beacons==false) {
       m_gn->disablePRRsupervisorForBeacons();
@@ -177,7 +179,7 @@ namespace ns3
         if(CABasicService_enabled==true) {
           m_cabs.setVDP(m_vdp_ptr);
         }
-        if (CPMBasicService_enabled==true)
+        if (CPService_enabled==true)
           {
             m_cpbs.setVDP (m_vdp_ptr);
           }
@@ -226,7 +228,7 @@ namespace ns3
           }
       }
 
-    if(CPMBasicService_enabled==true)
+    if(CPService_enabled==true)
       {
         m_cpbs.setBTP (m_btp);
         m_cpbs.setSocketTx (m_socket);

@@ -321,7 +321,7 @@ int main (int argc, char *argv[])
       // The third parameter should be true if you want to setup a VRU Basic Service (for sending/receiving VAMs)
 
       bs_container->addCPMRxCallback (std::bind(&receiveCPM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
-      bs_container->setupContainer(true,false,false,false);
+      bs_container->setupContainer(true,false,false,false,false);
       Ptr<GeoNet> gn = bs_container->getGeoNet();
 
       // Store the container for this vehicle inside a local global BSMap, i.e., a structure (similar to a hash table) which allows you to easily

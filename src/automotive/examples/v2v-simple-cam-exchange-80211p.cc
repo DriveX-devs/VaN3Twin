@@ -118,7 +118,7 @@ static void GenerateTraffic_interfering (Ptr<Socket> socket, uint32_t pktSize,
 
 int main (int argc, char *argv[])
 {
-  std::string phyMode ("OfdmRate6MbpsBW10MHz"); // Default IEEE 802.11p data rate
+  std::string phyMode ("OfdmRate3MbpsBW10MHz"); // Default IEEE 802.11p data rate
   int up=0;
   int interfering_up=0;
   bool verbose = false; // Set to true to get a lot of verbose output from the IEEE 802.11p PHY model (leave this to false)
@@ -127,8 +127,7 @@ int main (int argc, char *argv[])
   int txPower = 23.0; // IEEE 802.11p transmission power in dBm (default: 23 dBm)
   xmlDocPtr rou_xml_file;
   double simTime = 100.0; // Total simulation time (default: 100 seconds)
-
-
+  bool security_enabled = false; // V2X security is disabled by default
 
   // Set here the path to the SUMO XML files
   std::string sumo_folder = "src/automotive/examples/sumo_files_v2v_map/";
@@ -146,6 +145,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("baseline", "Baseline for PRR calculation", m_baseline_prr);
   cmd.AddValue ("tx-power", "OBUs transmission power [dBm]", txPower);
   cmd.AddValue ("sim-time", "Total duration of the simulation [s]", simTime);
+  cmd.AddValue("enable-security","Enable the transmission of secured V2X packets",security_enabled);
   cmd.Parse (argc, argv);
 
   /* Load the .rou.xml file (SUMO map and scenario) */
@@ -314,7 +314,9 @@ int main (int argc, char *argv[])
           // The first parameter is true is you want to setup a CA Basic Service (for sending/receiving CAMs)
           // The second parameter should be true if you want to setup a DEN Basic Service (for sending/receiving DENMs)
           // The third parameter should be true if you want to setup a VRU Basic Service (for sending/receiving VAMs)
-          bs_container->setupContainer(true,false,false,false);
+          // The fourth parameter should be true if you want to setup a CP Service (for sending/receiving CPMs)
+          // The fifth parameter should be true if you want to enable V2X security
+          bs_container->setupContainer(true,false,false,false,security_enabled);
 
           // Store the container for this vehicle inside a local global BSMap, i.e., a structure (similar to a hash table) which allows you to easily
           // retrieve the right BSContainer given a vehicle ID

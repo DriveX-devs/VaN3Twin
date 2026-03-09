@@ -71,34 +71,59 @@ namespace asn1cpp {
     }
 
     namespace uper {
-        /**
+    /**
          * @ingroup API
          * @brief Encodes an asn1cpp wrapper to an std::string.
          *
          * \sa decode(m, T)
          */
-        template <typename T, typename = typename std::enable_if<is_asn1_wrapper<T>::value>::type>
-        std::string encode(const T & m) {
-            if (!m) return {};
-            std::string retval;
-            const auto er = uper_encode(m.getTypeDescriptor(), nullptr, (void*)(&*m), Impl::fill, &retval);
-            return er.encoded < 0 ? std::string() : retval;
+    template <typename T, typename = typename std::enable_if<is_asn1_wrapper<T>::value>::type>
+    std::string encode(const T & m) {
+      if (!m) return {};
+      std::string retval;
+      const auto er = uper_encode(m.getTypeDescriptor(), nullptr, (void*)(&*m), Impl::fill, &retval);
+      return er.encoded < 0 ? std::string() : retval;
+    }
+
+    template <typename T>
+    Seq<T> decode(asn_TYPE_descriptor_t * def, const std::string & buffer) {
+      if (buffer.size() == 0) return Seq<T>();
+
+      T * m = nullptr;
+      const auto dr = uper_decode_complete(0, def, (void**)&m, buffer.data(), buffer.size());
+
+      if (dr.code != RC_OK) {
+          def->op->free_struct(def, m, ASFM_FREE_EVERYTHING);
+          return Seq<T>();
         }
 
-        template <typename T>
-        Seq<T> decode(asn_TYPE_descriptor_t * def, const std::string & buffer) {
-            if (buffer.size() == 0) return Seq<T>();
+      return Seq<T>(def, m);
+    }
+    }
 
-            T * m = nullptr;
-            const auto dr = uper_decode_complete(0, def, (void**)&m, buffer.data(), buffer.size());
+    namespace oer {
+    template <typename T, typename = typename std::enable_if<is_asn1_wrapper<T>::value>::type>
+    std::string encode(const T & m) {
+      if (!m) return {};
+      std::string retval;
+      const auto er = oer_encode(m.getTypeDescriptor(), (void*)(&*m), Impl::fill, &retval);
+      return er.encoded < 0 ? std::string() : retval;
+    }
 
-            if (dr.code != RC_OK) {
-                def->op->free_struct(def, m, ASFM_FREE_EVERYTHING);
-                return Seq<T>();
-            }
+    template <typename T>
+    Seq<T> decode(asn_TYPE_descriptor_t * def, const std::string & buffer) {
+      if (buffer.size() == 0) return Seq<T>();
 
-            return Seq<T>(def, m);
+      T * m = nullptr;
+      const auto dr = oer_decode(0, def, (void**)&m, buffer.data(), buffer.size());
+
+      if (dr.code != RC_OK) {
+          def->op->free_struct(def, m, ASFM_FREE_EVERYTHING);
+          return Seq<T>();
         }
+
+      return Seq<T>(def, m);
+    }
     }
 }
 
@@ -139,7 +164,7 @@ namespace asn1cpp {
  */
 
 
-/**
+    /**
  * @def decode(m, T)
  * @ingroup API
  * @brief Decodes an std::string to an asn1cpp wrapper for the specified type.

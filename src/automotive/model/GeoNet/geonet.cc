@@ -54,6 +54,7 @@ namespace ns3 {
 
   GeoNet::GeoNet()
   {
+    discard_packet = 0;
     m_socket_tx = NULL;
     m_station_id = ULONG_MAX;
     m_stationtype = LONG_MAX;
@@ -71,6 +72,7 @@ namespace ns3 {
   void
   GeoNet::cleanup()
   {
+    if (enableSecurity) std::cout << "Total discarded packets due to invalid signature: " << discard_packet << std::endl;
     Simulator::Cancel(m_event_EPVupdate);
     Simulator::Cancel(m_event_Beacon);
     m_EPVupdate_running=false;
@@ -271,8 +273,9 @@ namespace ns3 {
 
     //Basic Header field setting according to ETSI EN 302 636-4-1 [10.3.2]
     basicHeader.SetVersion (m_GnPtotocolVersion);
-    //Security option not implemented
-    basicHeader.SetNextHeader (1);//! Next Header: Common Header (1)
+    if (enableSecurity && dataRequest.GNType == TSB) {
+        basicHeader.SetNextHeader (2);
+      } else basicHeader.SetNextHeader (1);//! Next Header: Common Header (1)
     if(dataRequest.GNMaxLife != 0)
     {
       basicHeader.SetLifeTime(encodeLT(dataRequest.GNMaxLife));
@@ -461,9 +464,11 @@ namespace ns3 {
     dataRequest.data->AddHeader (header);
 
     dataRequest.data->AddHeader (commonHeader);
+    if(enableSecurity){
+        dataRequest = m_security->createSecurePacket (dataRequest);
+      }
     dataRequest.data->AddHeader (basicHeader);
 
-    //2)Security setting -not implemeted yet-
     //3)If not suitable neighbour exist in the LocT and the SCF for the traffic class is set:
 
     if((dataRequest.GNTraClass > 128) && (!hasNeighbour ()))
@@ -805,10 +810,12 @@ namespace ns3 {
       NS_LOG_ERROR("Incorrect version of GN protocol");
     }
     // 2) Check NH field
-    if(basicHeader.GetNextHeader()==2) // a) if NH=0 or NH=1 proceed with common header procesing
-    {
-      // Secured packet
-    }
+    if(enableSecurity && basicHeader.GetNextHeader()==2)
+      {
+        if(m_security->extractSecurePacket (dataIndication) == Security::SECURITY_VERIFICATION_FAILED) {
+            discard_packet++;
+          }
+      }
     dataIndication.GNRemainingLife = decodeLT(basicHeader.GetLifeTime ());
 
     // Common Header Processing according to ETSI EN 302 636-4-1 [10.3.5]

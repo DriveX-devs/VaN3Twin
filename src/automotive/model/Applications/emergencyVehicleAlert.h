@@ -150,6 +150,7 @@ class emergencyVehicleAlert : public Application
 
     bool m_send_cam;
     bool m_send_cpm;
+    bool m_security = false;
 
     Ptr<MetricSupervisor> m_metric_supervisor = nullptr;
 

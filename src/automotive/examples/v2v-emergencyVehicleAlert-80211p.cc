@@ -74,6 +74,7 @@ main (int argc, char *argv[])
   bool send_cam = true;
   double m_baseline_prr = 150.0;
   bool m_metric_sup = false;
+  bool m_security = false;
 
   double simTime = 100;
 
@@ -98,6 +99,7 @@ main (int argc, char *argv[])
   cmd.AddValue ("netstate-dump-file", "Name of the SUMO netstate-dump file containing the vehicle-related information throughout the whole simulation", sumo_netstate_file_name);
   cmd.AddValue ("baseline", "Baseline for PRR calculation", m_baseline_prr);
   cmd.AddValue ("met-sup","Use the Metric supervisor or not",m_metric_sup);
+  cmd.AddValue ("enable-security","Enable security header inside Geonet or not",m_security);
   cmd.AddValue ("penetrationRate", "Rate of vehicles equipped with wireless communication devices", penetrationRate);
 
   /* Cmd Line option for 802.11p */
@@ -257,6 +259,7 @@ main (int argc, char *argv[])
   EmergencyVehicleAlertHelper.SetAttribute ("CSV", StringValue(csv_name));
   EmergencyVehicleAlertHelper.SetAttribute ("SendCAM", BooleanValue (send_cam));
   EmergencyVehicleAlertHelper.SetAttribute ("MetricSupervisor", PointerValue (metSup));
+  EmergencyVehicleAlertHelper.SetAttribute ("EnableSecurity", BooleanValue (m_security));
 
   /* callback function for node creation */
   STARTUP_FCN setupNewWifiNode = [&] (std::string vehicleID,TraciClient::StationTypeTraCI_t stationType) -> Ptr<Node>
