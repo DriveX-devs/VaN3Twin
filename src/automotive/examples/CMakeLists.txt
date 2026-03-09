@@ -132,8 +132,8 @@ build_lib_example(
 )
 
 build_lib_example(
-        NAME v2v-simple-mcm-exchange-80211p
-        SOURCE_FILES v2v-simple-mcm-exchange-80211p.cc
+        NAME v2v-foresee-mcm-80211p
+        SOURCE_FILES v2v-foresee-mcm-80211p.cc
         LIBRARIES_TO_LINK
         ${libcarla}
         ${libautomotive}

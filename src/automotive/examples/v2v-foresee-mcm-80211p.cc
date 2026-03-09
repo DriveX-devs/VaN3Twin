@@ -67,6 +67,7 @@ int main (int argc, char *argv[])
   int txPower = 33.0; // IEEE 802.11p transmission power in dBm (default: 23 dBm)
   xmlDocPtr rou_xml_file;
   double simTime = 100.0; // Total simulation time (default: 100 seconds)
+  bool sumo_gui = false;
 
   // Set here the path to the SUMO XML files
   std::string sumo_folder = "src/automotive/examples/sumo_files_v2v_foresee/";
@@ -84,6 +85,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("baseline", "Baseline for PRR calculation", m_baseline_prr);
   cmd.AddValue ("tx-power", "OBUs transmission power [dBm]", txPower);
   cmd.AddValue ("sim-time", "Total duration of the simulation [s]", simTime);
+  cmd.AddValue ("sumo-gui", "Activate SUMO GUI", sumo_gui);
   cmd.Parse (argc, argv);
 
   /* Load the .rou.xml file (SUMO map and scenario) */
@@ -152,13 +154,13 @@ int main (int argc, char *argv[])
   sumoClient->SetAttribute ("SumoBinaryPath", StringValue (""));    // use system installation of sumo
   sumoClient->SetAttribute ("SynchInterval", TimeValue (Seconds (0.01)));
   sumoClient->SetAttribute ("StartTime", TimeValue (Seconds (0.0)));
-  sumoClient->SetAttribute ("SumoGUI", BooleanValue (false));
+  sumoClient->SetAttribute ("SumoGUI", BooleanValue (sumo_gui));
   sumoClient->SetAttribute ("SumoPort", UintegerValue (3400));
   sumoClient->SetAttribute ("PenetrationRate", DoubleValue (1.0));
   sumoClient->SetAttribute ("SumoLogFile", BooleanValue (false));
   sumoClient->SetAttribute ("SumoStepLog", BooleanValue (false));
   sumoClient->SetAttribute ("SumoSeed", IntegerValue (10));
-  sumoClient->SetAttribute ("SumoWaitForSocket", TimeValue (Seconds (1.5)));
+  sumoClient->SetAttribute ("SumoWaitForSocket", TimeValue (Seconds (10)));
 
   // Set up a Metricsupervisor
   // This module enables a trasparent and seamless collection of one-way latency (in ms) and PRR metrics

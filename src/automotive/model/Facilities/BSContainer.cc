@@ -179,7 +179,7 @@ namespace ns3
         if(CABasicService_enabled==true) {
           m_cabs.setVDP(m_vdp_ptr);
         }
-        if (CPService_enabled==true)
+        if (CPMBasicService_enabled==true)
           {
             m_cpbs.setVDP (m_vdp_ptr);
           }
@@ -228,7 +228,7 @@ namespace ns3
           }
       }
 
-    if(CPService_enabled==true)
+    if(CPMBasicService_enabled==true)
       {
         m_cpbs.setBTP (m_btp);
         m_cpbs.setSocketTx (m_socket);
