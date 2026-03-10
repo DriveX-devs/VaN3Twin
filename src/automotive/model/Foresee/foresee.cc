@@ -51,15 +51,16 @@ foresee::setNumberOfLanes ()
   m_num_lanes = lanes;
 }
 
-double IDMAcceleration(double v,
-                 double v_lead,
-                 double gap,
-                 double v0,
-                 double a_max,
-                 double b,
-                 double s0,
-                 double T,
-                 double delta = 4.0
+double IDMAcceleration(
+               double v,
+               double v_lead,
+               double gap,
+               double v0,
+               double a_max,
+               double b,
+               double s0,
+               double T,
+               double delta = 4.0
 )
 {
   // Ensure the gap is not too small to avoid singularities
@@ -70,7 +71,9 @@ double IDMAcceleration(double v,
   double s_star = s0 + v * T + (v * delta_v) / (2.0 * std::sqrt(a_max * b));
 
   // Compute the acceleration based on the IDM formula
-  return a_max * (1.0 - std::pow(v / v0, delta) - std::pow(s_star / gap, 2.0));
+  double a_exp = a_max * (1.0 - std::pow(v / v0, delta) - std::pow(s_star / gap, 2.0));
+
+  return a_exp;
 }
 
 double
@@ -139,6 +142,7 @@ foresee::FORESEEMobilityModel ()
   double my_y = m_vdp->getPositionXY().y;
   double my_speed = m_vdp->getSpeedValue();
   std::string my_type = m_traci->vehicle.getTypeID (m_vehicle_id);
+  // Lane normalized the lane in ETSI-based system --> 1 left-most lane, 2 center lane, 3 right-most lane
   VDPDataItem<int> my_lane = m_vdp->getLanePosition();
 
   // Process each vehicle in the LDM
@@ -251,183 +255,197 @@ foresee::FORESEEMobilityModel ()
   assert (lc_direction == 0 || lc_direction == 1 || lc_direction == -1);
   bool startManeuver = false;
   if (lc_direction != 0)
-    // At least one criterion is satisfied
+    // At least one incentive criterion is satisfied
+    // Check the comfort criterion
     {
-      // TraCI utility to determine whether the lane change in a certain direction is possible
-      could_change_lane = m_traci->vehicle.couldChangeLane (m_vehicle_id, lc_direction);
-      if (could_change_lane)
+      // Check the coordination avoidance range
+      bool found_coordination = false;
+      // Take the four roles, target, ahead ego, ahead target
+      std::string RV, HVAhead, RVAhead;
+      // Check whether there is another maneuver coordination that is happening within the ahead range
+      // If yes, ego vehicle cannot perform maneuver coordination
+      for (auto it = (*m_lc_data_structure).begin(); it != (*m_lc_data_structure).end(); ++it)
         {
-          // There are not any obstacles to change lane, so do it directly
-          if (left_criterion) m_traci->vehicle.changeLane (m_vehicle_id, my_lane.getData()-1, m_time_to_lc);
-          else m_traci->vehicle.changeLane (m_vehicle_id, my_lane.getData()+1, m_time_to_lc);
-        }
-      else
-        {
-          // Need for a maneuver coordination
-          auto [state, stateTraCI] = m_traci->vehicle.getLaneChangeState(m_vehicle_id, lc_direction);
-          std::vector<uint8_t> reasons = m_traci->vehicle.getLaneChangeFailureReasons (state, stateTraCI, lc_direction);
-          // TODO maybe use the reason in some way (sometimes is UNKNOWN)
-          // Check the coordination avoidance range
-          bool found = false;
-          // Take the four roles, target, ahead ego, ahead target
-          std::string RV, HVAhead, RVAhead;
-          // Check whether there is another maneuver coordination that is happening within the ahead range
-          // If yes, ego vehicle cannot perform maneuver coordination
-          for (auto it = (*m_lc_data_structure).begin(); it != (*m_lc_data_structure).end(); ++it)
+          auto v = it->second;
+          float heading = std::get<0>(v);
+          if (heading != my_heading) continue;
+          float x = std::get<1>(v);
+          // Filter behind vehicles
+          if (my_heading == 90 && x < my_x) continue;
+          if (my_heading == 270 && x > my_x) continue;
+          float y = std::get<2>(v);
+          float dist = std::sqrt (std::pow(my_x - x, 2) + std::pow(my_y - y, 2));
+          if (dist <= m_ca_range)
             {
-              auto v = it->second;
-              float heading = std::get<0>(v);
-              if (heading != my_heading) continue;
-              float x = std::get<1>(v);
-              // Filter behind vehicles
-              if (my_heading == 90 && x < my_x) continue;
-              if (my_heading == 270 && x > my_x) continue;
-              float y = std::get<2>(v);
-              float dist = std::sqrt (std::pow(my_x - x, 2) + std::pow(my_y - y, 2));
-              if (dist <= m_ca_range)
-                {
-                  found = true;
-                  break;
-                }
+              found_coordination = true;
+              break;
             }
-          if (!found)
+        }
+      if (!found_coordination)
+        {
+          // No other coordination in progress, check the comfort criterion
+          startManeuver = true;
+          double x_RV, x_RVAhead, x_HVAhead;
+          double y_RV, y_RVAhead, y_HVAhead;
+          double speed_RV, speed_RVAhead, speed_HVAhead;
+          double min_dist_hv_ahead = 10000;
+          double min_dist_rv_ahead = 10000;
+          double min_dist_rv = 10000;
+          // Vehicles ahead of HV in the same lane
+          auto& vec1 = veh_per_lane[my_lane.getData()];
+          // Target lane
+          int target_lane = left_criterion ? my_lane.getData() - 1 : my_lane.getData() + 1;
+          // Vehicles ahead of HV in the target lane
+          auto& vec2 = veh_per_lane[target_lane];
+          for(auto it = vehicles.begin(); it != vehicles.end(); ++it)
             {
-              // No other coordination in progress, initiate the MCM process
-              startManeuver = true;
-              double x_RV, x_RVAhead, x_HVAhead;
-              double y_RV, y_RVAhead, y_HVAhead;
-              double speed_RV, speed_RVAhead, speed_HVAhead;
-              double min_dist_hv_ahead = 10000;
-              double min_dist_rv_ahead = 10000;
-              double min_dist_rv = 10000;
-              // Vehicles ahead of HV in the same lane
-              auto& vec1 = veh_per_lane[my_lane.getData()];
-              // Vehicles ahead of HV in the target lane
-              auto& vec2 = left_criterion ? veh_per_lane[my_lane.getData()-1] : veh_per_lane[my_lane.getData()+1];
-              // Target lane
-              int target_lane = left_criterion ? my_lane.getData() - 1 : my_lane.getData() + 1;
-              for(auto it = vehicles.begin(); it != vehicles.end(); ++it)
+              auto it_found = std::find(
+                  vec1.begin(),
+                  vec1.end(),
+                  std::to_string(it->vehData.stationID)
+              );
+              auto pos = m_traci->simulation.convertLonLattoXY (it->vehData.lon, it->vehData.lat);
+              double dist = std::sqrt (std::pow(my_x - pos.x, 2) + std::pow(my_y - pos.y, 2));
+              if (it_found != vec1.end())
                 {
-                  auto it_found = std::find(
-                      vec1.begin(),
-                      vec1.end(),
+                  // Vehicle is in the same lane of HV ahead of ego, can be HVAhead
+                  if (dist < min_dist_hv_ahead && dist < MAX_DIST_AHEAD_BEHIND)
+                    {
+                      min_dist_hv_ahead = dist;
+                      HVAhead = "veh" + std::to_string (it->vehData.stationID);
+                      x_HVAhead = pos.x;
+                      y_HVAhead = pos.y;
+                      speed_HVAhead = it->vehData.speed_ms;
+                    }
+                }
+              else
+                {
+                  // Check for RV and RVAhead
+                  it_found = std::find(
+                      vec2.begin(),
+                      vec2.end(),
                       std::to_string(it->vehData.stationID)
                   );
-                  auto pos = m_traci->simulation.convertLonLattoXY (it->vehData.lon, it->vehData.lat);
-                  double dist = std::sqrt (std::pow(my_x - pos.x, 2) + std::pow(my_y - pos.y, 2));
-                  if (it_found != vec1.end())
+                  if (it_found != vec2.end())
                     {
-                      // Vehicle is in the same lane of HV ahead of ego, can be HVAhead
-                      if (dist < min_dist_hv_ahead && dist < MAX_DIST_AHEAD_BEHIND)
+                      // Vehicle is in the target lane ahead of ego, can be RVAhead
+                      if (dist < min_dist_rv_ahead && dist < MAX_DIST_AHEAD_BEHIND)
                         {
-                          min_dist_hv_ahead = dist;
-                          HVAhead = "veh" + std::to_string (it->vehData.stationID);
-                          x_HVAhead = pos.x;
-                          y_HVAhead = pos.y;
-                          speed_HVAhead = it->vehData.speed_ms;
+                          min_dist_rv_ahead = dist;
+                          RVAhead = "veh" + std::to_string (it->vehData.stationID);
+                          x_RVAhead = pos.x;
+                          y_RVAhead = pos.y;
+                          speed_RVAhead = it->vehData.speed_ms;
                         }
                     }
                   else
                     {
-                      // Check for RV and RVAhead
-                      it_found = std::find(
-                          vec2.begin(),
-                          vec2.end(),
-                          std::to_string(it->vehData.stationID)
-                      );
-                      if (it_found != vec2.end())
+                      // Can be RV
+                      OptionalDataItem<long> lane = it->vehData.lanePosition;
+                      if(lane.isAvailable() && lane.getData() == target_lane)
                         {
-                          // Vehicle is in the target lane ahead of ego, can be RVAhead
-                          if (dist < min_dist_rv_ahead && dist < MAX_DIST_AHEAD_BEHIND)
+                          if (dist < min_dist_rv && dist < MAX_DIST_AHEAD_BEHIND)
                             {
-                              min_dist_rv_ahead = dist;
-                              RVAhead = "veh" + std::to_string (it->vehData.stationID);
-                              x_RVAhead = pos.x;
-                              y_RVAhead = pos.y;
-                              speed_RVAhead = it->vehData.speed_ms;
-                            }
-                        }
-                      else
-                        {
-                          // Can be RV
-                          OptionalDataItem<long> lane = it->vehData.lanePosition;
-                          if(lane.isAvailable() && lane.getData() == target_lane)
-                            {
-                              if (dist < min_dist_rv && dist < MAX_DIST_AHEAD_BEHIND)
-                                {
-                                  min_dist_rv = dist;
-                                  RV = "veh" + std::to_string (it->vehData.stationID);
-                                  x_RV = pos.x;
-                                  y_RV = pos.y;
-                                  speed_RV = it->vehData.speed_ms;
-                                }
+                              min_dist_rv = dist;
+                              RV = "veh" + std::to_string (it->vehData.stationID);
+                              x_RV = pos.x;
+                              y_RV = pos.y;
+                              speed_RV = it->vehData.speed_ms;
                             }
                         }
                     }
                 }
-              m_actors = {RV, HVAhead, RVAhead};
-              std::vector<TrajectoryItem> mp_RV;
-              std::vector<TrajectoryItem> mp_RVAhead;
-              std::vector<TrajectoryItem> mp_HVAhead;
-              uint8_t sign = my_heading == 270 ? -1 : 1;
-              // Do prediction for each actor, if present
-              if(!RV.empty()) mp_RV = predictConstantSpeed (x_RV, y_RV, speed_RV, sign, true);
-              if(!RVAhead.empty()) mp_RVAhead = predictConstantSpeed (x_RVAhead, y_RVAhead, speed_RVAhead, sign);
-              if(!HVAhead.empty()) mp_HVAhead = predictConstantSpeed (x_HVAhead, y_HVAhead, speed_HVAhead, sign);
-              std::vector<TrajectoryItem> mp_HV = predictConstantSpeed (my_x, my_y, my_speed, sign);
-              double estimated_time_hv_rv = 0, estimated_time_hv_rvahead = 0, estimated_time_hv_hvahead = 0;
-              if(!mp_RV.empty())
-                {
-                  estimated_time_hv_rv = estimateTimeFromPredictionIDM (
-                      mp_HV,
-                      mp_RV,
-                      std::abs(COMFORT_DECELERATION), // comfort threshold
-                      m_desired_speed,
-                      m_traci->vehicletype.getAccel (my_type),
-                      std::abs(SAFE_DECELERATION),
-                      m_traci->vehicletype.getMinGap (my_type),
-                      m_traci->vehicletype.getTau (my_type)
-                  );
-                }
-              if (!mp_RVAhead.empty())
-                {
-                   estimated_time_hv_rvahead = estimateTimeFromPredictionIDM (
-                      mp_RVAhead,
-                      mp_HV,
-                      std::abs(COMFORT_DECELERATION), // comfort threshold
-                      m_desired_speed,
-                      m_traci->vehicletype.getAccel (my_type),
-                      std::abs(SAFE_DECELERATION),
-                      m_traci->vehicletype.getMinGap (my_type),
-                      m_traci->vehicletype.getTau (my_type)
-                  );
-                }
-              if (!mp_HVAhead.empty())
-                {
-                  estimated_time_hv_hvahead = estimateTimeFromPredictionIDM (
-                      mp_HVAhead,
-                      mp_HV,
-                      std::abs(COMFORT_DECELERATION), // comfort threshold
-                      m_desired_speed,
-                      m_traci->vehicletype.getAccel (my_type),
-                      std::abs(SAFE_DECELERATION),
-                      m_traci->vehicletype.getMinGap (my_type),
-                      m_traci->vehicletype.getTau (my_type)
-                  );
-                }
+            }
+          m_actors = {RV, HVAhead, RVAhead};
+          std::vector<TrajectoryItem> mp_RV;
+          std::vector<TrajectoryItem> mp_RVAhead;
+          std::vector<TrajectoryItem> mp_HVAhead;
+          int8_t sign = my_heading == 270 ? -1 : 1;
+          // Do prediction for each actor, if present
+          if(!RV.empty()) mp_RV = predictConstantSpeed (x_RV, y_RV, speed_RV, sign, true);
+          if(!RVAhead.empty()) mp_RVAhead = predictConstantSpeed (x_RVAhead, y_RVAhead, speed_RVAhead, sign);
+          if(!HVAhead.empty()) mp_HVAhead = predictConstantSpeed (x_HVAhead, y_HVAhead, speed_HVAhead, sign);
+          std::vector<TrajectoryItem> mp_HV = predictConstantSpeed (my_x, my_y, my_speed, sign);
+          double estimated_time_hv_rv = 0, estimated_time_hv_rvahead = 0, estimated_time_hv_hvahead = 0;
+          if(!mp_RV.empty())
+            {
+              estimated_time_hv_rv = estimateTimeFromPredictionIDM (
+                  mp_HV,
+                  mp_RV,
+                  std::abs(COMFORT_DECELERATION), // comfort threshold
+                  m_traci->vehicletype.getAccel (my_type),
+                  m_desired_speed,
+                  std::abs(SAFE_DECELERATION),
+                  m_traci->vehicletype.getMinGap (my_type),
+                  m_traci->vehicletype.getTau (my_type)
+              );
+            }
+          if (!mp_RVAhead.empty())
+            {
+              estimated_time_hv_rvahead = estimateTimeFromPredictionIDM (
+                  mp_RVAhead,
+                  mp_HV,
+                  std::abs(COMFORT_DECELERATION), // comfort threshold
+                  m_desired_speed,
+                  m_traci->vehicletype.getAccel (my_type),
+                  std::abs(SAFE_DECELERATION),
+                  m_traci->vehicletype.getMinGap (my_type),
+                  m_traci->vehicletype.getTau (my_type)
+              );
+            }
+          if (!mp_HVAhead.empty())
+            {
+              estimated_time_hv_hvahead = estimateTimeFromPredictionIDM (
+                  mp_HVAhead,
+                  mp_HV,
+                  std::abs(COMFORT_DECELERATION), // comfort threshold
+                  m_desired_speed,
+                  m_traci->vehicletype.getAccel (my_type),
+                  std::abs(SAFE_DECELERATION),
+                  m_traci->vehicletype.getMinGap (my_type),
+                  m_traci->vehicletype.getTau (my_type)
+              );
+            }
 
-              if (estimated_time_hv_rv == -1){
-                  std::cout << "Not found for HV-RV" << std::endl;
+          if (estimated_time_hv_rv == -1){
+              std::cout << "Not found for HV-RV" << std::endl;
+            }
+          if (estimated_time_hv_hvahead == -1){
+              std::cout << "Not found for HV-HVAhead" << std::endl;
+            }
+          if (estimated_time_hv_rvahead == -1){
+              std::cout << "Not found for HV-RVAhead" << std::endl;
+            }
+          // Insert in the data structure the new coordination event that is going to happen
+          // (*m_lc_data_structure)[m_vehicle_id_int] = std::make_tuple (my_heading, my_x, my_y);
+          // Simulator::Schedule (MilliSeconds(0), &foresee::doCoordination, this);
+          if (false)
+            {
+              // TraCI utility to determine whether the lane change in a certain direction is possible
+              could_change_lane = m_traci->vehicle.couldChangeLane (m_vehicle_id, lc_direction);
+              if (could_change_lane)
+                {
+                  // There are not any obstacles to change lane, so do it directly
+                  // Need to convert my_lane into SUMO-based lane system
+                  int target_lane;
+                  if (left_criterion)
+                    {
+                      target_lane = my_lane.getData() - 1;
+                    }
+                  else if (right_criterion)
+                    {
+                      target_lane = my_lane.getData() + 1;
+                    }
+                  target_lane = m_num_lanes - target_lane;
+                  m_traci->vehicle.changeLane (m_vehicle_id, target_lane, m_time_to_lc);
                 }
-              if (estimated_time_hv_hvahead == -1){
-                  std::cout << "Not found for HV-HVAhead" << std::endl;
+              else
+                {
+                  // Need for a maneuver coordination
+                  auto [state, stateTraCI] = m_traci->vehicle.getLaneChangeState(m_vehicle_id, lc_direction);
+                  std::vector<uint8_t> reasons = m_traci->vehicle.getLaneChangeFailureReasons (state, stateTraCI, lc_direction);
+                  // TODO maybe use the reason in some way (sometimes is UNKNOWN)
                 }
-              if (estimated_time_hv_rvahead == -1){
-                  std::cout << "Not found for HV-RVAhead" << std::endl;
-                }
-              // Insert in the data structure the new coordination event that is going to happen
-              (*m_lc_data_structure)[m_vehicle_id_int] = std::make_tuple (my_heading, my_x, my_y);
-              // Simulator::Schedule (MilliSeconds(0), &foresee::doCoordination, this);
             }
         }
     }
@@ -450,36 +468,40 @@ foresee::terminateCoordination ()
 }
 
 std::vector<foresee::TrajectoryItem>
-foresee::predictConstantSpeed(double x, double y, double speed, uint8_t sign, bool is_RV)
+foresee::predictConstantSpeed(double x, double y, double speed, int8_t sign, bool is_RV)
 {
   std::vector<foresee::TrajectoryItem> motion_plan;
   if (!is_RV)
     {
-      float t = 0.1;
+      float t = 0.5;
       while (t <= HORIZON_TIME)
       {
-        TrajectoryItem item {x + speed * STEP_TIME, y, speed};
+        double delta = sign * (speed * STEP_TIME);
+        x += delta;
+        TrajectoryItem item {x, y, speed};
         motion_plan.push_back (item);
-        x = sign * (x + speed * STEP_TIME);
         t += STEP_TIME;
       }
     }
   else
     {
-      float t = 0.1;
+      float t = 0.5;
       while (t <= HORIZON_TIME)
         {
           if (t <= NEGOTIATION_TIME || t > NEGOTIATION_TIME + DECELERATION_TIME)
             {
-              x = sign * (x + speed * STEP_TIME);
+              double delta = sign * (speed * STEP_TIME);
+              x += delta;
               TrajectoryItem item {x, y, speed};
               motion_plan.push_back (item);
               t += STEP_TIME;
             }
           else if (t > NEGOTIATION_TIME && t <= NEGOTIATION_TIME + DECELERATION_TIME)
             {
-              x = sign * (x + speed * STEP_TIME + 0.5 * COMFORT_DECELERATION * std::pow(STEP_TIME, 2));
-              speed = speed + COMFORT_DECELERATION * STEP_TIME;
+              double delta = sign * (speed * STEP_TIME + 0.5 * COMFORT_DECELERATION * std::pow(STEP_TIME, 2));
+              x += delta;
+              double delta_speed = COMFORT_DECELERATION * STEP_TIME;
+              speed += delta_speed;
               TrajectoryItem item {x, y, speed};
               motion_plan.push_back (item);
               t += STEP_TIME;

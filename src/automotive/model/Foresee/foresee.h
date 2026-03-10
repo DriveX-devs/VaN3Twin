@@ -50,7 +50,7 @@ public:
   void setStartTime(uint8_t startTime) {m_start_time = startTime;};
   void terminateCoordination ();
   void doCoordination ();
-  std::vector<TrajectoryItem> predictConstantSpeed(double x, double y, double speed, uint8_t sign, bool is_RV = false);
+  std::vector<TrajectoryItem> predictConstantSpeed(double x, double y, double speed, int8_t sign, bool is_RV = false);
 private:
   std::string m_vehicle_id;
   uint64_t m_vehicle_id_int;

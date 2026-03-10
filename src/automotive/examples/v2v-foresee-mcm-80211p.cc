@@ -250,7 +250,7 @@ int main (int argc, char *argv[])
       lc_model[nodeID].setCurrentLCData(&lc_data_structure);
       lc_model[nodeID].setCoordinationAvoidanceRange(ca_range);
       lc_model[nodeID].setMCBasicService(bs_container->getMCBasicService());
-      lc_model[nodeID].setStartTime(30);
+      lc_model[nodeID].setStartTime(10);
       lc_model[nodeID].WrapperFORESEEMobilityModel();
 
       return c.Get(nodeID);
