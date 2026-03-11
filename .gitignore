@@ -396,3 +396,4 @@ src/sionna/sionna_log.csv
 src/sionna/phy_with_sionna_nrv2x.csv
 distance_rssi_int_extra.csv
 VAM_metrics.csv
+src/automotive/examples/v2v-student-application-80211p-denm.cc

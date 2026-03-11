@@ -60,7 +60,7 @@ namespace ns3
     // For example, if vehicles in the XML file have id "carX", you should call "changeSUMO_ID_prefix("car")"
     void changeSUMO_ID_prefix(std::string new_prefix) {m_sumo_vehid_prefix=new_prefix;}
 
-    void setupContainer(bool CABasicService_enabled,bool DENBasicService_enabled,bool VRUBasicService_enabled, bool CPBasicService_enabled, bool MCBasicService_enabled = false, bool security_enabled = false);
+    void setupContainer(bool CABasicService_enabled,bool DENBasicService_enabled,bool VRUBasicService_enabled, bool CPService_enabled, bool MCBasicService_enabled = false, bool security_enabled = false);
 
     // Function to setup a circular GeoArea for DENMs - it must be called at least once when sending/receiving DENMs
     // Then, it may be called as many times as desired to change the DENMs GeoArea
