@@ -8,12 +8,8 @@
 // #include "ns3/core-module.h"
 // #include "ns3/LDM.h"
 #include "ns3/mcBasicService.h"
+#include "ns3/trajectoryPrediction.h"
 
-#define HORIZON_TIME 8
-#define NEGOTIATION_TIME 1
-#define DECELERATION_TIME 1
-#define STEP_TIME .5
-#define COMFORT_DECELERATION -2
 #define SAFE_DECELERATION -4
 #define MAX_DIST_AHEAD_BEHIND 50
 
@@ -28,14 +24,17 @@ public:
     std::string RVAhead;
   }FORESEEActors;
 
-  typedef struct {
-    double x;
-    double y;
-    double speed;
-  }TrajectoryItem;
+  enum PredictionType
+  {
+    UNKNOWN,
+    CONSTANT_SPEED,
+    CONSTANT_ACCELERATION,
+  };
 
   foresee() = default;
-  ~foresee() = default;
+  ~foresee() {
+      delete m_traj_predictor;
+  };
   void WrapperFORESEEMobilityModel();
   void FORESEEMobilityModel();
   void setLDM (Ptr<LDM> ldm) {m_LDM = ldm;};
@@ -48,9 +47,9 @@ public:
   void setCoordinationAvoidanceRange(float ca_range) {m_ca_range = ca_range;};
   void setMCBasicService(Ptr<MCBasicService> mcs_ptr) {m_mcs_ptr = mcs_ptr;};
   void setStartTime(uint8_t startTime) {m_start_time = startTime;};
+  void setTrajectoryPredictor(double horizon_time, double step_time, double negotiation_time, double deceleration_time, PredictionType prediction_type);
   void terminateCoordination ();
   void doCoordination ();
-  std::vector<TrajectoryItem> predictConstantSpeed(double x, double y, double speed, int8_t sign, bool is_RV = false);
 private:
   std::string m_vehicle_id;
   uint64_t m_vehicle_id_int;
@@ -70,6 +69,8 @@ private:
   Ptr<MCBasicService> m_mcs_ptr;
   FORESEEActors m_actors;
   uint8_t m_start_time;
+  trajectoryPrediction* m_traj_predictor;
+  PredictionType m_prediction_type = UNKNOWN;
 };
 }
 

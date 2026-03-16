@@ -17,6 +17,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#define HORIZON_TIME 8
+#define NEGOTIATION_TIME 1
+#define DECELERATION_TIME 1
+#define STEP_TIME .5
+#define COMFORT_DECELERATION -3
+#define PREDICTION_TYPE "constant_speed"
+
 #include "ns3/carla-module.h"
 
 #include "ns3/vector.h"
@@ -251,6 +259,8 @@ int main (int argc, char *argv[])
       lc_model[nodeID].setCoordinationAvoidanceRange(ca_range);
       lc_model[nodeID].setMCBasicService(bs_container->getMCBasicService());
       lc_model[nodeID].setStartTime(10);
+      std::string my_type = sumoClient->vehicle.getTypeID (vehicleID);
+      lc_model[nodeID].setTrajectoryPredictor(HORIZON_TIME, STEP_TIME, NEGOTIATION_TIME, DECELERATION_TIME, foresee::PredictionType::CONSTANT_SPEED);
       lc_model[nodeID].WrapperFORESEEMobilityModel();
 
       return c.Get(nodeID);

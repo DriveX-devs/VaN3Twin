@@ -84,6 +84,8 @@ if(${NS3_MONOLIB})
           automotive/model/Foresee/foresee.h
           automotive/model/Foresee/foresee.cc
           automotive/model/Foresee/foresee.h
+          automotive/model/Foresee/trajectoryPrediction.cc
+          automotive/model/Foresee/trajectoryPrediction.h
   )
   set_target_properties(
     ${lib-ns3-monolib} PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE
