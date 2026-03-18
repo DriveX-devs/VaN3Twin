@@ -38,7 +38,7 @@
 #include "ns3/sumo_xml_parser.h"
 #include "ns3/vehicle-visualizer-module.h"
 #include "ns3/MetricSupervisor.h"
-
+#include "../utils/json.hpp"
 
 #include <unistd.h>
 #include "ns3/core-module.h"

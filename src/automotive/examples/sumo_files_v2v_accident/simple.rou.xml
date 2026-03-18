@@ -2,24 +2,24 @@
 <vType id="type1" accel="200" maxSpeed="500" minGap="2.5" color="1,0,0"/>
 <vType id="type2" accel="300" maxSpeed="500" minGap="2.5" color="0,1,0"/>
 <vType id="type3" accel="300" maxSpeed="500" minGap="2.5" color="0,0,1"/>
-<vehicle id="Vehicle_1" type="type1" depart="0.00">
+<vehicle id="veh1" type="type1" depart="0.00">
 <route edges="gneE1 gneE2 gneE3 gneE4 gneE5 gneE0"/>
 <stop lane="gneE2_0" endPos="10" until="200"/>
 </vehicle>
-<vehicle id="Vehicle_3" type="type2" depart="0.00">
+<vehicle id="veh3" type="type2" depart="0.00">
 <route edges="gneE4 gneE5 gneE0 gneE1 gneE2 gneE3"/>
 </vehicle>
-<vehicle id="Vehicle_5" type="type2" depart="0.00">
+<vehicle id="veh5" type="type2" depart="0.00">
 <route edges="gneE1 gneE2 gneE3 gneE4 gneE5 gneE0"/>
 </vehicle>
-<vehicle id="Vehicle_6" type="type2" depart="0.00">
+<vehicle id="veh6" type="type2" depart="0.00">
 <route edges="gneE1 gneE2 gneE3 gneE4 gneE5 gneE0"/>
 </vehicle>
-<vehicle id="Vehicle_2" type="type3" depart="0.00">
+<vehicle id="veh2" type="type3" depart="0.00">
 <route edges="-gneE2 -gneE1 -gneE0 -gneE5 -gneE4 -gneE3"/>
 <stop lane="-gneE1_0" endPos="10" until="200"/>
 </vehicle>
-<vehicle id="Vehicle_4" type="type3" depart="0.00">
+<vehicle id="veh4" type="type3" depart="0.00">
 <route edges="-gneE5 -gneE4 -gneE3 -gneE2 -gneE1 -gneE0"/>
 </vehicle>
 </routes>
