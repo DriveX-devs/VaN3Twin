@@ -156,6 +156,7 @@ namespace ns3
       // This static method creates a new GeoNetworking socket, starting from the ns-3 PacketSocket and properly binding/connecting it
       // It requires as input a pointer to the node to which the socket should be bound
       static Ptr<Socket> createGNPacketSocket(Ptr<Node> node_ptr);
+      static Ptr<Socket> createGNPacketSocketUnicast(Ptr<Node> node_ptr, Address to);
 
       void setSecurity(bool security){enableSecurity = security; m_security = CreateObject<Security>();}
       void attachSendFromDCCQueue();

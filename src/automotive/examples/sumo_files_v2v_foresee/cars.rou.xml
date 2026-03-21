@@ -4,8 +4,8 @@
   <route id="0" edges="ne_to_nw"/>
   <route id="1" edges="nw_to_ne"/>
   <!--lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1"-->
-  <vType carFollowModel="IDM" tau="0.8" lcDuration="1.5" accel="1.5" decel="3" emergencyDecel="7" minGap="2.0" id="Car0" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1"/>
-  <vType carFollowModel="IDM" tau="1" lcDuration="1.5" accel="1.5" decel="3" emergencyDecel="7" minGap="2.0" id="Truck" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1"/>
+  <vType carFollowModel="IDM" tau="0.8" lcDuration="1.5" accel="3" decel="3" emergencyDecel="7" minGap="2.0" id="Car0" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1"/>
+  <vType carFollowModel="IDM" tau="1" lcDuration="1.5" accel="3" decel="3" emergencyDecel="7" minGap="2.0" id="Truck" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1"/>
 
       <vehicle id="veh1" type="Truck" depart="1.5" route="0" departLane="0" arrivalLane="0">
     </vehicle>

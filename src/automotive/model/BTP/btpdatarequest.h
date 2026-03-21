@@ -4,6 +4,7 @@
 #include "ns3/packet.h"
 #include "ns3/gn-address.h"
 #include "ns3/longpositionvector.h"
+#include "ns3/socket.h"
 
 
 
@@ -63,15 +64,17 @@ namespace ns3 {
     int16_t destPInfo;
 
     TransportType_t GNType; // GN Packet transport type -- GeoUnicast, SHB, TSB, GeoBroadcast or GeoAnycast
-    GeoArea_t GnAddress; // GN destination adress -- destination adress(GeoUnicast) or geo. area (GeoBroadcast or GeoAnycast)
+    GeoArea_t GnAddress; // GN destination address -- destination address(GeoUnicast) or geo. area (GeoBroadcast or GeoAnycast)
     CommProfile_t GNCommProfile; // GN Communication Profile -- determines de LL protocol entity
 
-    int16_t GNSecurityP; // GN Security Profile /OPCIONAL/
-    double GNMaxLife; //GN Maximum Packet Lifetime in [s] /OPCIONAL/
-    int16_t GNRepInt; // GN Repetition Interval /OPCIONAL/
-    int16_t GNMaxRepInt; // GN maximum repetition Interval /OPCIONAL/
-    int16_t GNMaxHL; // GN Max Hop Limit /OPCIONAL/
+    int16_t GNSecurityP; // GN Security Profile /OPTIONAL/
+    double GNMaxLife; //GN Maximum Packet Lifetime in [s] /OPTIONAL/
+    int16_t GNRepInt; // GN Repetition Interval /OPTIONAL/
+    int16_t GNMaxRepInt; // GN maximum repetition Interval /OPTIONAL/
+    int16_t GNMaxHL; // GN Max Hop Limit /OPTIONAL/
     uint8_t GNTraClass; // GN Traffic Class
+
+    Ptr<Socket> socket = nullptr;
 
     uint32_t lenght; // Payload size
     Ptr<Packet> data; // Payload
@@ -120,6 +123,8 @@ namespace ns3 {
 
     uint32_t lenght; // Payload size
     Ptr<Packet> data; // Payload
+
+    Ptr<Socket> socket = nullptr;
 
     int16_t _messagePort; //BTP port for PRR supervisor (used for internal computation, not specified in the standard)
 

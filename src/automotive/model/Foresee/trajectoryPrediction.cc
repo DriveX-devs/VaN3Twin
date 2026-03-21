@@ -17,41 +17,41 @@ trajectoryPrediction::trajectoryPrediction (double horizon_time, double step_tim
 }
 
 std::vector<trajectoryPrediction::TrajectoryItem>
-trajectoryPrediction::predictConstantSpeed(double x, double speed, double comfort_deceleration, int8_t sign, bool is_RV)
+trajectoryPrediction::predictConstantSpeed(double x, double speed, double comfort_acceleration, int8_t sign, ActorType type)
 {
   std::vector<trajectoryPrediction::TrajectoryItem> motion_plan;
-  if (!is_RV)
+  if (type == ActorType::HV)
     {
-      double t = 0.5;
+      double t = m_step_time;
       while (t <= m_horizon_time)
         {
           double delta = sign * (speed * m_step_time);
           x += delta;
-          TrajectoryItem item {x, speed};
+          TrajectoryItem item {t, x, speed, 0};
           motion_plan.push_back (item);
           t += m_step_time;
         }
     }
-  else
+  else if (type == ActorType::RV || type == ActorType::RVAhead)
     {
-      double t = 0.5;
+      double t = m_step_time;
       while (t <= m_horizon_time)
         {
           if (t <= m_negotiation_time || t > m_negotiation_time + m_deceleration_time)
             {
               double delta = sign * (speed * m_step_time);
               x += delta;
-              TrajectoryItem item {x, speed};
+              TrajectoryItem item {t, x, speed, 0};
               motion_plan.push_back (item);
               t += m_step_time;
             }
           else if (t > m_negotiation_time && t <= m_negotiation_time + m_deceleration_time)
             {
-              double delta = sign * (speed * m_step_time + 0.5 * comfort_deceleration * std::pow(m_step_time, 2));
+              double delta = sign * (speed * m_step_time + 0.5 * comfort_acceleration * std::pow(m_step_time, 2));
               x += delta;
-              double delta_speed = comfort_deceleration * m_step_time;
+              double delta_speed = comfort_acceleration * m_step_time;
               speed += delta_speed;
-              TrajectoryItem item {x, speed};
+              TrajectoryItem item {t, x, speed, comfort_acceleration};
               motion_plan.push_back (item);
               t += m_step_time;
             }
@@ -67,20 +67,20 @@ trajectoryPrediction::predictConstantAcceleration (double x, double speed, doubl
   std::vector<trajectoryPrediction::TrajectoryItem> motion_plan;
   if (!is_RV)
     {
-      double t = 0.5;
+      double t = m_step_time;
       while (t <= m_horizon_time)
         {
           double delta = sign * (speed * m_step_time + 0.5 * acceleration * std::pow (m_step_time, 2));
           x += delta;
           speed += (acceleration * m_step_time);
-          TrajectoryItem item {x, speed, acceleration};
+          TrajectoryItem item {t, x, speed, acceleration};
           motion_plan.push_back (item);
           t += m_step_time;
         }
     }
   else
     {
-      double t = 0.5;
+      double t = m_step_time;
       while (t <= m_horizon_time)
         {
           if (t <= m_negotiation_time || t > m_negotiation_time + m_deceleration_time)
@@ -88,7 +88,7 @@ trajectoryPrediction::predictConstantAcceleration (double x, double speed, doubl
               double delta = sign * (speed * m_step_time + 0.5 * acceleration * std::pow (m_step_time, 2));
               x += delta;
               speed += (acceleration * m_step_time);
-              TrajectoryItem item {x, speed, acceleration};
+              TrajectoryItem item {t, x, speed, acceleration};
               motion_plan.push_back (item);
               t += m_step_time;
             }
@@ -98,7 +98,7 @@ trajectoryPrediction::predictConstantAcceleration (double x, double speed, doubl
               x += delta;
               double delta_speed = comfort_deceleration * m_step_time;
               speed += delta_speed;
-              TrajectoryItem item {x, speed, comfort_deceleration};
+              TrajectoryItem item {t, x, speed, comfort_deceleration};
               motion_plan.push_back (item);
               t += m_step_time;
             }

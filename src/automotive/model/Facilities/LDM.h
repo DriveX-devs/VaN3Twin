@@ -4,8 +4,8 @@
 #include "ns3/ldm-utils.h"
 #include "ns3/phPoints.h"
 #include "ns3/core-module.h"
-#include "ns3/traci-client.h"
 #include "ns3/vdpTraci.h"
+#include "ns3/packet-socket-address.h"
 #include <unordered_map>
 #include <vector>
 #include <random>
@@ -19,7 +19,6 @@
 #define LOG_FREQ 100
 
 namespace ns3 {
-
 
   typedef boost::geometry::model::point<double, 2, boost::geometry::cs::cartesian> point_type;
 
@@ -256,6 +255,8 @@ private:
 	double m_avg_dwell = 0.0;
 	int m_dwell_count = 0;
         StationType_t m_station_type;
+
+        Ptr<Node> m_node = nullptr;
 
 };
 }

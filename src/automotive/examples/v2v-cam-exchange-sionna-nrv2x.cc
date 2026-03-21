@@ -538,7 +538,7 @@ int main (int argc, char *argv[])
     bs_container->addCAMRxCallback (std::bind(&receiveCAM, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
     bs_container->linkMetricSupervisor (metSup_nr);
     bs_container->disablePRRSupervisorForGNBeacons();
-    bs_container->setupContainer(true,false,false,false);
+    bs_container->setupContainer(true,false,false,false,false,false);
     basicServices.add(bs_container);
     std::srand(Simulator::Now().GetNanoSeconds ()*2); // Seed based on the simulation time to give each vehicle a different random seed
     double desync = ((double)std::rand()/RAND_MAX);

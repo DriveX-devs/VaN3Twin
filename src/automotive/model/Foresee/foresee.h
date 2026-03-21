@@ -9,21 +9,18 @@
 // #include "ns3/LDM.h"
 #include "ns3/mcBasicService.h"
 #include "ns3/trajectoryPrediction.h"
+#include "ns3/geonet.h"
 
-#define SAFE_DECELERATION -4
 #define MAX_DIST_AHEAD_BEHIND 50
+#define ACCELERATION_STEP 0.5
+#define MIN_TTC 3
+#define DEFAULT_ACC_VALUE 500
 
 namespace ns3
 {
 class foresee
 {
 public:
-  typedef struct {
-    std::string RV;
-    std::string HVAhead;
-    std::string RVAhead;
-  }FORESEEActors;
-
   enum PredictionType
   {
     UNKNOWN,
@@ -37,6 +34,7 @@ public:
   };
   void WrapperFORESEEMobilityModel();
   void FORESEEMobilityModel();
+  void setNode(Ptr<Node> node) {m_node = node;};
   void setLDM (Ptr<LDM> ldm) {m_LDM = ldm;};
   void setTraciAPI (Ptr<TraciClient> traci) {m_traci = traci;};
   void setNumberOfLanes ();
@@ -47,9 +45,11 @@ public:
   void setCoordinationAvoidanceRange(float ca_range) {m_ca_range = ca_range;};
   void setMCBasicService(Ptr<MCBasicService> mcs_ptr) {m_mcs_ptr = mcs_ptr;};
   void setStartTime(uint8_t startTime) {m_start_time = startTime;};
-  void setTrajectoryPredictor(double horizon_time, double step_time, double negotiation_time, double deceleration_time, PredictionType prediction_type);
+  void setTrajectoryPredictor(double horizon_time, double step_time, double negotiation_time, double deceleration_time, double lc_duration, PredictionType prediction_type);
+  static bool trajectoryEvaluation(std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other, double leader_length, double step_time, double negotiation_time, double lc_duration);
+  void startCoordination(MCSpecification specifications);
   void terminateCoordination ();
-  void doCoordination ();
+  void doCoordination (std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RV, Address gn_addr_RV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RVAhead, Address gn_addr_RVAhead);
 private:
   std::string m_vehicle_id;
   uint64_t m_vehicle_id_int;
@@ -63,14 +63,20 @@ private:
   double m_delta_ds = 0.5;
   double m_offset = 0.3;
   int m_num_lanes = 0;
-  float m_time_to_lc = 1.5;
+  double m_time_to_lc;
   std::unordered_map<ulong, std::tuple<float, float, float>>* m_lc_data_structure;
   float m_ca_range;
   Ptr<MCBasicService> m_mcs_ptr;
-  FORESEEActors m_actors;
   uint8_t m_start_time;
   trajectoryPrediction* m_traj_predictor;
   PredictionType m_prediction_type = UNKNOWN;
+  double m_step_time;
+  double m_negotiation_time;
+  int m_FORESEE_max_time = 10000;
+  bool m_maneuver_execution = false;
+  EventId m_termination_event;
+  Ptr<Node> m_node = nullptr;
+  std::unordered_map<std::string, Ptr<Socket>> m_socket_map;
 };
 }
 

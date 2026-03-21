@@ -988,7 +988,7 @@ int main (int argc, char *argv[])
             break;
           }
         bs_container->disablePRRSupervisorForGNBeacons();
-        bs_container->setupContainer(true,false,false,true);
+        bs_container->setupContainer(true,false,false,true,false,false);
         basicServices.add(bs_container);
         std::srand(Simulator::Now().GetNanoSeconds ()*2); // Seed based on the simulation time to give each vehicle a different random seed
         bs_container->getCABasicService ()->startCamDissemination ();

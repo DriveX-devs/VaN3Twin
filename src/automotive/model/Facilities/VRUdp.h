@@ -1,6 +1,7 @@
 #ifndef VRUdp_h
 #define VRUdp_h
 
+#include "ns3/LDM.h"
 #include "vdp.h"
 #include "ns3/asn_utils.h"
 #include <float.h>
@@ -10,7 +11,6 @@
 #include "ns3/SetOf.hpp"
 #include "ns3/SequenceOf.hpp"
 #include "ns3/traci-client.h"
-#include "ns3/LDM.h"
 
 extern "C" {
   #include "ns3/VAM.h"

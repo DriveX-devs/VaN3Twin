@@ -13,17 +13,17 @@ def get_options():
     optParser.add_option(
         "-r", "--rate", type="float", default=0.1, help="creation rate")
     optParser.add_option(
-        "-m", "--minGap", type="float", default=1.0, help="vehicle min gap, negative numbers denote the center of a uniform distribution [x-0.2, x+0.2]")
+        "-m", "--minGap", type="float", default=2.0, help="vehicle min gap, negative numbers denote the center of a uniform distribution [x-0.2, x+0.2]")
     optParser.add_option(
-        "-s", "--maxSpeed", type="float", default=13.89, help="vehicle max speed, negative numbers denote the center of a uniform distribution [x-3, x+3]")
+        "-s", "--maxSpeed", type="float", default=40, help="vehicle max speed, negative numbers denote the center of a uniform distribution [x-3, x+3]")
     optParser.add_option(
-        "-d", "--speedDev", type="float", default=0.5, help="speed dev (see SUMO spec)")
+        "-d", "--speedDev", type="float", default=0, help="speed dev (see SUMO spec)")
     optParser.add_option(
-        "-f", "--speedFactor", type="float", default=1.5, help="speed factor (see SUMO spec)")
+        "-f", "--speedFactor", type="float", default=0, help="speed factor (see SUMO spec)")
     optParser.add_option(
         "-b", "--begin", type="int", default=0, help="begin time")
     optParser.add_option(
-        "-e", "--end", type="int", default=600, help="end time")
+        "-e", "--end", type="int", default=1000, help="end time")
     optParser.add_option("-i", "--index", type="int",
                          default=1, help="starting index for naming vehicles")
     optParser.add_option(
@@ -48,8 +48,8 @@ def write_init(f,options):
     f.write('  <route id="1" edges="nw_to_ne"/>\n')
  
     f.write('\n')
-    f.write('  <vType carFollowModel="IDM" tau="0.8" lcDuration="1.5" accel="1.5" decel="2" emergencyDecel="7" minGap="2.0" id="Car0" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1"/>\n')
-    f.write('  <vType carFollowModel="IDM" tau="1.0" lcDuration="1.5" accel="1,5" decel="2" emergencyDecel="7" minGap="2.0" id="Truck" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1"/>\n')
+    f.write('  <vType carFollowModel="IDM" tau="0.8" lcDuration="1.5" accel="3" decel="3" emergencyDecel="7" minGap="2.0" id="Car0" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1"/>\n')
+    f.write('  <vType carFollowModel="IDM" tau="1.0" lcDuration="1.5" accel="3" decel="3" emergencyDecel="7" minGap="2.0" id="Truck" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1"/>\n')
     f.write('\n')
 
 def write_veh(f, name, car_type, index, depart, route_var, departLane, desired_speed):

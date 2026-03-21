@@ -294,7 +294,7 @@ int main (int argc, char *argv[])
 
     // Set the function which will be called every time a CAM is received, i.e., receiveCAM()
     bs_container->addCAMRxCallback (std::bind(&receiveCAM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
-    bs_container->setupContainer(true,false,false,false);
+    bs_container->setupContainer(true, false, false, false, false, false);
 
     basicServices.add(bs_container);
 

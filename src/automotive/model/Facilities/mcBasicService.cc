@@ -330,17 +330,17 @@ namespace ns3
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_vehicleManoeuvreContainer);
 
        // Allocate + fill VehicleManoeuvreContainer
-       auto &veh = MCM_message->payload.mcmContainer.choice.vehicleManoeuvreContainer;
+       auto &man = MCM_message->payload.mcmContainer.choice.vehicleManoeuvreContainer;
 
-       asn1cpp::setField(veh.currentPoint.present, McmStartPoint_PR_NOTHING); // No Fill
+       asn1cpp::setField(man.currentPoint.present, McmStartPoint_PR_NOTHING); // No Fill
 
-       asn1cpp::setField(veh.automationState->lateralAutomated, true);
-       asn1cpp::setField(veh.automationState->longitudinalAutomated, true);
+       asn1cpp::setField(man.automationState->lateralAutomated, true);
+       asn1cpp::setField(man.automationState->longitudinalAutomated, true);
 
        auto trajectory = asn1cpp::makeSeq (McmTrajectory);
        asn1cpp::setField(trajectory->trajectoryID, trajectory->trajectoryID);
        // TODO do trajectory prediction
-       asn1cpp::sequenceof::pushList(veh.mcmTrajectories, trajectory);
+       asn1cpp::sequenceof::pushList(man.mcmTrajectories, trajectory);
        // TODO from here
      }
    else if (specification.vehicle_advise_container)
@@ -361,6 +361,7 @@ namespace ns3
 
     packet = Create<Packet> ((uint8_t*) encode_result.c_str(), encode_result.size());
 
+    dataRequest.socket = specification.socket;
     dataRequest.BTPType = BTP_B; //!< BTP-B
     dataRequest.destPort = MC_PORT;
     dataRequest.destPInfo = 0;

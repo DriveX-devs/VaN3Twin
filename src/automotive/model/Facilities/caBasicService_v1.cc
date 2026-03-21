@@ -219,6 +219,7 @@ namespace ns3
     buffer=(uint8_t *)malloc((dataIndication.data->GetSize ())*sizeof(uint8_t));
     dataIndication.data->CopyData (buffer, dataIndication.data->GetSize ());
     std::string packetContent((char *)buffer,(int) dataIndication.data->GetSize ());
+    Address ll_addr = from;
 
     RssiTag rssi;
     bool rssi_result = dataIndication.data->PeekPacketTag(rssi);
@@ -281,7 +282,7 @@ namespace ns3
 
     if(m_LDM != NULL){
       //Update LDM
-      vLDM_handler(decoded_cam);
+      vLDM_handler(decoded_cam, ll_addr);
     }
 
     if(m_CAReceiveCallback!=nullptr) {
@@ -292,11 +293,12 @@ namespace ns3
   }
 
   void
-  CABasicServiceV1::vLDM_handler(asn1cpp::Seq<CAMV1> decodedCAM)
+  CABasicServiceV1::vLDM_handler(asn1cpp::Seq<CAMV1> decodedCAM, Address gn_addr)
   {
       vehicleData_t vehdata;
       LDM::LDM_error_t db_retval;
       bool lowFreq_ok;
+      vehdata.gn_addr = gn_addr;
       vehdata.detected = false;
       vehdata.stationType = asn1cpp::getField(decodedCAM->cam.camParameters.basicContainer.stationType,long);
       vehdata.stationID = asn1cpp::getField(decodedCAM->header.stationID,uint64_t);

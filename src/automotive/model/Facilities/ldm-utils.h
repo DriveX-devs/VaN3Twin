@@ -5,6 +5,8 @@
 #include <vector>
 #include <deque>
 #include <stdint.h>
+#include "ns3/btpdatarequest.h"
+// #include "ns3/socket.h"
 #include <boost/geometry.hpp>
 //#include <boost/geometry/geometries/geometries.hpp>
 //#include <boost/geometry/geometries/register/point.hpp>
@@ -51,6 +53,7 @@ namespace ns3 {
           bool detected;
           uint64_t stationID;
           std::string ID;
+          OptionalDataItem<Address> gn_addr;
           double lat;
           double lon;
           double x;

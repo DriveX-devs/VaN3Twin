@@ -12,27 +12,29 @@
 #include "ns3/Getter.hpp"
 #include "ns3/LDM.h"
 #include "signalInfoUtils.h"
+#include "ns3/trajectoryPrediction.h"
 
 extern "C" {
   #include "ns3/MCM.h"
 }
 
-
-typedef struct {
-  long mcm_type;
-  long maneuver_id;
-  long mcm_status;
-  long mcm_concept;
-  long mcm_goal;
-  long mcm_cost;
-  bool vehicle_maneuver_container;
-  bool vehicle_advise_container;
-}MCSpecification;
-
 //#define CURRENT_VDP_TYPE VDPTraCI
 
 namespace ns3
 {
+  typedef struct {
+    long mcm_type;
+    long maneuver_id;
+    long mcm_status;
+    long mcm_concept;
+    long mcm_goal;
+    long mcm_cost;
+    bool vehicle_maneuver_container;
+    bool vehicle_advise_container;
+    std::vector<trajectoryPrediction::TrajectoryItem> trajectory;
+    Ptr<Socket> socket;
+  }MCSpecification;
+
   typedef enum {
     MCM_NO_ERROR=0,
     MCM_WRONG_INTERVAL=1,

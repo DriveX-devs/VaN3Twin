@@ -21,9 +21,8 @@
 #define HORIZON_TIME 8
 #define NEGOTIATION_TIME 1
 #define DECELERATION_TIME 1
-#define STEP_TIME .5
-#define COMFORT_DECELERATION -3
-#define PREDICTION_TYPE "constant_speed"
+#define STEP_TIME .1
+#define LC_TIME 1.5
 
 #include "ns3/carla-module.h"
 
@@ -233,23 +232,14 @@ int main (int argc, char *argv[])
 
       // Set the function which will be called every time a CAM is received, i.e., receiveCAM()
       bs_container->addMCMRxCallback (std::bind(&receiveMCM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
-      bs_container->setupContainer(true,false,false,false,true);
+      bs_container->setupContainer(true,false,false,false,true,false);
 
       // Store the container for this vehicle inside a local global BSMap, i.e., a structure (similar to a hash table) which allows you to easily
       // retrieve the right BSContainer given a vehicle ID
       basicServices.add(bs_container);
 
-      // Start transmitting CAMs
-      // We randomize the instant in time in which the CAM dissemination is going to start
-      // This simulates different startup times for the OBUs of the different vehicles, and
-      // reduces the risk of multiple vehicles trying to send CAMs are the same time (causing more collisions);
-      // "desync" is a value between 0 and 1 (seconds) after which the CAM dissemination should start
-      std::srand(Simulator::Now().GetNanoSeconds ()*2); // Seed based on the simulation time to give each vehicle a different random seed
-      double desync = ((double)std::rand()/RAND_MAX);
-      bs_container->getCABasicService ()->startCamDissemination (desync);
-      // bs_container->getMCBasicService()->startMCMDissemination(desync);
-
       lc_model[nodeID].setDesiredSpeed (speed);
+      lc_model[nodeID].setNode(c.Get(nodeID));
       lc_model[nodeID].setLDM (bs_container->getLDM());
       lc_model[nodeID].setVDP (bs_container->getVDP());
       lc_model[nodeID].setVehicleID (vehicleID);
@@ -260,8 +250,18 @@ int main (int argc, char *argv[])
       lc_model[nodeID].setMCBasicService(bs_container->getMCBasicService());
       lc_model[nodeID].setStartTime(10);
       std::string my_type = sumoClient->vehicle.getTypeID (vehicleID);
-      lc_model[nodeID].setTrajectoryPredictor(HORIZON_TIME, STEP_TIME, NEGOTIATION_TIME, DECELERATION_TIME, foresee::PredictionType::CONSTANT_SPEED);
+      lc_model[nodeID].setTrajectoryPredictor(HORIZON_TIME, STEP_TIME, NEGOTIATION_TIME, DECELERATION_TIME, LC_TIME, foresee::PredictionType::CONSTANT_SPEED);
       lc_model[nodeID].WrapperFORESEEMobilityModel();
+
+      // Start transmitting CAMs
+      // We randomize the instant in time in which the CAM dissemination is going to start
+      // This simulates different startup times for the OBUs of the different vehicles, and
+      // reduces the risk of multiple vehicles trying to send CAMs are the same time (causing more collisions);
+      // "desync" is a value between 0 and 1 (seconds) after which the CAM dissemination should start
+      std::srand(Simulator::Now().GetNanoSeconds ()*2); // Seed based on the simulation time to give each vehicle a different random seed
+      double desync = ((double)std::rand()/RAND_MAX);
+      bs_container->getCABasicService ()->startCamDissemination (desync);
+      // bs_container->getMCBasicService()->startMCMDissemination(desync);
 
       return c.Get(nodeID);
     };

@@ -504,11 +504,23 @@ namespace ns3 {
       delete[] buffer;
     }
 
-    if(m_socket_tx->Send (dataRequest.data)==-1)
+    if (dataRequest.socket != nullptr)
       {
-        NS_LOG_ERROR("Cannot send SHB packet ");
-        return UNSPECIFIED_ERROR;
+        if(dataRequest.socket->Send (dataRequest.data)==-1)
+          {
+            NS_LOG_ERROR("Cannot send SHB packet ");
+            return UNSPECIFIED_ERROR;
+          }
       }
+    else
+      {
+        if(m_socket_tx->Send (dataRequest.data)==-1)
+          {
+            NS_LOG_ERROR("Cannot send SHB packet ");
+            return UNSPECIFIED_ERROR;
+          }
+      }
+
     size_t pktSize = dataRequest.data->GetSize () + IEEE80211_DATA_PKT_HDR_LEN + IEEE80211_FCS_LEN + 8; // 8 = bytes layer LLC
     if (m_dcc != nullptr) m_dcc->updateTonpp(pktSize);
     //7)reset beacon timer to prevent dissemination of unnecessary beacon packet
@@ -1115,6 +1127,29 @@ namespace ns3 {
       gn_sock->Connect (remote);
 
       return gn_sock;
+  }
+
+  Ptr<Socket>
+  GeoNet::createGNPacketSocketUnicast(Ptr<Node> node_ptr, Address to)
+  {
+    Ptr<Socket> gn_sock;
+    TypeId tid = TypeId::LookupByName ("ns3::PacketSocketFactory");
+
+    if(node_ptr==nullptr)
+      {
+        NS_FATAL_ERROR ("Error. Called createGNPacketSocket() with a null Ptr<Node>!");
+      }
+
+    gn_sock = Socket::CreateSocket (node_ptr, tid);
+    PacketSocketAddress local = getGNAddress(node_ptr->GetDevice(0)->GetIfIndex (), node_ptr->GetDevice(0)->GetAddress());
+    if (gn_sock->Bind (local) == -1)
+      {
+        NS_FATAL_ERROR ("Failed to create GeoNet Packet Socket. Cannot Bind().");
+      }
+    PacketSocketAddress remote = getGNAddress(node_ptr->GetDevice(0)->GetIfIndex(), to);
+    gn_sock->Connect (remote);
+
+    return gn_sock;
   }
 
   void GeoNet::attachGlobalCBRCheck ()
