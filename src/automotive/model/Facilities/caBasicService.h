@@ -232,7 +232,7 @@ namespace ns3
      * @brief Update the LDM with the received CAM message information
      * @param decodedCAM
      */
-    void vLDM_handler(asn1cpp::Seq<CAM> decodedCAM, Address ll_addr);
+    void vLDM_handler(asn1cpp::Seq<CAM> decodedCAM, GNAddress gn_addr);
 
     // std::function<void(CAM_t *, Address)> m_CAReceiveCallback;
     std::function<void(asn1cpp::Seq<CAM>, Address)> m_CAReceiveCallback;

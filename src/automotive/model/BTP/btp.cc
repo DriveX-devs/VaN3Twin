@@ -127,6 +127,7 @@ namespace ns3
     btpDataIndication.GNTraClass = dataIndication.GNTraClass;
     btpDataIndication.GNRemPLife = dataIndication.GNRemainingLife;
     btpDataIndication.GNPositionV = dataIndication.SourcePV;
+    btpDataIndication.GNAddressSource = dataIndication.SourcePV.GnAddress;
     btpDataIndication.data = dataIndication.data;
     btpDataIndication.lenght = dataIndication.data->GetSize ();
 

@@ -1347,7 +1347,7 @@ Set(source_files
     model/ASN1/full-v1-v2/ManagementContainerV1.c
     model/ASN1/full-v1-v2/ManeuverAssistList.c
     model/ASN1/full-v1-v2/Manoeuvre.c
-    model/ASN1/full-v1-v2/ManoeuvreAdviceContainer.c
+    #model/ASN1/full-v1-v2/ManoeuvreAdviceContainer.c
     model/ASN1/full-v1-v2/ManoeuvreCoordination.c
     model/ASN1/full-v1-v2/McmAutomationState.c
     model/ASN1/full-v1-v2/McmCategory.c
@@ -1380,11 +1380,11 @@ Set(source_files
     model/ASN1/full-v1-v2/REAL_xer.c
     model/ASN1/full-v1-v2/Reason.c
     model/ASN1/full-v1-v2/TimeOfPos.c
-    model/ASN1/full-v1-v2/Trajectory.c
-    model/ASN1/full-v1-v2/VehicleManoeuvreContainer.c
+    #model/ASN1/full-v1-v2/Trajectory.c
+    #model/ASN1/full-v1-v2/VehicleManoeuvreContainer.c
 
     model/ASN1/MCM/MCM.c
-    model/ASN1/MCM/AcknowledgmentContainer.c
+    #model/ASN1/MCM/AcknowledgmentContainer.c
     model/ASN1/MCM/AdvisedTrrContainer.c
     model/ASN1/MCM/CurrentStateAdvisedChange.c
     model/ASN1/MCM/DeclineReason.c
@@ -1407,7 +1407,7 @@ Set(source_files
     model/ASN1/MCM/McmType.c
     model/ASN1/MCM/RLLC.c
     model/ASN1/MCM/RRLC.c
-    model/ASN1/MCM/ResponseContainer.c
+    #model/ASN1/MCM/ResponseContainer.c
     model/ASN1/MCM/Submanoeuvre.c
     model/ASN1/MCM/SubmanoeuvreDescription.c
     model/ASN1/MCM/SubmanoeuvreStrategy.c
@@ -1415,7 +1415,7 @@ Set(source_files
     model/ASN1/MCM/TRRLength.c
     model/ASN1/MCM/TRRWidth.c
     model/ASN1/MCM/TemporalCharacteristics.c
-    model/ASN1/MCM/TerminationContainer.c
+    # model/ASN1/MCM/TerminationContainer.c
     model/ASN1/MCM/TrrDescription.c
     model/ASN1/MCM/TrrType.c
     model/ASN1/MCM/VehicleCurrentStateContainer.c
@@ -1423,6 +1423,12 @@ Set(source_files
     model/ASN1/MCM/WayPoint.c
     model/ASN1/MCM/WayPointType.c
     model/ASN1/MCM/WrappedMcmInformationBlocks.c
+        model/ASN1/MCM/VehicleManoeuvreContainer.c
+        model/ASN1/MCM/ManoeuvreAdviceContainer.c
+        model/ASN1/MCM/AcknowledgmentContainer.c
+        model/ASN1/MCM/TerminationContainer.c
+        model/ASN1/MCM/ResponseContainer.c
+        model/ASN1/MCM/Trajectory.c
 
 
         #-----------------------------------
@@ -2820,14 +2826,14 @@ model/ASN1/full-v1-v2/ManagementContainerCPM.h
 model/ASN1/full-v1-v2/ManagementContainerV1.h
 model/ASN1/full-v1-v2/ManeuverAssistList.h
 model/ASN1/full-v1-v2/Manoeuvre.h
-model/ASN1/full-v1-v2/ManoeuvreAdviceContainer.h
+#model/ASN1/full-v1-v2/ManoeuvreAdviceContainer.h
 model/ASN1/full-v1-v2/ManoeuvreCoordination.h
 model/ASN1/full-v1-v2/McmAutomationState.h
 model/ASN1/full-v1-v2/McmCategory.h
 model/ASN1/full-v1-v2/McmCategoryType.h
 # model/ASN1/full-v1-v2/McmContainer.h
 model/ASN1/full-v1-v2/McmStartPoint.h
-model/ASN1/full-v1-v2/McmTrajectory.h
+#model/ASN1/full-v1-v2/McmTrajectory.h
 model/ASN1/full-v1-v2/NativeReal.h
 model/ASN1/full-v1-v2/Polynom.h
 model/ASN1/full-v1-v2/PolynomCoefficient.h
@@ -2837,8 +2843,8 @@ model/ASN1/full-v1-v2/PolynomXOffset.h
 model/ASN1/full-v1-v2/REAL.h
 model/ASN1/full-v1-v2/Reason.h
 model/ASN1/full-v1-v2/TimeOfPos.h
-model/ASN1/full-v1-v2/Trajectory.h
-model/ASN1/full-v1-v2/VehicleManoeuvreContainer.h
+#model/ASN1/full-v1-v2/Trajectory.h
+#model/ASN1/full-v1-v2/VehicleManoeuvreContainer.h
 
         #-----------------------------------
         #       SECURITY PART .H FILES
@@ -3083,7 +3089,7 @@ model/ASN1/full-v1-v2/xer_decoder.h
 model/ASN1/full-v1-v2/xer_encoder.h
 model/ASN1/full-v1-v2/xer_support.h
         model/ASN1/MCM/MCM.h
-        model/ASN1/MCM/AcknowledgmentContainer.h
+        # model/ASN1/MCM/AcknowledgmentContainer.h
         model/ASN1/MCM/AdvisedTrrContainer.h
         model/ASN1/MCM/CurrentStateAdvisedChange.h
         model/ASN1/MCM/DeclineReason.h
@@ -3106,7 +3112,7 @@ model/ASN1/full-v1-v2/xer_support.h
         model/ASN1/MCM/McmType.h
         model/ASN1/MCM/RLLC.h
         model/ASN1/MCM/RRLC.h
-        model/ASN1/MCM/ResponseContainer.h
+        # model/ASN1/MCM/ResponseContainer.h
         model/ASN1/MCM/Submanoeuvre.h
         model/ASN1/MCM/SubmanoeuvreDescription.h
         model/ASN1/MCM/SubmanoeuvreStrategy.h
@@ -3114,7 +3120,7 @@ model/ASN1/full-v1-v2/xer_support.h
         model/ASN1/MCM/TRRLength.h
         model/ASN1/MCM/TRRWidth.h
         model/ASN1/MCM/TemporalCharacteristics.h
-        model/ASN1/MCM/TerminationContainer.h
+        # model/ASN1/MCM/TerminationContainer.h
         model/ASN1/MCM/TrrDescription.h
         model/ASN1/MCM/TrrType.h
         model/ASN1/MCM/VehicleCurrentStateContainer.h
@@ -3123,6 +3129,12 @@ model/ASN1/full-v1-v2/xer_support.h
         model/ASN1/MCM/WayPointType.h
         model/ASN1/MCM/WrappedMcmInformationBlocks.h
         model/ASN1/MCM/McmContainer.h
+        model/ASN1/MCM/VehicleManoeuvreContainer.h
+        model/ASN1/MCM/ManoeuvreAdviceContainer.h
+        model/ASN1/MCM/AcknowledgmentContainer.h
+        model/ASN1/MCM/TerminationContainer.h
+        model/ASN1/MCM/ResponseContainer.h
+        model/ASN1/MCM/Trajectory.h
 
         #model/ASN1/asn1-v2/IssuerIdentifier.h
 )
@@ -5127,7 +5139,7 @@ model/ASN1/full-v1-v2/ManagementContainerCPM.c
 model/ASN1/full-v1-v2/ManagementContainerV1.c
 model/ASN1/full-v1-v2/ManeuverAssistList.c
 model/ASN1/full-v1-v2/Manoeuvre.c
-model/ASN1/full-v1-v2/ManoeuvreAdviceContainer.c
+#model/ASN1/full-v1-v2/ManoeuvreAdviceContainer.c
 model/ASN1/full-v1-v2/ManoeuvreCoordination.c
 model/ASN1/full-v1-v2/MapData-addGrpC.c
 model/ASN1/full-v1-v2/MapData.c
@@ -5146,7 +5158,7 @@ model/ASN1/full-v1-v2/McmCategoryType.c
 # model/ASN1/full-v1-v2/McmContainer.c
 model/ASN1/MCM/McmContainer.c
 model/ASN1/full-v1-v2/McmStartPoint.c
-model/ASN1/full-v1-v2/McmTrajectory.c
+#model/ASN1/full-v1-v2/McmTrajectory.c
 model/ASN1/full-v1-v2/MergeDivergeNodeAngle.c
 model/ASN1/full-v1-v2/MessageId.c
 model/ASN1/full-v1-v2/MessageRateHz.c
@@ -5632,7 +5644,7 @@ model/ASN1/full-v1-v2/TrailerDetails.c
 model/ASN1/full-v1-v2/TrailerLicencePlateNumber.c
 model/ASN1/full-v1-v2/TrailerPresenceInformation.c
 model/ASN1/full-v1-v2/TrainCharacteristics.c
-model/ASN1/full-v1-v2/Trajectory.c
+#model/ASN1/full-v1-v2/Trajectory.c
 model/ASN1/full-v1-v2/TrajectoryInterceptionConfidence.c
 model/ASN1/full-v1-v2/TrajectoryInterceptionIndication.c
 model/ASN1/full-v1-v2/TrajectoryInterceptionProbability.c

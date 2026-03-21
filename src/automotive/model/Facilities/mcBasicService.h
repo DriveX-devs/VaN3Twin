@@ -24,15 +24,21 @@ namespace ns3
 {
   typedef struct {
     long mcm_type;
-    long maneuver_id;
+    uint8_t maneuver_id;
+    long mcm_its_role;
     long mcm_status;
     long mcm_concept;
     long mcm_goal;
     long mcm_cost;
     bool vehicle_maneuver_container;
     bool vehicle_advise_container;
-    std::vector<trajectoryPrediction::TrajectoryItem> trajectory;
+    bool vehicle_acknowledgement_container;
+    bool vehicle_response_container;
+    bool vehicle_terminator_container;
+    std::unordered_map<long, std::vector<trajectoryPrediction::TrajectoryItem>> trajectories;
+    std::unordered_map<long, uint8_t > maneuvers;
     Ptr<Socket> socket;
+    StationType_t type;
   }MCSpecification;
 
   typedef enum {

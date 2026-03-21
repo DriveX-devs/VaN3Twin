@@ -291,6 +291,7 @@ namespace ns3
 
     asn1cpp::setField(MCM_message->payload.basicContainer.stationType, m_stationtype);
     asn1cpp::setField(MCM_message->payload.basicContainer.stationID, m_station_id);
+    asn1cpp::setField(MCM_message->payload.basicContainer.itssRole, specification.mcm_its_role);
     if(m_vehicle==true)
       {
         MCM_mandatory_data = m_vdp->getMCMMandatoryData();
@@ -301,6 +302,8 @@ namespace ns3
         asn1cpp::setField(MCM_message->payload.basicContainer.position.positionConfidenceEllipse.semiMajorAxisLength, MCM_mandatory_data.posConfidenceEllipse.semiMajorConfidence);
         asn1cpp::setField(MCM_message->payload.basicContainer.position.positionConfidenceEllipse.semiMinorAxisLength, MCM_mandatory_data.posConfidenceEllipse.semiMinorConfidence);
         asn1cpp::setField(MCM_message->payload.basicContainer.position.positionConfidenceEllipse.semiMajorAxisOrientation, MCM_mandatory_data.posConfidenceEllipse.semiMajorOrientation);
+        asn1cpp::setField(MCM_message->payload.basicContainer.mcmType, specification.mcm_type);
+        asn1cpp::setField(MCM_message->payload.basicContainer.manoeuvreId, specification.maneuver_id);
         asn1cpp::setField(MCM_message->payload.basicContainer.concept, specification.mcm_concept);
         MCM_message->payload.basicContainer.rational = (ManoeuvreCoordinationRational_t*)CALLOC(1, sizeof(ManoeuvreCoordinationRational_t));
         if (specification.mcm_concept == 0) {
@@ -311,12 +314,10 @@ namespace ns3
             asn1cpp::setField(MCM_message->payload.basicContainer.rational->present, ManoeuvreCoordinationRational_PR_manoeuvreCooperationCost);
             asn1cpp::setField(MCM_message->payload.basicContainer.rational->choice.manoeuvreCooperationCost, specification.mcm_cost);
           }
-        //MCM_message->payload.basicContainer.rational = rational;
-        asn1cpp::setField(MCM_message->payload.basicContainer.mcmType, specification.mcm_type);
         if (specification.mcm_type == 4 || specification.mcm_type == 7)
-          asn1cpp::setField(MCM_message->payload.basicContainer.executionStatus, specification.mcm_status);
-        asn1cpp::setField(MCM_message->payload.basicContainer.itssRole, 0); // Unavailable for the moment
-        asn1cpp::setField(MCM_message->payload.basicContainer.manoeuvreId, specification.maneuver_id);
+          {
+            asn1cpp::setField (MCM_message->payload.basicContainer.executionStatus, specification.mcm_status);
+          }
       }
    else
      {
@@ -331,25 +332,54 @@ namespace ns3
 
        // Allocate + fill VehicleManoeuvreContainer
        auto &man = MCM_message->payload.mcmContainer.choice.vehicleManoeuvreContainer;
-
-       asn1cpp::setField(man.currentPoint.present, McmStartPoint_PR_NOTHING); // No Fill
-
-       asn1cpp::setField(man.automationState->lateralAutomated, true);
-       asn1cpp::setField(man.automationState->longitudinalAutomated, true);
-
-       auto trajectory = asn1cpp::makeSeq (McmTrajectory);
-       asn1cpp::setField(trajectory->trajectoryID, trajectory->trajectoryID);
-       // TODO do trajectory prediction
-       asn1cpp::sequenceof::pushList(man.mcmTrajectories, trajectory);
-       // TODO from here
+       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleHeading.value, MCM_mandatory_data.heading.getValue());
+       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleHeading.confidence, MCM_mandatory_data.heading.getConfidence());
+       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleWidth, MCM_mandatory_data.VehicleWidth);
+       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleLenth.vehicleLengthValue, MCM_mandatory_data.VehicleLength.getValue());
+       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleLenth.vehicleLengthConfidenceIndication, MCM_mandatory_data.VehicleLength.getConfidence());
+       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleHeight, VehicleHeight_unavailable);
+       if (specification.type == StationType_passengerCar)
+         {
+           asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleType, Iso3833VehicleType_passengerCar);
+         }
+        else
+          {
+            asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleType, Iso3833VehicleType_truckStationWagon);
+          }
+        // TODO the standard is not clear about the usage of this container
      }
    else if (specification.vehicle_advise_container)
      {
-       // Select this choice
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_advisedManoeuvreContainer);
-       auto &adv = MCM_message->payload.mcmContainer.choice.advisedManoeuvreContainer;
+       auto adv = asn1cpp::makeSeq(ManoeuvreAdviceContainer);
+       for (auto it = specification.maneuvers.begin(); it != specification.maneuvers.end(); ++it)
+         {
+           auto madv = asn1cpp::makeSeq(ManoeuvreAdvice);
+           asn1cpp::setField(madv->executantID, it->first);
+           auto subms = asn1cpp::makeSeq(Submanoeuvres);
+           asn1cpp::setField(madv->submaneuvres, subms);
+           auto subm = asn1cpp::makeSeq(Submanoeuvre);
+           asn1cpp::setField (subm->submanoeuvreId, it->second);
+           asn1cpp::sequenceof::pushList(madv->submaneuvres, subm);
+           asn1cpp::sequenceof::pushList(*adv, madv);
+         }
+       asn1cpp::setField(MCM_message->payload.mcmContainer.choice.advisedManoeuvreContainer, adv);
+     }
+   else if (specification.vehicle_acknowledgement_container)
+     {
 
-       // TODO
+     }
+   else if (specification.vehicle_response_container)
+     {
+
+     }
+   else if (specification.vehicle_terminator_container)
+     {
+
+     }
+   else
+     {
+       NS_FATAL_ERROR ("No container specified.");
      }
 
    std::string encode_result = asn1cpp::uper::encode(MCM_message);
@@ -361,7 +391,7 @@ namespace ns3
 
     packet = Create<Packet> ((uint8_t*) encode_result.c_str(), encode_result.size());
 
-    dataRequest.socket = specification.socket;
+    // dataRequest.socket = specification.socket;
     dataRequest.BTPType = BTP_B; //!< BTP-B
     dataRequest.destPort = MC_PORT;
     dataRequest.destPInfo = 0;

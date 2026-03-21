@@ -34,6 +34,7 @@ public:
   };
   void WrapperFORESEEMobilityModel();
   void FORESEEMobilityModel();
+  void setStationType(StationType_t type) {m_station_type = type;};
   void setNode(Ptr<Node> node) {m_node = node;};
   void setLDM (Ptr<LDM> ldm) {m_LDM = ldm;};
   void setTraciAPI (Ptr<TraciClient> traci) {m_traci = traci;};
@@ -49,7 +50,7 @@ public:
   static bool trajectoryEvaluation(std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other, double leader_length, double step_time, double negotiation_time, double lc_duration);
   void startCoordination(MCSpecification specifications);
   void terminateCoordination ();
-  void doCoordination (std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RV, Address gn_addr_RV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RVAhead, Address gn_addr_RVAhead);
+  void doCoordination (std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RV, long RV_id, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RVAhead, long RVAhead_id, uint8_t maneuver_id);
 private:
   std::string m_vehicle_id;
   uint64_t m_vehicle_id_int;
@@ -77,6 +78,7 @@ private:
   EventId m_termination_event;
   Ptr<Node> m_node = nullptr;
   std::unordered_map<std::string, Ptr<Socket>> m_socket_map;
+  StationType_t m_station_type;
 };
 }
 

@@ -79,7 +79,7 @@ namespace ns3
     void checkCamConditions();
     CABasicServiceV1_error_t generateAndEncodeCam();
     int64_t computeTimestampUInt64();
-    void vLDM_handler(asn1cpp::Seq<CAMV1> decodedCAM, Address ll_addr);
+    void vLDM_handler(asn1cpp::Seq<CAMV1> decodedCAM, GNAddress ll_addr);
 
     // std::function<void(CAM_t *, Address)> m_CAReceiveCallback;
     std::function<void(asn1cpp::Seq<CAMV1>, Address)> m_CAReceiveCallback;

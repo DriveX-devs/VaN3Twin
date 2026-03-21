@@ -74,10 +74,10 @@ namespace ns3 {
     int16_t GNMaxHL; // GN Max Hop Limit /OPTIONAL/
     uint8_t GNTraClass; // GN Traffic Class
 
-    Ptr<Socket> socket = nullptr;
-
     uint32_t lenght; // Payload size
     Ptr<Packet> data; // Payload
+
+    Ptr<Socket> socket = nullptr;
   } BTPDataRequest_t;
 
   typedef struct _dataIndication {
@@ -96,6 +96,8 @@ namespace ns3 {
     int16_t GNMaxRepInt; // GN maximum repetition Interval /OPCIONAL/
     uint8_t GNTraClass; // GN Traffic Class
     double GNRemPLife; // GN Reamianing Packet Lifetime /OPCIONAL/
+
+    GNAddress GNAddressSource;
 
     uint32_t lenght;
     Ptr<Packet> data;

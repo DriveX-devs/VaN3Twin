@@ -1030,7 +1030,7 @@ namespace ns3 {
     //7) Pass the payload to the upper protocol entity if it's not a beacon packet
     if(dataIndication.GNType != BEACON)
     {
-      m_ReceiveCallback(dataIndication,from);
+      m_ReceiveCallback(dataIndication, from);
     }
   }
 

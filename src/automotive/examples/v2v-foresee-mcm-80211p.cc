@@ -223,8 +223,8 @@ int main (int argc, char *argv[])
       sock=GeoNet::createGNPacketSocket(c.Get(nodeID));
       // Set the proper AC, through the specified UP
       sock->SetPriority (up);
-
-      Ptr<BSContainer> bs_container = CreateObject<BSContainer>(std::stol(vehicleID.substr(3)),StationType_passengerCar,sumoClient,false,sock);
+      StationType_t st_type = type == "Car0" ? StationType_passengerCar : StationType_lightTruck;
+      Ptr<BSContainer> bs_container = CreateObject<BSContainer>(std::stol(vehicleID.substr(3)),st_type,sumoClient,false,sock);
       // Setup the PRRsupervisor inside the BSContainer, to make each vehicle collect latency and PRR metrics
       bs_container->linkMetricSupervisor(metSup);
       // This is needed just to simplify the whole application
@@ -240,6 +240,7 @@ int main (int argc, char *argv[])
 
       lc_model[nodeID].setDesiredSpeed (speed);
       lc_model[nodeID].setNode(c.Get(nodeID));
+      lc_model[nodeID].setStationType(st_type);
       lc_model[nodeID].setLDM (bs_container->getLDM());
       lc_model[nodeID].setVDP (bs_container->getVDP());
       lc_model[nodeID].setVehicleID (vehicleID);

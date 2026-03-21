@@ -59,6 +59,10 @@ foresee::WrapperFORESEEMobilityModel()
     {
       NS_FATAL_ERROR ("FORESEE Mobility Model needs the pointer of the vehicle node.");
     }
+  if (m_station_type != StationType_passengerCar && m_station_type != StationType_lightTruck)
+    {
+      NS_FATAL_ERROR ("FORESEE Mobility Model needs the station type ['StationType_passengerCar', 'StationType_lightTruck'].");
+    }
   // Schedule the FORESEE Mobility Model to start at the specified time
   Simulator::Schedule (Seconds(m_start_time), &foresee::FORESEEMobilityModel, this);
 }
@@ -215,6 +219,7 @@ foresee::FORESEEMobilityModel ()
       bool found_coordination = false;
       // Take the four roles, target, ahead ego, ahead target
       std::string RV, HVAhead, RVAhead;
+      long RV_id, RVAhead_id;
       // Check whether there is another maneuver coordination that is happening within the ahead range
       // If yes, ego vehicle cannot perform maneuver coordination
       for (auto it = (*m_lc_data_structure).begin(); it != (*m_lc_data_structure).end(); ++it)
@@ -266,6 +271,7 @@ foresee::FORESEEMobilityModel ()
                     {
                       min_dist_rv_ahead = dist;
                       RVAhead = "veh" + std::to_string (it->vehData.stationID);
+                      RVAhead_id = it->vehData.stationID;
                       x_RVAhead = pos.x;
                       y_RVAhead = pos.y;
                       speed_RVAhead = it->vehData.speed_ms;
@@ -282,6 +288,7 @@ foresee::FORESEEMobilityModel ()
                         {
                           min_dist_rv = dist;
                           RV = "veh" + std::to_string (it->vehData.stationID);
+                          RV_id = it->vehData.stationID;
                           x_RV = pos.x;
                           y_RV = pos.y;
                           speed_RV = it->vehData.speed_ms;
@@ -383,7 +390,8 @@ foresee::FORESEEMobilityModel ()
                   // At least RV or RVAhead are present
                   // Insert in the data structure the new coordination event that is going to happen
                   (*m_lc_data_structure)[m_vehicle_id_int] = std::make_tuple (my_heading, my_x, my_y);
-                  Simulator::Schedule (MilliSeconds(0), &foresee::doCoordination, this, trajectory_RV, gn_addr_RV, trajectory_RVAhead, gn_addr_RVAhead);
+                  uint8_t maneuver_id = left_criterion ? 12 : 13;
+                  Simulator::Schedule (MilliSeconds(0), &foresee::doCoordination, this, trajectory_RV, RV_id, trajectory_RVAhead, RVAhead_id, maneuver_id);
                 }
               else
                 {
@@ -399,18 +407,24 @@ foresee::FORESEEMobilityModel ()
 }
 
 void
-foresee::doCoordination (std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RV, Address gn_addr_RV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RVAhead, Address gn_addr_RVAhead)
+foresee::doCoordination (std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RV, long RV_id, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RVAhead, long RVAhead_id, uint8_t maneuver_id)
 {
-  if (!trajectory_RV.empty())
-    {
-      MCSpecification specification = {};
-      Simulator::Schedule(MilliSeconds(0), &foresee::startCoordination, this, specification);
-    }
-  if (!trajectory_RVAhead.empty())
-    {
-      MCSpecification specification = {};
-      Simulator::Schedule(MilliSeconds(0), &foresee::startCoordination, this, specification);
-    }
+  MCSpecification specification = {};
+  specification.mcm_its_role = McmItssRole_coordinatingItss; // HV is the coordinator
+  specification.maneuvers[RV_id] = 0;
+  specification.maneuvers[RVAhead_id] = 1;
+  specification.vehicle_maneuver_container = false;
+  specification.vehicle_advise_container = true;
+  specification.vehicle_acknowledgement_container = false;
+  specification.vehicle_response_container = false;
+  specification.vehicle_terminator_container = false;
+  specification.mcm_concept = 0; // MCM Goal
+  specification.mcm_cost = 0; // Default, it is not used
+  specification.mcm_goal = ManoeuvreCooperationGoal_localTrafficManagement; // FORESEE manages local traffic interactions
+  specification.mcm_type = McmType_request; // HV is asking to RVAhead
+  specification.maneuver_id = maneuver_id;
+  specification.type = m_station_type;
+  Simulator::Schedule(MilliSeconds(0), &foresee::startCoordination, this, specification);
   m_termination_event = Simulator::Schedule(MilliSeconds(m_FORESEE_max_time), &foresee::terminateCoordination, this);
   m_maneuver_execution = true;
 }
