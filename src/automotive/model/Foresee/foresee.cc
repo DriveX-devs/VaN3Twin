@@ -312,11 +312,6 @@ foresee::FORESEEMobilityModel ()
           // Note that a deceleration of 0 is first used to consider the case in which no motion changes are required for RV
           if(!RV.empty())
             {
-              // Built a socket to RV if needed
-              if (m_socket_map.find(RV) == m_socket_map.end())
-                {
-                  m_socket_map[RV] = GeoNet::createGNPacketSocketUnicast(m_node, gn_addr_RV);
-                }
               rv_type = m_traci->vehicle.getTypeID (RV);
               double deceleration_supported = -m_traci->vehicletype.getDecel (rv_type);
               double d = 0;
@@ -348,11 +343,6 @@ foresee::FORESEEMobilityModel ()
           // Note that an acceleration of 0 is first used to consider the case in which no motion changes are required for RV Ahead
           if(!RVAhead.empty())
             {
-              // Built a socket to RV if needed
-              if (m_socket_map.find(RVAhead) == m_socket_map.end())
-                {
-                  m_socket_map[RVAhead] = GeoNet::createGNPacketSocketUnicast(m_node, gn_addr_RVAhead);
-                }
               rvahead_type = m_traci->vehicle.getTypeID (RVAhead);
               double acceleration_supported = m_traci->vehicletype.getAccel (rvahead_type);
               double a = 0.0;
@@ -391,7 +381,7 @@ foresee::FORESEEMobilityModel ()
                   // Insert in the data structure the new coordination event that is going to happen
                   (*m_lc_data_structure)[m_vehicle_id_int] = std::make_tuple (my_heading, my_x, my_y);
                   uint8_t maneuver_id = left_criterion ? 12 : 13;
-                  Simulator::Schedule (MilliSeconds(0), &foresee::doCoordination, this, trajectory_RV, RV_id, trajectory_RVAhead, RVAhead_id, maneuver_id);
+                  Simulator::Schedule (MilliSeconds(0), &foresee::doCoordination, this, RV_id, RVAhead_id, left_criterion);
                 }
               else
                 {
@@ -407,12 +397,12 @@ foresee::FORESEEMobilityModel ()
 }
 
 void
-foresee::doCoordination (std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RV, long RV_id, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RVAhead, long RVAhead_id, uint8_t maneuver_id)
+foresee::doCoordination (long RV_id, long RVAhead_id, bool left_criterion)
 {
   MCSpecification specification = {};
   specification.mcm_its_role = McmItssRole_coordinatingItss; // HV is the coordinator
-  specification.maneuvers[RV_id] = 0;
-  specification.maneuvers[RVAhead_id] = 1;
+  specification.maneuvers[RV_id] = ManeuverID::Slowdown;
+  specification.maneuvers[RVAhead_id] = ManeuverID::Accelerate;
   specification.vehicle_maneuver_container = false;
   specification.vehicle_advise_container = true;
   specification.vehicle_acknowledgement_container = false;
@@ -422,7 +412,7 @@ foresee::doCoordination (std::vector<trajectoryPrediction::TrajectoryItem> traje
   specification.mcm_cost = 0; // Default, it is not used
   specification.mcm_goal = ManoeuvreCooperationGoal_localTrafficManagement; // FORESEE manages local traffic interactions
   specification.mcm_type = McmType_request; // HV is asking to RVAhead
-  specification.maneuver_id = maneuver_id;
+  specification.maneuver_id = left_criterion ? ManeuverID::GoToLeftLane : ManeuverID::GoToRightLane;
   specification.type = m_station_type;
   Simulator::Schedule(MilliSeconds(0), &foresee::startCoordination, this, specification);
   m_termination_event = Simulator::Schedule(MilliSeconds(m_FORESEE_max_time), &foresee::terminateCoordination, this);

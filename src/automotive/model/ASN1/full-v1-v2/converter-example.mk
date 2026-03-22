@@ -26,5 +26,5 @@ clean:
 regen: regenerate-from-asn1-source
 
 regenerate-from-asn1-source:
-	asn1c -fcompound-names -fincludes-quoted -findirect-choice -fall-defs-global CPM-all.asn
+	asn2c ../MCM.asn
 

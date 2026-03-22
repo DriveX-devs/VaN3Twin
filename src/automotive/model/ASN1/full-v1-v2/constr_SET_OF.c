@@ -167,7 +167,7 @@ SET_OF__encode_sorted(const asn_TYPE_member_t *elm,
         switch(method) {
 #if !defined(ASN_DISABLE_BER_SUPPORT)
         case SOES_DER:
-            erval = elm->type->op->der_encoder(elm->type, memb_ptr, 0, elm->tag,
+            erval = elm->type->op->der_encoder(elm->type, memb_ptr, elm->tag_mode, elm->tag,
                                                _el_addbytes, encoding_el);
             break;
 #endif  /* !defined(ASN_DISABLE_BER_SUPPORT) */

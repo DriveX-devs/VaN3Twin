@@ -504,21 +504,10 @@ namespace ns3 {
       delete[] buffer;
     }
 
-    if (dataRequest.socket != nullptr)
+    if(m_socket_tx->Send (dataRequest.data)==-1)
       {
-        if(dataRequest.socket->Send (dataRequest.data)==-1)
-          {
-            NS_LOG_ERROR("Cannot send SHB packet ");
-            return UNSPECIFIED_ERROR;
-          }
-      }
-    else
-      {
-        if(m_socket_tx->Send (dataRequest.data)==-1)
-          {
-            NS_LOG_ERROR("Cannot send SHB packet ");
-            return UNSPECIFIED_ERROR;
-          }
+        NS_LOG_ERROR("Cannot send SHB packet ");
+        return UNSPECIFIED_ERROR;
       }
 
     size_t pktSize = dataRequest.data->GetSize () + IEEE80211_DATA_PKT_HDR_LEN + IEEE80211_FCS_LEN + 8; // 8 = bytes layer LLC

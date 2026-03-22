@@ -50,7 +50,7 @@ public:
   static bool trajectoryEvaluation(std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other, double leader_length, double step_time, double negotiation_time, double lc_duration);
   void startCoordination(MCSpecification specifications);
   void terminateCoordination ();
-  void doCoordination (std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RV, long RV_id, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RVAhead, long RVAhead_id, uint8_t maneuver_id);
+  void doCoordination (long RV_id, long RVAhead_id, bool left_criterion);
 private:
   std::string m_vehicle_id;
   uint64_t m_vehicle_id_int;

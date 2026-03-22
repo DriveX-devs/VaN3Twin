@@ -83,7 +83,6 @@ namespace ns3
     dataRequest.data->AddHeader (header);
 
     //Filling the GN-dataRequest
-    GnDataRequest.socket = dataRequest.socket;
     GnDataRequest.GNType = dataRequest.GNType;
     GnDataRequest.GnAddress = dataRequest.GnAddress;
     GnDataRequest.GNCommProfile = dataRequest.GNCommProfile;

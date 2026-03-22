@@ -4,8 +4,6 @@
 #include "ns3/packet.h"
 #include "ns3/gn-address.h"
 #include "ns3/longpositionvector.h"
-#include "ns3/socket.h"
-
 
 
 #define CIRCULAR 0
@@ -77,7 +75,6 @@ namespace ns3 {
     uint32_t lenght; // Payload size
     Ptr<Packet> data; // Payload
 
-    Ptr<Socket> socket = nullptr;
   } BTPDataRequest_t;
 
   typedef struct _dataIndication {
@@ -125,8 +122,6 @@ namespace ns3 {
 
     uint32_t lenght; // Payload size
     Ptr<Packet> data; // Payload
-
-    Ptr<Socket> socket = nullptr;
 
     int16_t _messagePort; //BTP port for PRR supervisor (used for internal computation, not specified in the standard)
 

@@ -36,6 +36,8 @@
 #include "ns3/rsrp-tag.h"
 #include "ns3/size-tag.h"
 
+#include "ns3/asn_SEQUENCE_OF.h"
+
 namespace ns3
 {
   NS_LOG_COMPONENT_DEFINE("MCBasicService");
@@ -259,6 +261,8 @@ namespace ns3
     VDP::MCM_mandatory_data_t MCM_mandatory_data;
     MCBasicService_error_t errval=MCM_NO_ERROR;
 
+    std::vector<std::tuple<void *, asn_TYPE_descriptor_s>> free_ptr;
+
     Ptr<Packet> packet;
 
     BTPDataRequest_t dataRequest = {};
@@ -289,11 +293,11 @@ namespace ns3
     */
     asn1cpp::setField(MCM_message->payload.basicContainer.generationDeltaTime, compute_timestampIts (m_real_time) % 65536);
 
-    asn1cpp::setField(MCM_message->payload.basicContainer.stationType, m_stationtype);
     asn1cpp::setField(MCM_message->payload.basicContainer.stationID, m_station_id);
     asn1cpp::setField(MCM_message->payload.basicContainer.itssRole, specification.mcm_its_role);
     if(m_vehicle==true)
       {
+        asn1cpp::setField(MCM_message->payload.basicContainer.stationType, McmStationType_vehicle);
         MCM_mandatory_data = m_vdp->getMCMMandatoryData();
         asn1cpp::setField(MCM_message->payload.basicContainer.position.latitude, MCM_mandatory_data.latitude);
         asn1cpp::setField(MCM_message->payload.basicContainer.position.longitude, MCM_mandatory_data.longitude);
@@ -306,6 +310,7 @@ namespace ns3
         asn1cpp::setField(MCM_message->payload.basicContainer.manoeuvreId, specification.maneuver_id);
         asn1cpp::setField(MCM_message->payload.basicContainer.concept, specification.mcm_concept);
         MCM_message->payload.basicContainer.rational = (ManoeuvreCoordinationRational_t*)CALLOC(1, sizeof(ManoeuvreCoordinationRational_t));
+        free_ptr.push_back ({& MCM_message->payload.basicContainer.rational, asn_DEF_ManoeuvreCoordinationRational});
         if (specification.mcm_concept == 0) {
             //rational->present = ManoeuvreCoordinationRational_PR_manoeuvreCooperationGoal;
             asn1cpp::setField(MCM_message->payload.basicContainer.rational->present, ManoeuvreCoordinationRational_PR_manoeuvreCooperationGoal);
@@ -322,6 +327,7 @@ namespace ns3
    else
      {
        /* Fill the basicContainer for RSU*/
+       asn1cpp::setField(MCM_message->payload.basicContainer.stationType, McmStationType_roadsideUnit);
        // TODO
      }
 
@@ -346,36 +352,55 @@ namespace ns3
           {
             asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleType, Iso3833VehicleType_truckStationWagon);
           }
-        // TODO the standard is not clear about the usage of this container
+
+        for (auto it = specification.maneuvers.begin(); it != specification.maneuvers.end(); ++it)
+          {
+            auto madv = asn1cpp::makeSeq(ManoeuvreAdvice);
+            asn1cpp::setField(madv->executantID, it->first);
+            //asn1cpp::setField(madv->manoeuvreID, it->second);
+            asn1cpp::sequenceof::pushList(man.manoeuvreAdvice, madv);
+          }
      }
    else if (specification.vehicle_advise_container)
      {
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_advisedManoeuvreContainer);
-       auto adv = asn1cpp::makeSeq(ManoeuvreAdviceContainer);
        for (auto it = specification.maneuvers.begin(); it != specification.maneuvers.end(); ++it)
          {
-           auto madv = asn1cpp::makeSeq(ManoeuvreAdvice);
-           asn1cpp::setField(madv->executantID, it->first);
-           auto subms = asn1cpp::makeSeq(Submanoeuvres);
-           asn1cpp::setField(madv->submaneuvres, subms);
-           auto subm = asn1cpp::makeSeq(Submanoeuvre);
-           asn1cpp::setField (subm->submanoeuvreId, it->second);
-           asn1cpp::sequenceof::pushList(madv->submaneuvres, subm);
-           asn1cpp::sequenceof::pushList(*adv, madv);
+           auto advice = asn1cpp::makeSeq(ManoeuvreAdvice);
+           asn1cpp::setField(advice->executantID, it->first);
+
+           auto *sm = static_cast<Submanoeuvre_t *> (calloc(1, sizeof(Submanoeuvre_t)));
+           free_ptr.push_back ({sm, asn_DEF_Submanoeuvre});
+
+           asn1cpp::setField(sm->submanoeuvreId, it->second);
+
+           if(ASN_SEQUENCE_ADD(&advice->submaneuvres, sm) != 0) {
+               ASN_STRUCT_FREE(asn_DEF_Submanoeuvre, sm);
+             }
+           asn1cpp::sequenceof::pushList(MCM_message->payload.mcmContainer.choice.advisedManoeuvreContainer, advice);
          }
-       asn1cpp::setField(MCM_message->payload.mcmContainer.choice.advisedManoeuvreContainer, adv);
      }
    else if (specification.vehicle_acknowledgement_container)
      {
-
+       asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_acknowledgmentContainer);
+       asn1cpp::setField(MCM_message->payload.mcmContainer.choice.acknowledgmentContainer.acknowledgedType, McmType_acknowledgment);
+       asn1cpp::setField(MCM_message->payload.mcmContainer.choice.acknowledgmentContainer.generationDeltaTime, compute_timestampIts (m_real_time) % 65536);
      }
    else if (specification.vehicle_response_container)
      {
-
-     }
+       asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_responseContainer);
+       if (specification.mcm_response == 0)
+         {
+           asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.manouevreResponse, ManouevreResponse_accept);
+         }
+       else
+         {
+           asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.manouevreResponse, ManouevreResponse_decline);
+         }
+       }
    else if (specification.vehicle_terminator_container)
      {
-
+       asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_terminationContainer);
      }
    else
      {
@@ -388,6 +413,11 @@ namespace ns3
     {
       return MCM_ASN1_UPER_ENC_ERROR;
     }
+
+    for (auto ptr_it = free_ptr.begin(); ptr_it != free_ptr.end(); ++ptr_it)
+      {
+        ASN_STRUCT_FREE(std::get<1>(*ptr_it), std::get<0>(*ptr_it));
+      }
 
     packet = Create<Packet> ((uint8_t*) encode_result.c_str(), encode_result.size());
 

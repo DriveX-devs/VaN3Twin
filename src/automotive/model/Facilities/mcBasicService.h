@@ -22,9 +22,48 @@ extern "C" {
 
 namespace ns3
 {
+
+enum ManeuverID
+{
+  // --- Traffic ---
+  Undefined                         = 0x00,
+  TransitToHumanDrivenMode          = 0x01,
+  TransitToAutomatedDrivingMode     = 0x02,
+  DriveStraight                     = 0x03,
+  TurnLeft                          = 0x04,
+  TurnRight                         = 0x05,
+  UTurn                             = 0x06,
+  MoveBackward                      = 0x07,
+  Overtake                          = 0x08,
+  Accelerate                        = 0x09,
+  Slowdown                          = 0x0A,
+  Stop                              = 0x0B,
+  GoToLeftLane                      = 0x0C,
+  GoToRightLane                     = 0x0D,
+  GetOnHighway                      = 0x0E,
+  ExitHighway                       = 0x0F,
+  TakeTollingLane                   = 0x10,
+  StopAndWait                       = 0x11,
+
+  // --- Safety ---
+  EmergencyBrakeAndStop             = 0x40,
+  ResetStopAndRestartMoving         = 0x41,
+  StayInLane                        = 0x42,
+  ResetStayInLane                   = 0x43,
+  StayAway                          = 0x44,
+  ResetStayAway                     = 0x45,
+
+  // --- Group Manoeuvre ---
+  FollowMe                          = 0x80,
+  ExistingGroup                     = 0x81,
+  TemporarilyDisbandGroup           = 0x82,
+  ConstituteTemporaryGroup          = 0x83,
+  DisbandTemporaryGroup             = 0x84
+};
+
   typedef struct {
     long mcm_type;
-    uint8_t maneuver_id;
+    ManeuverID maneuver_id;
     long mcm_its_role;
     long mcm_status;
     long mcm_concept;
@@ -36,9 +75,9 @@ namespace ns3
     bool vehicle_response_container;
     bool vehicle_terminator_container;
     std::unordered_map<long, std::vector<trajectoryPrediction::TrajectoryItem>> trajectories;
-    std::unordered_map<long, uint8_t > maneuvers;
-    Ptr<Socket> socket;
+    std::unordered_map<long, ManeuverID > maneuvers;
     StationType_t type;
+    long mcm_response;
   }MCSpecification;
 
   typedef enum {

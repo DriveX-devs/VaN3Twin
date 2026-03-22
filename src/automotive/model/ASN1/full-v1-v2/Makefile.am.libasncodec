@@ -1,21 +1,4 @@
 ASN_MODULE_SRCS=	\
-	CollectivePerceptionMessage.c	\
-	CpmPayload.c	\
-	ManagementContainerCPM.c	\
-	CpmContainerId.c	\
-	WrappedCpmContainer.c	\
-	WrappedCpmContainers.c	\
-	MessageRateRange.c	\
-	OriginatingVehicleContainer.c	\
-	OriginatingRsuContainer.c	\
-	TrailerDataSet.c	\
-	PerceivedObjectContainer.c	\
-	PerceivedObjects.c	\
-	PerceptionRegionContainer.c	\
-	PerceptionRegion.c	\
-	PerceivedObjectIds.c	\
-	SensorInformationContainer.c	\
-	SensorInformation.c	\
 	AccelerationChange.c	\
 	AccelerationConfidence.c	\
 	AccelerationControl.c	\
@@ -320,26 +303,54 @@ ASN_MODULE_SRCS=	\
 	VruProfileAndSubprofile.c	\
 	Wgs84Angle.c	\
 	YawRate.c	\
+	MCM.c	\
+	WrappedMcmInformationBlocks.c	\
+	McmBasicContainer.c	\
+	McmStationType.c	\
+	McmItssRole.c	\
+	McmContainer.c	\
+	TerminationContainer.c	\
+	VehicleManoeuvreContainer.c	\
+	ResponseContainer.c	\
+	McmGenericCurentStateContainer.c	\
+	VehicleCurrentStateContainer.c	\
+	ManoeuvreOverallStrategy.c	\
+	ListOfSubmanoeuvreDescriptionsContainer.c	\
+	SubmanoeuvreDescription.c	\
+	McmType.c	\
+	ManoeuvreId.c	\
+	ManoeuvreCoordinationConcept.c	\
+	ManoeuvreCoordinationRational.c	\
+	ManoeuvreCooperationGoal.c	\
+	ManoeuvreCooperationCost.c	\
+	ManoeuvreExecutionStatus.c	\
+	SubmanoeuvreStrategy.c	\
+	VehicleSize.c	\
+	Trajectory.c	\
+	WayPointType.c	\
+	WayPoint.c	\
+	ManoeuvreAdviceContainer.c	\
+	ManoeuvreAdvice.c	\
+	AcknowledgmentContainer.c	\
+	Submanoeuvres.c	\
+	Submanoeuvre.c	\
+	AdvisedTrrContainer.c	\
+	TrrDescription.c	\
+	TrrType.c	\
+	LaneCount.c	\
+	RLLC.c	\
+	RRLC.c	\
+	TRRWidth.c	\
+	TRRLength.c	\
+	TemporalCharacteristics.c	\
+	KinematicsCharacteristics.c	\
+	CurrentStateAdvisedChange.c	\
+	JoinGroupStateChange.c	\
+	ManouevreResponse.c	\
+	DeclineReason.c	\
 	EXTERNAL.c
 
 ASN_MODULE_HDRS=	\
-	CollectivePerceptionMessage.h	\
-	CpmPayload.h	\
-	ManagementContainerCPM.h	\
-	CpmContainerId.h	\
-	WrappedCpmContainer.h	\
-	WrappedCpmContainers.h	\
-	MessageRateRange.h	\
-	OriginatingVehicleContainer.h	\
-	OriginatingRsuContainer.h	\
-	TrailerDataSet.h	\
-	PerceivedObjectContainer.h	\
-	PerceivedObjects.h	\
-	PerceptionRegionContainer.h	\
-	PerceptionRegion.h	\
-	PerceivedObjectIds.h	\
-	SensorInformationContainer.h	\
-	SensorInformation.h	\
 	AccelerationChange.h	\
 	AccelerationConfidence.h	\
 	AccelerationControl.h	\
@@ -644,6 +655,51 @@ ASN_MODULE_HDRS=	\
 	VruProfileAndSubprofile.h	\
 	Wgs84Angle.h	\
 	YawRate.h	\
+	MCM.h	\
+	WrappedMcmInformationBlocks.h	\
+	McmBasicContainer.h	\
+	McmStationType.h	\
+	McmItssRole.h	\
+	McmContainer.h	\
+	TerminationContainer.h	\
+	VehicleManoeuvreContainer.h	\
+	ResponseContainer.h	\
+	McmGenericCurentStateContainer.h	\
+	VehicleCurrentStateContainer.h	\
+	ManoeuvreOverallStrategy.h	\
+	ListOfSubmanoeuvreDescriptionsContainer.h	\
+	SubmanoeuvreDescription.h	\
+	McmType.h	\
+	ManoeuvreId.h	\
+	ManoeuvreCoordinationConcept.h	\
+	ManoeuvreCoordinationRational.h	\
+	ManoeuvreCooperationGoal.h	\
+	ManoeuvreCooperationCost.h	\
+	ManoeuvreExecutionStatus.h	\
+	SubmanoeuvreStrategy.h	\
+	VehicleSize.h	\
+	Trajectory.h	\
+	WayPointType.h	\
+	WayPoint.h	\
+	ManoeuvreAdviceContainer.h	\
+	ManoeuvreAdvice.h	\
+	AcknowledgmentContainer.h	\
+	Submanoeuvres.h	\
+	Submanoeuvre.h	\
+	AdvisedTrrContainer.h	\
+	TrrDescription.h	\
+	TrrType.h	\
+	LaneCount.h	\
+	RLLC.h	\
+	RRLC.h	\
+	TRRWidth.h	\
+	TRRLength.h	\
+	TemporalCharacteristics.h	\
+	KinematicsCharacteristics.h	\
+	CurrentStateAdvisedChange.h	\
+	JoinGroupStateChange.h	\
+	ManouevreResponse.h	\
+	DeclineReason.h	\
 	EXTERNAL.h
 
 ASN_MODULE_HDRS+=ANY.h
