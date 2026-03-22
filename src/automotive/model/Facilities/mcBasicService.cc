@@ -258,6 +258,13 @@ namespace ns3
   MCBasicService_error_t
   MCBasicService::generateAndEncodeMCM(MCSpecification specification)
   {
+    int count = specification.vehicle_terminator_container
+                + specification.vehicle_response_container
+                + specification.vehicle_acknowledgement_container
+                + specification.vehicle_advise_container
+                + specification.vehicle_maneuver_container;
+    // Only one container must be activated for one message
+    NS_ASSERT (count == 1);
     VDP::MCM_mandatory_data_t MCM_mandatory_data;
     MCBasicService_error_t errval=MCM_NO_ERROR;
 
@@ -309,8 +316,9 @@ namespace ns3
         asn1cpp::setField(MCM_message->payload.basicContainer.mcmType, specification.mcm_type);
         asn1cpp::setField(MCM_message->payload.basicContainer.manoeuvreId, specification.maneuver_id);
         asn1cpp::setField(MCM_message->payload.basicContainer.concept, specification.mcm_concept);
-        MCM_message->payload.basicContainer.rational = (ManoeuvreCoordinationRational_t*)CALLOC(1, sizeof(ManoeuvreCoordinationRational_t));
-        free_ptr.push_back ({& MCM_message->payload.basicContainer.rational, asn_DEF_ManoeuvreCoordinationRational});
+        // MCM_message->payload.basicContainer.rational = (ManoeuvreCoordinationRational_t*)CALLOC(1, sizeof(ManoeuvreCoordinationRational_t));
+        MCM_message->payload.basicContainer.rational = static_cast<ManoeuvreCoordinationRational_t*> (calloc(1, sizeof(ManoeuvreCoordinationRational_t)));
+        //free_ptr.push_back ({& MCM_message->payload.basicContainer.rational, asn_DEF_ManoeuvreCoordinationRational});
         if (specification.mcm_concept == 0) {
             //rational->present = ManoeuvreCoordinationRational_PR_manoeuvreCooperationGoal;
             asn1cpp::setField(MCM_message->payload.basicContainer.rational->present, ManoeuvreCoordinationRational_PR_manoeuvreCooperationGoal);
@@ -340,6 +348,8 @@ namespace ns3
        auto &man = MCM_message->payload.mcmContainer.choice.vehicleManoeuvreContainer;
        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleHeading.value, MCM_mandatory_data.heading.getValue());
        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleHeading.confidence, MCM_mandatory_data.heading.getConfidence());
+       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSpeed.speedValue, MCM_mandatory_data.speed.getValue());
+       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSpeed.speedConfidence, MCM_mandatory_data.speed.getConfidence());
        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleWidth, MCM_mandatory_data.VehicleWidth);
        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleLenth.vehicleLengthValue, MCM_mandatory_data.VehicleLength.getValue());
        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleLenth.vehicleLengthConfidenceIndication, MCM_mandatory_data.VehicleLength.getConfidence());
@@ -355,10 +365,19 @@ namespace ns3
 
         for (auto it = specification.maneuvers.begin(); it != specification.maneuvers.end(); ++it)
           {
-            auto madv = asn1cpp::makeSeq(ManoeuvreAdvice);
-            asn1cpp::setField(madv->executantID, it->first);
-            //asn1cpp::setField(madv->manoeuvreID, it->second);
-            asn1cpp::sequenceof::pushList(man.manoeuvreAdvice, madv);
+            auto advice = asn1cpp::makeSeq(ManoeuvreAdvice);
+            asn1cpp::setField(advice->executantID, it->first);
+
+            auto *sm = static_cast<Submanoeuvre_t *> (calloc(1, sizeof(Submanoeuvre_t)));
+            free_ptr.push_back ({sm, asn_DEF_Submanoeuvre});
+
+            asn1cpp::setField(sm->submanoeuvreId, it->second);
+
+            if(ASN_SEQUENCE_ADD(&advice->submaneuvres, sm) != 0)
+              {
+                ASN_STRUCT_FREE(asn_DEF_Submanoeuvre, sm);
+              }
+            asn1cpp::sequenceof::pushList(man.manoeuvreAdvice, advice);
           }
      }
    else if (specification.vehicle_advise_container)
@@ -374,7 +393,8 @@ namespace ns3
 
            asn1cpp::setField(sm->submanoeuvreId, it->second);
 
-           if(ASN_SEQUENCE_ADD(&advice->submaneuvres, sm) != 0) {
+           if(ASN_SEQUENCE_ADD(&advice->submaneuvres, sm) != 0)
+             {
                ASN_STRUCT_FREE(asn_DEF_Submanoeuvre, sm);
              }
            asn1cpp::sequenceof::pushList(MCM_message->payload.mcmContainer.choice.advisedManoeuvreContainer, advice);
@@ -416,7 +436,12 @@ namespace ns3
 
     for (auto ptr_it = free_ptr.begin(); ptr_it != free_ptr.end(); ++ptr_it)
       {
-        ASN_STRUCT_FREE(std::get<1>(*ptr_it), std::get<0>(*ptr_it));
+        void* ptr = std::get<0>(*ptr_it);
+        asn_TYPE_descriptor_s type = std::get<1>(*ptr_it);
+        if (ptr != nullptr)
+          {
+            ASN_STRUCT_FREE(type, ptr);
+          }
       }
 
     packet = Create<Packet> ((uint8_t*) encode_result.c_str(), encode_result.size());
@@ -427,8 +452,8 @@ namespace ns3
     dataRequest.destPInfo = 0;
     dataRequest.GNType = TSB;
     dataRequest.GNCommProfile = UNSPECIFIED;
-    dataRequest.GNRepInt =0;
-    dataRequest.GNMaxRepInt=0;
+    dataRequest.GNRepInt = 0;
+    dataRequest.GNMaxRepInt = 0;
     dataRequest.GNMaxLife = 1;
     dataRequest.GNMaxHL = 1;
     dataRequest.GNTraClass = 0x02; // Store carry foward: no - Channel offload: no - Traffic Class ID: 2
@@ -448,7 +473,7 @@ namespace ns3
     // Store the time in which the last MCM (i.e. this one) has been generated and successfully sent
     now=computeTimestampUInt64 ()/NANO_TO_MILLI;
     now_centi = computeTimestampUInt64 ()/NANO_TO_CENTI; //Time in centiseconds(now[ms]/10->centiseconds) for Reference Position
-    m_T_GenMCM_ms=now-lastMCMGen;
+    m_T_GenMCM_ms = now - lastMCMGen;
     lastMCMGen = now;
 
     return errval;

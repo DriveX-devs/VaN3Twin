@@ -219,7 +219,7 @@ foresee::FORESEEMobilityModel ()
       bool found_coordination = false;
       // Take the four roles, target, ahead ego, ahead target
       std::string RV, HVAhead, RVAhead;
-      long RV_id, RVAhead_id;
+      long RV_id = -1, RVAhead_id = -1;
       // Check whether there is another maneuver coordination that is happening within the ahead range
       // If yes, ego vehicle cannot perform maneuver coordination
       for (auto it = (*m_lc_data_structure).begin(); it != (*m_lc_data_structure).end(); ++it)
@@ -401,10 +401,17 @@ foresee::doCoordination (long RV_id, long RVAhead_id, bool left_criterion)
 {
   MCSpecification specification = {};
   specification.mcm_its_role = McmItssRole_coordinatingItss; // HV is the coordinator
-  specification.maneuvers[RV_id] = ManeuverID::Slowdown;
-  specification.maneuvers[RVAhead_id] = ManeuverID::Accelerate;
-  specification.vehicle_maneuver_container = false;
-  specification.vehicle_advise_container = true;
+  if (RV_id >= 0)
+    {
+      specification.maneuvers[RV_id] = ManeuverID::Slowdown;
+    }
+  if (RVAhead_id >= 0)
+    {
+      specification.maneuvers[RVAhead_id] = ManeuverID::Accelerate;
+    }
+
+  specification.vehicle_maneuver_container = true;
+  specification.vehicle_advise_container = false;
   specification.vehicle_acknowledgement_container = false;
   specification.vehicle_response_container = false;
   specification.vehicle_terminator_container = false;
