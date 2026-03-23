@@ -148,7 +148,7 @@ int main (int argc, char *argv[])
   NetDeviceContainer devices = wifi80211p.Install (wifiPhy, wifi80211pMac, c);
 
   // Enable saving to Wireshark PCAP traces
-  // wifiPhy.EnablePcap ("v2v-80211p-mcm", devices);
+  wifiPhy.EnablePcap ("v2v-80211p-foresee-mcm", devices.Get (0));
 
   // Set up the link between SUMO and ns-3, to make each node "mobile" (i.e., linking each ns-3 node to each moving vehicle in ns-3,
   // which corresponds to installing the network stack to each SUMO vehicle)
@@ -231,7 +231,7 @@ int main (int argc, char *argv[])
       bs_container->disablePRRSupervisorForGNBeacons ();
 
       // Set the function which will be called every time a CAM is received, i.e., receiveCAM()
-      bs_container->addMCMRxCallback (std::bind(&receiveMCM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
+      // bs_container->addMCMRxCallback (std::bind(&receiveMCM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
       bs_container->setupContainer(true,false,false,false,true,false);
 
       // Store the container for this vehicle inside a local global BSMap, i.e., a structure (similar to a hash table) which allows you to easily
@@ -249,6 +249,7 @@ int main (int argc, char *argv[])
       lc_model[nodeID].setCurrentLCData(&lc_data_structure);
       lc_model[nodeID].setCoordinationAvoidanceRange(ca_range);
       lc_model[nodeID].setMCBasicService(bs_container->getMCBasicService());
+      lc_model[nodeID].addMCMRxCallback ();
       lc_model[nodeID].setStartTime(10);
       std::string my_type = sumoClient->vehicle.getTypeID (vehicleID);
       lc_model[nodeID].setTrajectoryPredictor(HORIZON_TIME, STEP_TIME, NEGOTIATION_TIME, DECELERATION_TIME, LC_TIME, foresee::PredictionType::CONSTANT_SPEED);

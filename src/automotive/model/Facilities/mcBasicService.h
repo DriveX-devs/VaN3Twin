@@ -61,25 +61,6 @@ enum ManeuverID
   DisbandTemporaryGroup             = 0x84
 };
 
-  typedef struct {
-    long mcm_type;
-    ManeuverID maneuver_id;
-    long mcm_its_role;
-    long mcm_status;
-    long mcm_concept;
-    long mcm_goal;
-    long mcm_cost;
-    bool vehicle_maneuver_container;
-    bool vehicle_advise_container;
-    bool vehicle_acknowledgement_container;
-    bool vehicle_response_container;
-    bool vehicle_terminator_container;
-    std::unordered_map<long, std::vector<trajectoryPrediction::TrajectoryItem>> trajectories;
-    std::unordered_map<long, ManeuverID > maneuvers;
-    StationType_t type;
-    long mcm_response;
-  }MCSpecification;
-
   typedef enum {
     MCM_NO_ERROR=0,
     MCM_WRONG_INTERVAL=1,
@@ -88,6 +69,105 @@ enum ManeuverID
     MCM_ASN1_UPER_ENC_ERROR=4,
     MCM_CANNOT_SEND=5
   } MCBasicService_error_t;
+
+  class MCSpecification: public Object
+  {
+  public:
+    MCSpecification()
+        : m_mcm_type(0), m_mcm_its_role(0), m_mcm_status(0),
+          m_mcm_concept(0), m_mcm_goal(0), m_mcm_cost(0),
+          m_vehicle_maneuver_container(false),
+          m_vehicle_advise_container(false),
+          m_vehicle_acknowledgement_container(false),
+          m_vehicle_response_container(false),
+          m_vehicle_terminator_container(false),
+          m_vehicle_type{}, m_mcm_response(0) {}
+
+    ~MCSpecification ();
+    template <typename T>
+    T* create()
+    {
+      T* new_item = (T *)CALLOC(1, sizeof(T));
+      return new_item;
+    }
+
+    template <typename T, typename Container, typename Item>
+    int add(T type, Container* container, Item* item)
+    {
+      if (ASN_SEQUENCE_ADD(container, item) != 0)
+        {
+          ASN_STRUCT_FREE(type, item);
+          return 0;
+        }
+      else return 1;
+    }
+
+    bool checkContainers();
+
+    void setAdviseContainer() {m_vehicle_advise_container = true;};
+    bool getAdviseContainer() {return m_vehicle_advise_container;};
+    void setManeuverContainer() {m_vehicle_maneuver_container = true;};
+    bool getManeuverContainer() {return m_vehicle_maneuver_container;};
+    void setAcknowledgmentContainer() {m_vehicle_acknowledgement_container = true;};
+    bool getAcknowledgmentContainer() {return m_vehicle_acknowledgement_container;};
+    void setResponseContainer() { m_vehicle_response_container = true; };
+    bool getResponseContainer() { return m_vehicle_response_container; };
+    void setTerminatorContainer() {m_vehicle_terminator_container = true;};
+    bool getTerminatorContainer() {return m_vehicle_terminator_container;};
+    void setMCMType(long type) {m_mcm_type = type;};
+    long getMCMType() {return m_mcm_type;};
+    void setMCMItsRole(long role) { m_mcm_its_role = role; };
+    long getMCMItsRole() { return m_mcm_its_role; };
+    void setMCMStatus(long status) { m_mcm_status = status; };
+    long getMCMStatus() { return m_mcm_status; };
+    void setMCMConcept(long concept) { m_mcm_concept = concept; };
+    long getMCMConcept() { return m_mcm_concept; };
+    void setMCMGoal(long goal) { m_mcm_goal = goal; };
+    long getMCMGoal() { return m_mcm_goal; };
+    void setMCMCost(long cost) { m_mcm_cost = cost; };
+    long getMCMCost() { return m_mcm_cost; };
+    void setMCMResponse(long response) { m_mcm_response = response; };
+    long getMCMResponse() { return m_mcm_response; };
+    void setManeuverID(ManeuverID id) { m_maneuver_id = id; };
+    ManeuverID getManeuverID() { return m_maneuver_id; };
+    void setVehicleType(Iso3833VehicleType type) { m_vehicle_type = type; };
+    Iso3833VehicleType getVehicleType() { return m_vehicle_type; };
+    void pushSubmaneuverDescription(const SubmanoeuvreDescription& item)
+    {
+      m_submaneuver_description.push_back(item);
+    };
+    std::vector<SubmanoeuvreDescription>& getSubmaneuverDescription()
+    {
+      return m_submaneuver_description;
+    };
+    void pushManeuverAdvice(const ManoeuvreAdvice& item)
+    {
+      m_maneuver_advice.push_back(item);
+    };
+    std::vector<ManoeuvreAdvice>& getManeuverAdvice()
+    {
+      return m_maneuver_advice;
+    };
+
+  private:
+    long m_mcm_type;
+    ManeuverID m_maneuver_id;
+    long m_mcm_its_role;
+    long m_mcm_status;
+    long m_mcm_concept;
+    long m_mcm_goal;
+    long m_mcm_cost;
+    bool m_vehicle_maneuver_container;
+    bool m_vehicle_advise_container;
+    bool m_vehicle_acknowledgement_container;
+    bool m_vehicle_response_container;
+    bool m_vehicle_terminator_container;
+    std::vector<SubmanoeuvreDescription> m_submaneuver_description; // For Vehicle Maneuver Container
+    std::vector<ManoeuvreAdvice> m_maneuver_advice; // For Vehicle Maneuver Container and Vehicle Advice Container
+    Iso3833VehicleType m_vehicle_type;
+    long m_mcm_response;
+  };
+
 
   /**
    * \ingroup automotive
@@ -265,7 +345,7 @@ enum ManeuverID
      *
      * @return MCBasicService_error_t   The error code
      */
-    MCBasicService_error_t generateAndEncodeMCM(MCSpecification specification);
+    MCBasicService_error_t generateAndEncodeMCM(MCSpecification *specification);
 
 
   private:

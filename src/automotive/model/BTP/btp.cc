@@ -151,8 +151,12 @@ namespace ns3
         if(m_vam_ReceiveCallback!=nullptr) {
           m_vam_ReceiveCallback(btpDataIndication,address);
         }
+    } else if (btpDataIndication.destPort == MC_PORT) {
+        if (m_mcm_ReceiveCallback != nullptr) {
+            m_mcm_ReceiveCallback(btpDataIndication, address);
+          }
     } else {
-      NS_LOG_ERROR("BTP : Unknown port");
+    NS_LOG_ERROR("BTP : Unknown port");
     }
   }
 

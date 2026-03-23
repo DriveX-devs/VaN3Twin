@@ -48,9 +48,11 @@ public:
   void setStartTime(uint8_t startTime) {m_start_time = startTime;};
   void setTrajectoryPredictor(double horizon_time, double step_time, double negotiation_time, double deceleration_time, double lc_duration, PredictionType prediction_type);
   static bool trajectoryEvaluation(std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other, double leader_length, double step_time, double negotiation_time, double lc_duration);
-  void startCoordination(MCSpecification specifications);
   void terminateCoordination ();
-  void doCoordination (long RV_id, long RVAhead_id, bool left_criterion);
+  void startCoordination (long RV_id, long RVAhead_id, long HVAhead_id, bool left_criterion);
+  void addMCMRxCallback();
+  void receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info);
+
 private:
   std::string m_vehicle_id;
   uint64_t m_vehicle_id_int;
@@ -79,6 +81,7 @@ private:
   Ptr<Node> m_node = nullptr;
   std::unordered_map<std::string, Ptr<Socket>> m_socket_map;
   StationType_t m_station_type;
+  std::function<void(asn1cpp::Seq<MCM>, Address, StationID_t, StationType_t, SignalInfo)> m_MCMReceiveCallbackExtended;
 };
 }
 
