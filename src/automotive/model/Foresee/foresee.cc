@@ -64,6 +64,10 @@ foresee::WrapperFORESEEMobilityModel()
     {
       NS_FATAL_ERROR ("FORESEE Mobility Model needs the station type ['StationType_passengerCar', 'StationType_lightTruck'].");
     }
+  if (m_MCMReceiveCallbackExtended == nullptr)
+    {
+      NS_FATAL_ERROR ("FORESEE Mobility Model needs the callback for MCM.");
+    }
   // Schedule the FORESEE Mobility Model to start at the specified time
   Simulator::Schedule (Seconds(m_start_time), &foresee::FORESEEMobilityModel, this);
 }
@@ -522,7 +526,7 @@ foresee::startCoordination (long RV_id, long RVAhead_id, long HVAhead_id, bool l
   // Free the CurrentStateAdvisedChange we allocated above
   // Simulator::Schedule(MilliSeconds(m_negotiation_time), &foresee::startCoordination, this);
   m_termination_event = Simulator::Schedule(MilliSeconds(m_FORESEE_max_time), &foresee::terminateCoordination, this);
-  m_maneuver_execution = true;
+  m_busy_with_maneuver = true;
 }
 
 void
@@ -530,6 +534,8 @@ foresee::terminateCoordination ()
 {
   // Clear the data structure after terminating the coordination
   (*m_lc_data_structure).erase(m_vehicle_id_int);
+  // TODO send a coordination message to terminate
+  m_busy_with_maneuver = false;
   // Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
 }
 
@@ -601,7 +607,102 @@ foresee::trajectoryEvaluation (std::vector<trajectoryPrediction::TrajectoryItem>
 
 void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info)
 {
-  std::cout<< "Received" << std::endl;
+  StationId_t sender = mcm->header.stationId;
+  long now = compute_timestampIts (m_real_time) % 65536;
+  mcm->payload.basicContainer.generationDeltaTime;
+  McmType_t type = mcm->payload.basicContainer.mcmType;
+  McmContainer_PR present_container = mcm->payload.mcmContainer.present;
+
+  // Container extraction
+  bool no_containers = false;
+  bool advice_container = false;
+  ManoeuvreAdviceContainer_t adc;
+  bool maneuver_container = false;
+  VehicleManoeuvreContainer_t man;
+  bool ack_container = false;
+  AcknowledgmentContainer_t ack;
+  bool resp_container = false;
+  ResponseContainer_t resp;
+  bool term_container = false;
+  TerminationContainer_t term;
+
+  switch (present_container)
+    {
+      case McmContainer_PR_NOTHING:
+        no_containers = true;
+        break;
+      case McmContainer_PR_advisedManoeuvreContainer:
+      {
+        adc = mcm->payload.mcmContainer.choice.advisedManoeuvreContainer;
+        advice_container = true;
+        break;
+      }
+      case McmContainer_PR_vehicleManoeuvreContainer:
+      {
+        man = mcm->payload.mcmContainer.choice.vehicleManoeuvreContainer;
+        maneuver_container = true;
+        break;
+      }
+      case McmContainer_PR_acknowledgmentContainer:
+      {
+        ack = mcm->payload.mcmContainer.choice.acknowledgmentContainer;
+        ack_container = true;
+        break;
+      }
+      case McmContainer_PR_responseContainer:
+      {
+        resp = mcm->payload.mcmContainer.choice.responseContainer;
+        resp_container = true;
+        break;
+      }
+      case McmContainer_PR_terminationContainer:
+      {
+        term = mcm->payload.mcmContainer.choice.terminationContainer;
+        term_container = true;
+        break;
+      }
+      default:
+        break;
+    }
+
+  if (no_containers)
+    {
+      // If no container present, directly return
+      return;
+    }
+
+  // MCM type identification
+  // FORESEE takes into account: Request, Response, Acknowledgment, Execution Status, Terminator
+  switch (type)
+    {
+    case McmType::McmType_request:
+      // TODO check if the message is for me
+      if (m_busy_with_maneuver)
+        {
+          // Refuse the coordination
+          MCSpecification specification;
+          specification.setResponseContainer();
+          specification.setMCMItsRole (McmItssRole_notAvailable);
+          specification.setMCMResponse (1);
+          m_mcs_ptr->generateAndEncodeMCM (&specification);
+        }
+      else
+        {
+          // Accept the coordination if the request is for us
+          m_busy_with_maneuver = true;
+        }
+      break;
+    case McmType::McmType_termination:
+      // Termination reception, the vehicle is now free to do other coordinations
+      m_busy_with_maneuver = false;
+      break;
+    case McmType::McmType_acknowledgment:
+      break;
+    case McmType::McmType_response:
+      break;
+    default:
+      break;
+    }
 }
 void
 foresee::addMCMRxCallback ()

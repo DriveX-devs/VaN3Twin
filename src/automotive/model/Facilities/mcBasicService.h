@@ -75,7 +75,7 @@ enum ManeuverID
   public:
     MCSpecification()
         : m_mcm_type(0), m_mcm_its_role(0), m_mcm_status(0),
-          m_mcm_concept(0), m_mcm_goal(0), m_mcm_cost(0),
+          m_mcm_concept(0), m_mcm_goal(0), m_maneuver_id(Undefined), m_mcm_cost(0),
           m_vehicle_maneuver_container(false),
           m_vehicle_advise_container(false),
           m_vehicle_acknowledgement_container(false),

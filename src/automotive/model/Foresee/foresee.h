@@ -76,12 +76,13 @@ private:
   double m_step_time;
   double m_negotiation_time;
   int m_FORESEE_max_time = 10000;
-  bool m_maneuver_execution = false;
+  bool m_busy_with_maneuver = false;
   EventId m_termination_event;
   Ptr<Node> m_node = nullptr;
   std::unordered_map<std::string, Ptr<Socket>> m_socket_map;
   StationType_t m_station_type;
-  std::function<void(asn1cpp::Seq<MCM>, Address, StationID_t, StationType_t, SignalInfo)> m_MCMReceiveCallbackExtended;
+  std::function<void(asn1cpp::Seq<MCM>, Address, StationID_t, StationType_t, SignalInfo)> m_MCMReceiveCallbackExtended = nullptr;
+  bool m_real_time;
 };
 }
 

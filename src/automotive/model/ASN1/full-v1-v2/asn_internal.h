@@ -21,7 +21,8 @@
 extern "C" {
 #endif
 
-//#define ASN_EMIT_DEBUG 1
+// UNCOMMENT HERE FOR ASN DEBUGGING
+// #define ASN_EMIT_DEBUG 1
 //#define ASN_THREAD_SAFE 0
 
 #if !defined(ASN_DISABLE_UPER_SUPPORT)
@@ -42,6 +43,7 @@ int get_asn1c_environment_version(void);	/* Run-time version */
 #define	REALLOC(oldptr, size)	realloc(oldptr, size)
 #define	FREEMEM(ptr)		free(ptr)
 
+// UNCOMMENT HERE FOR ASN DEBUGGING
 // #define	asn_debug_indent	0
 #define ASN_DEBUG_INDENT_ADD(i) do{}while(0)
 
