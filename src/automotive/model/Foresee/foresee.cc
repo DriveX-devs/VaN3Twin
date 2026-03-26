@@ -19,6 +19,21 @@ foresee::setTrajectoryPredictor (double horizon_time, double step_time, double n
 }
 
 void
+foresee::addMCMRxCallback ()
+{
+  std::function<void(asn1cpp::Seq<MCM>, Address, StationID_t, StationType_t, SignalInfo)> rx_callback =
+      std::bind(&foresee::receiveMCM,
+                 this,
+                 std::placeholders::_1,
+                 std::placeholders::_2,
+                 std::placeholders::_3,
+                 std::placeholders::_4,
+                 std::placeholders::_5);
+  m_MCMReceiveCallbackExtended = rx_callback;
+  m_mcs_ptr->addMCRxCallbackExtended (m_MCMReceiveCallbackExtended);
+}
+
+void
 foresee::WrapperFORESEEMobilityModel()
 {
   // Check if the number of lanes is valid
@@ -114,7 +129,6 @@ foresee::FORESEEMobilityModel ()
       if (it->vehData.heading != my_heading) continue;
       auto pos = m_traci->simulation.convertLonLattoXY (it->vehData.lon, it->vehData.lat);
       double x = pos.x;
-
       // Skip vehicles behind the ego vehicle
       if (my_heading == 90 && x < my_x) continue;
       if (my_heading == 270 && x > my_x) continue;
@@ -321,36 +335,40 @@ foresee::FORESEEMobilityModel ()
                 }
             }
           std::vector<trajectoryPrediction::TrajectoryItem> mp_HV;
+          std::vector<trajectoryPrediction::TrajectoryItem> mp_HVAhead;
           std::vector<trajectoryPrediction::TrajectoryItem> mp_RV;
           std::vector<trajectoryPrediction::TrajectoryItem> mp_RVAhead;
+          double start_time = -1;
           int8_t sign = my_heading == 270 ? -1 : 1;
           bool feasible_for_RV = false, feasible_for_RVAhead = false, feasible_for_HVAhead = false;
-          double deceleration_RV, acceleration_RVAhead;
-          std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RV, trajectory_RVAhead;
+          double deceleration_RV, acceleration_RVAhead, acceleration_HVAhead;
+          std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RV, trajectory_RVAhead, trajectory_HVAhead;
           // Do prediction for each actor, if present
           // Prediction for HV, considering a constant speed prediction model (minimum effort for HV)
-          mp_HV = m_traj_predictor->predictConstantSpeed (my_x, my_speed, -m_traci->vehicletype.getDecel (my_type), sign, trajectoryPrediction::ActorType::HV);
+          mp_HV = m_traj_predictor->predictConstantSpeed (my_x, my_speed, -ACCEL_DECEL, sign, trajectoryPrediction::ActorType::HV);
 
           // Prediction for RV, considering a constant deceleration during the deceleration time, then constant speed
           // Note that a deceleration of 0 is first used to consider the case in which no motion changes are required for RV
           if(!RV.empty())
             {
-              rv_type = m_traci->vehicle.getTypeID (RV);
-              double deceleration_supported = -m_traci->vehicletype.getDecel (rv_type);
+              double deceleration_supported = -ACCEL_DECEL;
               double d = 0;
               // The leader in this case is HV
-              double leader_length = m_traci->vehicletype.getLength (my_type);
+              double leader_length = m_traci->vehicle.getLength (m_vehicle_id);
               // Starting with the least invasive deceleration for RV (= 0)
               // Do multiple trial until we find a possible safe deceleration to apply
               while (d >= deceleration_supported)
                 {
                   std::vector<trajectoryPrediction::TrajectoryItem> trajectory = m_traj_predictor->predictConstantSpeed (x_RV, speed_RV, d, sign, trajectoryPrediction::ActorType::RV);
-                  bool evaluation = trajectoryEvaluation (mp_HV, trajectory, leader_length, m_step_time, m_negotiation_time, m_time_to_lc);
+                  std::tuple<bool, double> ret = trajectoryEvaluation (mp_HV, trajectory, leader_length, m_step_time, m_negotiation_time, m_time_to_lc, trajectoryPrediction::ActorType::RV, 0);
+                  bool evaluation = std::get<0>(ret);
+                  bool start = std::get<1>(ret);
                   if (evaluation)
                     {
                       feasible_for_RV = true;
                       deceleration_RV = d;
                       trajectory_RV = std::move(trajectory);
+                      start_time = start;
                       break;
                     }
                   d -= ACCELERATION_STEP;
@@ -364,24 +382,32 @@ foresee::FORESEEMobilityModel ()
 
           // Prediction for RV Ahead, considering a constant acceleration during the deceleration time, then constant speed
           // Note that an acceleration of 0 is first used to consider the case in which no motion changes are required for RV Ahead
-          if(!RVAhead.empty())
+          // If present, the maneuver must be feasible for RV
+          if(!RVAhead.empty() && feasible_for_RV)
             {
-              rvahead_type = m_traci->vehicle.getTypeID (RVAhead);
-              double acceleration_supported = m_traci->vehicletype.getAccel (rvahead_type);
+              double acceleration_supported = ACCEL_DECEL;
               double a = 0.0;
               // The leader in this case is RVAhead
-              double leader_length = m_traci->vehicletype.getLength (rvahead_type);
+              double leader_length = std::find_if(vehicles.begin(), vehicles.end(), [&id = RVAhead_id] (const LDM::returnedVehicleData_t& ldm_item) -> bool {return  ldm_item.vehData.stationID == id;})->vehData.vehicleLength.getData();
+              leader_length /= DECI;
               // Starting with the least invasive acceleration for RVAhead (= 0)
               // Do multiple trial until we find a possible safe acceleration to apply
               while (a <= acceleration_supported)
                 {
                   std::vector<trajectoryPrediction::TrajectoryItem> trajectory = m_traj_predictor->predictConstantSpeed (x_RVAhead, speed_RVAhead, a, sign, trajectoryPrediction::ActorType::RVAhead);
-                  bool evaluation = trajectoryEvaluation (mp_HV, trajectory, leader_length, m_step_time, m_negotiation_time, m_time_to_lc);
+                  std::tuple<bool, double> ret = trajectoryEvaluation (mp_HV, trajectory, leader_length, m_step_time, m_negotiation_time, m_time_to_lc, trajectoryPrediction::ActorType::RVAhead, start_time);
+                  bool evaluation = std::get<0>(ret);
+                  double start = std::get<1>(ret);
                   if (evaluation)
                     {
                       feasible_for_RVAhead = true;
                       acceleration_RVAhead = a;
                       trajectory_RVAhead = std::move(trajectory);
+                      if (start_time == -1)
+                        {
+                          // If there is not RV, store the start_time
+                          start_time = start;
+                        }
                       break;
                     }
                   a += ACCELERATION_STEP;
@@ -393,41 +419,62 @@ foresee::FORESEEMobilityModel ()
               acceleration_RVAhead = DEFAULT_ACC_VALUE;
             }
 
-          // Prediction for HV Ahead, considering constant speed
-          if(!HVAhead.empty())
+          // Prediction for HV Ahead, considering a constant acceleration during the deceleration time, then constant speed
+          // Note that an acceleration of 0 is first used to consider the case in which no motion changes are required for RV Ahead
+          // If present, the maneuver must be feasible for both RV and RVAhead first
+          if(!HVAhead.empty() && feasible_for_RV && feasible_for_RVAhead)
             {
-              double delta_v = std::abs(my_speed - speed_HVAhead);
-              double current_ttc = min_dist_hv_ahead / delta_v;
-              if (current_ttc >= MIN_TTC)
+              double acceleration_supported = ACCEL_DECEL;
+              double a = 0.0;
+              // The leader in this case is HVAhead
+              double leader_length = std::find_if(vehicles.begin(), vehicles.end(), [&id = HVAhead_id] (const LDM::returnedVehicleData_t& ldm_item) -> bool {return  ldm_item.vehData.stationID == id;})->vehData.vehicleLength.getData();
+              leader_length /= DECI;
+              // Starting with the least invasive acceleration for RVAhead (= 0)
+              // Do multiple trial until we find a possible safe acceleration to apply
+              while (a <= acceleration_supported)
                 {
-                  feasible_for_HVAhead = true;
-                }
-              else
-                {
-                  feasible_for_HVAhead = false;
+                  std::vector<trajectoryPrediction::TrajectoryItem> trajectory = m_traj_predictor->predictConstantSpeed (x_HVAhead, speed_HVAhead, a, sign, trajectoryPrediction::ActorType::HVAhead);
+                  std::tuple<bool, double> ret = trajectoryEvaluation (mp_HV, trajectory, leader_length, m_step_time, m_negotiation_time, m_time_to_lc, trajectoryPrediction::ActorType::HVAhead, start_time);
+                  bool evaluation = std::get<0>(ret);
+                  double start = std::get<1>(ret);
+                  if (evaluation)
+                    {
+                      feasible_for_HVAhead = true;
+                      acceleration_HVAhead = a;
+                      trajectory_HVAhead = std::move(trajectory);
+                      if (start_time == -1)
+                        {
+                          // If there are not RV and RVAhead, store the start_time
+                          start_time = start;
+                        }
+                      break;
+                    }
+                  a += ACCELERATION_STEP;
                 }
             }
           else
             {
               feasible_for_HVAhead = true;
+              acceleration_HVAhead = DEFAULT_ACC_VALUE;
             }
 
-
-          // If this condition is not verified,one or both the actors cannot perform the requested maneuver, it is not feasible for them
+          // If this condition is not verified, one or both the actors cannot perform the requested maneuver (it is not feasible for all of them)
           // The maneuver must not be executed
           if (feasible_for_RV && feasible_for_RVAhead && feasible_for_HVAhead)
             {
-              if (deceleration_RV != DEFAULT_ACC_VALUE || acceleration_RVAhead != DEFAULT_ACC_VALUE)
+              if (deceleration_RV != DEFAULT_ACC_VALUE || acceleration_RVAhead != DEFAULT_ACC_VALUE || acceleration_HVAhead != DEFAULT_ACC_VALUE)
                 {
                   // At least RV or RVAhead are present
                   // Insert in the data structure the new coordination event that is going to happen
                   (*m_lc_data_structure)[m_vehicle_id_int] = std::make_tuple (my_heading, my_x, my_y);
-                  uint8_t maneuver_id = left_criterion ? 12 : 13;
+                  m_strategy.RV_acceleration = deceleration_RV;
+                  m_strategy.RVAhead_acceleration = acceleration_RVAhead;
+                  m_strategy.HVAhead_acceleration = acceleration_HVAhead;
                   Simulator::Schedule (MilliSeconds(0), &foresee::startCoordination, this, RV_id, RVAhead_id, HVAhead_id, left_criterion);
                 }
               else
                 {
-                  // The maneuver is feasible but there is no RV neither RVAhead
+                  // The maneuver is feasible but there are not RV, neither RVAhead,neither HVAhead
                   // The coordination is not needed, manually change lane
                   target_lane = 3 - target_lane;
                   m_traci->vehicle.changeLane (m_vehicle_id, target_lane, m_time_to_lc);
@@ -436,6 +483,97 @@ foresee::FORESEEMobilityModel ()
         }
     }
   Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+}
+
+std::tuple<bool, double>
+foresee::trajectoryEvaluation (std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV,
+                               std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other,
+                               double leader_length,
+                               double step_time,
+                               double negotiation_time,
+                               double lc_duration,
+                               trajectoryPrediction::ActorType type,
+                               double start_time)
+{
+  // The extensive evaluation must be done by RV ( to decide the start time)
+  // In case the RV doesn't exist, the start_time would be -1
+  // The evaluation will be performed for RVAhead/HVAhead
+  if (type == trajectoryPrediction::ActorType::RV || start_time == -1)
+    {
+      size_t length = trajectory_HV.size();
+      int i = 0;
+      std::vector<std::tuple<double, bool>> ttc_over_time;
+      while (i < length)
+        {
+          // Exclude the negotiation time from the evaluation
+          double t = trajectory_HV[i].time;
+          if (t >= negotiation_time)
+            {
+              // Remember: SUMO positions refer always to the front bumper of the vehicles
+              // To get the distance between the leader back bumper and the follower front bumper, we remove the length of the leader
+              double gap = std::max (std::abs (trajectory_HV[i].x - trajectory_other[i].x) - leader_length, 0.1);
+              double delta_v = std::max (std::abs (trajectory_HV[i].speed - trajectory_other[i].speed), 0.1);
+              double ttc = gap / delta_v;
+              // Store the TTC condition predicted for the moment t
+              ttc_over_time.push_back({t, ttc >= MIN_TTC});
+            }
+          t += step_time;
+          i += 1;
+        }
+      double start_time = -1;
+      bool possible = false;
+      // We need to check whether there is a long enough window (based on lane change duration) to do the coordination safely
+      for (auto it = ttc_over_time.begin(); it != ttc_over_time.end(); ++it)
+        {
+          double t = std::get<0> (*it);
+          bool ttc = std::get<1> (*it);
+          if (start_time == -1 && ttc)
+            {
+              // Store the start time of the window
+              start_time = t;
+            }
+          else if (start_time != -1 && ttc)
+            {
+              // Start time is already present and the situation is safe
+              // We need to check the length of the window
+              double delta_t = t - start_time;
+              if (delta_t >= lc_duration)
+                {
+                  // If the time window is exceeded, we found a favorable window for the lane change
+                  possible = true;
+                  break;
+                }
+            }
+          else if (start_time != -1 && !ttc)
+            {
+              // The window is broken, we need to start again the window computation
+              // Set again the start_time
+              start_time = -1;
+            }
+          else if (start_time == -1 && !ttc)
+            {
+              continue;
+            }
+        }
+      return {possible, start_time};
+    }
+  // In case the start_time has already been computed, do just a simple check on TTC at the estimated coordination time (i.e., start_time)
+  else if (type == trajectoryPrediction::ActorType::RVAhead || type == trajectoryPrediction::ActorType::HVAhead)
+    {
+      trajectoryPrediction::TrajectoryItem HV = *std::find_if(trajectory_HV.begin(), trajectory_HV.end(), [&time = start_time] (const trajectoryPrediction::TrajectoryItem item) {return item.time == time;});
+      trajectoryPrediction::TrajectoryItem other = *std::find_if(trajectory_other.begin(), trajectory_other.end(), [&time = start_time] (const trajectoryPrediction::TrajectoryItem item) {return item.time == time;});
+      double gap = std::max (std::abs (HV.x - other.x) - leader_length, 0.1);
+      double delta_v = std::max (std::abs (HV.speed - other.speed), 0.1);
+      double ttc = gap / delta_v;
+      if (ttc >= MIN_TTC)
+        {
+          return {true, 0};
+        }
+      else
+        {
+          return {false, 0};
+        }
+    }
 }
 
 void
@@ -529,82 +667,6 @@ foresee::startCoordination (long RV_id, long RVAhead_id, long HVAhead_id, bool l
   m_busy_with_maneuver = true;
 }
 
-void
-foresee::terminateCoordination ()
-{
-  // Clear the data structure after terminating the coordination
-  (*m_lc_data_structure).erase(m_vehicle_id_int);
-  // TODO send a coordination message to terminate
-  m_busy_with_maneuver = false;
-  // Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
-}
-
-bool
-foresee::trajectoryEvaluation (std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV,
-                               std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other,
-                               double leader_length,
-                               double step_time,
-                               double negotiation_time,
-                               double lc_duration)
-{
-  size_t length = trajectory_HV.size();
-  int i = 0;
-  std::vector<std::tuple<double, bool>> ttc_over_time;
-  while (i < length)
-    {
-      // Exclude the negotiation time from the evaluation
-      double t = trajectory_HV[i].time;
-      if (t >= negotiation_time)
-        {
-          // Remember: SUMO positions refer always to the front bumper of the vehicles
-          // To get the distance between the leader back bumper and the follower front bumper, we remove the length of the leader
-          double gap = std::max (std::abs (trajectory_HV[i].x - trajectory_other[i].x) - leader_length, 0.1);
-          double delta_v = std::max (std::abs (trajectory_HV[i].speed - trajectory_other[i].speed), 0.1);
-          double ttc = gap / delta_v;
-          // Store the TTC condition predicted for the moment t
-          ttc_over_time.push_back({t, ttc >= MIN_TTC});
-        }
-      t += step_time;
-      i += 1;
-    }
-  double start_time = -1;
-  bool possible = false;
-  // We need to check whether there is a long enough window (based on lane change duration) to do the coordination safely
-  for (auto it = ttc_over_time.begin(); it != ttc_over_time.end(); ++it)
-    {
-      double t = std::get<0> (*it);
-      bool ttc = std::get<1> (*it);
-      if (start_time == -1 && ttc)
-        {
-          // Store the start time of the window
-          start_time = t;
-        }
-      else if (start_time != -1 && ttc)
-        {
-          // Start time is already present and the situation is safe
-          // We need to check the length of the window
-          double delta_t = t - start_time;
-          if (delta_t >= lc_duration)
-            {
-              // If the time window is exceeded, we found a favorable window for the lane change
-              possible = true;
-              break;
-            }
-        }
-      else if (start_time != -1 && !ttc)
-        {
-          // The window is broken, we need to start again the window computation
-          // Set again the start_time
-          start_time = -1;
-        }
-      else if (start_time == -1 && !ttc)
-        {
-          continue;
-        }
-    }
-  return possible;
-}
-
 void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info)
 {
   StationId_t sender = mcm->header.stationId;
@@ -682,7 +744,7 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
           // Refuse the coordination
           MCSpecification specification;
           specification.setResponseContainer();
-          specification.setMCMItsRole (McmItssRole_notAvailable);
+          specification.setMCMItsRole (McmItssRole_targetVehicle);
           specification.setMCMResponse (1);
           m_mcs_ptr->generateAndEncodeMCM (&specification);
         }
@@ -704,19 +766,15 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
       break;
     }
 }
+
 void
-foresee::addMCMRxCallback ()
+foresee::terminateCoordination ()
 {
-  std::function<void(asn1cpp::Seq<MCM>, Address, StationID_t, StationType_t, SignalInfo)> rx_callback =
-      std::bind(&foresee::receiveMCM,
-                 this,
-                 std::placeholders::_1,
-                 std::placeholders::_2,
-                 std::placeholders::_3,
-                 std::placeholders::_4,
-                 std::placeholders::_5);
-  m_MCMReceiveCallbackExtended = rx_callback;
-  m_mcs_ptr->addMCRxCallbackExtended (m_MCMReceiveCallbackExtended);
+  // Clear the data structure after terminating the coordination
+  (*m_lc_data_structure).erase(m_vehicle_id_int);
+  // TODO send a coordination message to terminate
+  m_busy_with_maneuver = false;
+  // Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
 }
 
 }

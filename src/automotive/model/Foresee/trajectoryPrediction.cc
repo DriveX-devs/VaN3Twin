@@ -32,7 +32,7 @@ trajectoryPrediction::predictConstantSpeed(double x, double speed, double comfor
           t += m_step_time;
         }
     }
-  else if (type == ActorType::RV || type == ActorType::RVAhead)
+  else if (type == ActorType::RV || type == ActorType::RVAhead || type == ActorType::HVAhead)
     {
       double t = m_step_time;
       while (t <= m_horizon_time)

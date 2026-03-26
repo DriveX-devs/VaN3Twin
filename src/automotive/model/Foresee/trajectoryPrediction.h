@@ -26,6 +26,7 @@ public:
   enum ActorType {
     HV,
     RV,
+    HVAhead,
     RVAhead,
   };
 

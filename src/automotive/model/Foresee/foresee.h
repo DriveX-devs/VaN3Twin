@@ -15,6 +15,7 @@
 #define ACCELERATION_STEP 0.5
 #define MIN_TTC 3
 #define DEFAULT_ACC_VALUE 500
+#define ACCEL_DECEL 3
 
 namespace ns3
 {
@@ -27,6 +28,13 @@ public:
     CONSTANT_SPEED,
     CONSTANT_ACCELERATION,
   };
+
+  typedef struct Strategy
+  {
+    double RV_acceleration;
+    double RVAhead_acceleration;
+    double HVAhead_acceleration;
+  } Strategy;
 
   foresee() = default;
   ~foresee() {
@@ -47,7 +55,7 @@ public:
   void setMCBasicService(Ptr<MCBasicService> mcs_ptr) {m_mcs_ptr = mcs_ptr;};
   void setStartTime(uint8_t startTime) {m_start_time = startTime;};
   void setTrajectoryPredictor(double horizon_time, double step_time, double negotiation_time, double deceleration_time, double lc_duration, PredictionType prediction_type);
-  static bool trajectoryEvaluation(std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other, double leader_length, double step_time, double negotiation_time, double lc_duration);
+  static std::tuple<bool, double> trajectoryEvaluation(std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other, double leader_length, double step_time, double negotiation_time, double lc_duration, trajectoryPrediction::ActorType type, double start_time);
   void terminateCoordination ();
   void startCoordination (long RV_id, long RVAhead_id, long HVAhead_id, bool left_criterion);
   void addMCMRxCallback();
@@ -83,6 +91,7 @@ private:
   StationType_t m_station_type;
   std::function<void(asn1cpp::Seq<MCM>, Address, StationID_t, StationType_t, SignalInfo)> m_MCMReceiveCallbackExtended = nullptr;
   bool m_real_time;
+  Strategy m_strategy;
 };
 }
 

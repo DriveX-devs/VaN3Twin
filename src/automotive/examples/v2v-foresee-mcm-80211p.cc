@@ -21,8 +21,8 @@
 #define HORIZON_TIME 8
 #define NEGOTIATION_TIME 1
 #define DECELERATION_TIME 1
-#define STEP_TIME .1
-#define LC_TIME 1.5
+#define STEP_TIME 0.25
+#define LC_TIME_SEC 1.5
 
 #include "ns3/carla-module.h"
 
@@ -252,7 +252,7 @@ int main (int argc, char *argv[])
       lc_model[nodeID].addMCMRxCallback ();
       lc_model[nodeID].setStartTime(10);
       std::string my_type = sumoClient->vehicle.getTypeID (vehicleID);
-      lc_model[nodeID].setTrajectoryPredictor(HORIZON_TIME, STEP_TIME, NEGOTIATION_TIME, DECELERATION_TIME, LC_TIME, foresee::PredictionType::CONSTANT_SPEED);
+      lc_model[nodeID].setTrajectoryPredictor(HORIZON_TIME, STEP_TIME, NEGOTIATION_TIME, DECELERATION_TIME, LC_TIME_SEC, foresee::PredictionType::CONSTANT_SPEED);
       lc_model[nodeID].WrapperFORESEEMobilityModel();
 
       // Start transmitting CAMs
