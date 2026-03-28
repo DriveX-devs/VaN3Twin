@@ -8,8 +8,8 @@
 namespace ns3
 {
 void
-foresee::setTrajectoryPredictor (double horizon_time, double step_time, double negotiation_time,
-                                 double deceleration_time, double lc_duration, PredictionType prediction_type)
+foresee::setTrajectoryPredictor (int horizon_time, int step_time, int negotiation_time,
+                                 int deceleration_time, int lc_duration, PredictionType prediction_type)
 {
   m_traj_predictor = new trajectoryPrediction(horizon_time, step_time, negotiation_time, deceleration_time);
   m_step_time = step_time;
@@ -334,18 +334,17 @@ foresee::FORESEEMobilityModel ()
                     }
                 }
             }
-          std::vector<trajectoryPrediction::TrajectoryItem> mp_HV;
-          std::vector<trajectoryPrediction::TrajectoryItem> mp_HVAhead;
-          std::vector<trajectoryPrediction::TrajectoryItem> mp_RV;
-          std::vector<trajectoryPrediction::TrajectoryItem> mp_RVAhead;
-          double start_time = -1;
+          int start_time = -1;
           int8_t sign = my_heading == 270 ? -1 : 1;
           bool feasible_for_RV = false, feasible_for_RVAhead = false, feasible_for_HVAhead = false;
           double deceleration_RV, acceleration_RVAhead, acceleration_HVAhead;
-          std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RV, trajectory_RVAhead, trajectory_HVAhead;
+          trajectoryPrediction::TrajectoryItem ref_HV, ref_RV, ref_RVAhead, ref_HVAhead;
+          std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, trajectory_RV, trajectory_RVAhead, trajectory_HVAhead;
           // Do prediction for each actor, if present
           // Prediction for HV, considering a constant speed prediction model (minimum effort for HV)
-          mp_HV = m_traj_predictor->predictConstantSpeed (my_x, my_speed, -ACCEL_DECEL, sign, trajectoryPrediction::ActorType::HV);
+          std::tuple<trajectoryPrediction::TrajectoryItem, std::vector<trajectoryPrediction::TrajectoryItem>> item =
+              m_traj_predictor->predictConstantSpeed (my_x, my_y, my_speed, -ACCEL_DECEL, sign, trajectoryPrediction::ActorType::HV);
+          trajectory_HV = std::get<1>(item);
 
           // Prediction for RV, considering a constant deceleration during the deceleration time, then constant speed
           // Note that a deceleration of 0 is first used to consider the case in which no motion changes are required for RV
@@ -359,8 +358,9 @@ foresee::FORESEEMobilityModel ()
               // Do multiple trial until we find a possible safe deceleration to apply
               while (d >= deceleration_supported)
                 {
-                  std::vector<trajectoryPrediction::TrajectoryItem> trajectory = m_traj_predictor->predictConstantSpeed (x_RV, speed_RV, d, sign, trajectoryPrediction::ActorType::RV);
-                  std::tuple<bool, double> ret = trajectoryEvaluation (mp_HV, trajectory, leader_length, m_step_time, m_negotiation_time, m_time_to_lc, trajectoryPrediction::ActorType::RV, 0);
+                  item = m_traj_predictor->predictConstantSpeed (x_RV, y_RV, speed_RV, d, sign, trajectoryPrediction::ActorType::RV);
+                  std::vector<trajectoryPrediction::TrajectoryItem> trajectory = std::get<1>(item);
+                  std::tuple<bool, double> ret = trajectoryEvaluation (trajectory_HV, trajectory, leader_length, m_step_time, m_negotiation_time, m_time_to_lc, trajectoryPrediction::ActorType::RV, 0);
                   bool evaluation = std::get<0>(ret);
                   bool start = std::get<1>(ret);
                   if (evaluation)
@@ -368,6 +368,7 @@ foresee::FORESEEMobilityModel ()
                       feasible_for_RV = true;
                       deceleration_RV = d;
                       trajectory_RV = std::move(trajectory);
+                      ref_RV = std::get<0>(item);
                       start_time = start;
                       break;
                     }
@@ -394,8 +395,9 @@ foresee::FORESEEMobilityModel ()
               // Do multiple trial until we find a possible safe acceleration to apply
               while (a <= acceleration_supported)
                 {
-                  std::vector<trajectoryPrediction::TrajectoryItem> trajectory = m_traj_predictor->predictConstantSpeed (x_RVAhead, speed_RVAhead, a, sign, trajectoryPrediction::ActorType::RVAhead);
-                  std::tuple<bool, double> ret = trajectoryEvaluation (mp_HV, trajectory, leader_length, m_step_time, m_negotiation_time, m_time_to_lc, trajectoryPrediction::ActorType::RVAhead, start_time);
+                  item = m_traj_predictor->predictConstantSpeed (x_RVAhead, y_RVAhead, speed_RVAhead, a, sign, trajectoryPrediction::ActorType::RVAhead);
+                  std::vector<trajectoryPrediction::TrajectoryItem> trajectory = std::get<1>(item);
+                  std::tuple<bool, double> ret = trajectoryEvaluation (trajectory_HV, trajectory, leader_length, m_step_time, m_negotiation_time, m_time_to_lc, trajectoryPrediction::ActorType::RVAhead, start_time);
                   bool evaluation = std::get<0>(ret);
                   double start = std::get<1>(ret);
                   if (evaluation)
@@ -403,6 +405,7 @@ foresee::FORESEEMobilityModel ()
                       feasible_for_RVAhead = true;
                       acceleration_RVAhead = a;
                       trajectory_RVAhead = std::move(trajectory);
+                      ref_RVAhead = std::get<0>(item);
                       if (start_time == -1)
                         {
                           // If there is not RV, store the start_time
@@ -433,8 +436,9 @@ foresee::FORESEEMobilityModel ()
               // Do multiple trial until we find a possible safe acceleration to apply
               while (a <= acceleration_supported)
                 {
-                  std::vector<trajectoryPrediction::TrajectoryItem> trajectory = m_traj_predictor->predictConstantSpeed (x_HVAhead, speed_HVAhead, a, sign, trajectoryPrediction::ActorType::HVAhead);
-                  std::tuple<bool, double> ret = trajectoryEvaluation (mp_HV, trajectory, leader_length, m_step_time, m_negotiation_time, m_time_to_lc, trajectoryPrediction::ActorType::HVAhead, start_time);
+                  item = m_traj_predictor->predictConstantSpeed (x_HVAhead, y_HVAhead, speed_HVAhead, a, sign, trajectoryPrediction::ActorType::HVAhead);
+                  std::vector<trajectoryPrediction::TrajectoryItem> trajectory = std::get<1>(item);
+                  std::tuple<bool, double> ret = trajectoryEvaluation (trajectory_HV, trajectory, leader_length, m_step_time, m_negotiation_time, m_time_to_lc, trajectoryPrediction::ActorType::HVAhead, start_time);
                   bool evaluation = std::get<0>(ret);
                   double start = std::get<1>(ret);
                   if (evaluation)
@@ -442,6 +446,7 @@ foresee::FORESEEMobilityModel ()
                       feasible_for_HVAhead = true;
                       acceleration_HVAhead = a;
                       trajectory_HVAhead = std::move(trajectory);
+                      ref_HVAhead = std::get<0>(item);
                       if (start_time == -1)
                         {
                           // If there are not RV and RVAhead, store the start_time
@@ -470,7 +475,7 @@ foresee::FORESEEMobilityModel ()
                   m_strategy.RV_acceleration = deceleration_RV;
                   m_strategy.RVAhead_acceleration = acceleration_RVAhead;
                   m_strategy.HVAhead_acceleration = acceleration_HVAhead;
-                  Simulator::Schedule (MilliSeconds(0), &foresee::startCoordination, this, RV_id, RVAhead_id, HVAhead_id, left_criterion);
+                  Simulator::Schedule (MilliSeconds(0), std::bind(&foresee::startCoordination, this, RV_id, trajectory_RV, ref_RV, RVAhead_id, trajectory_RVAhead, ref_RVAhead, HVAhead_id, trajectory_HVAhead, ref_HVAhead, left_criterion));
                 }
               else
                 {
@@ -489,11 +494,11 @@ std::tuple<bool, double>
 foresee::trajectoryEvaluation (std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV,
                                std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other,
                                double leader_length,
-                               double step_time,
-                               double negotiation_time,
-                               double lc_duration,
+                               int step_time,
+                               int negotiation_time,
+                               int lc_duration,
                                trajectoryPrediction::ActorType type,
-                               double start_time)
+                               int start_time)
 {
   // The extensive evaluation must be done by RV ( to decide the start time)
   // In case the RV doesn't exist, the start_time would be -1
@@ -506,7 +511,7 @@ foresee::trajectoryEvaluation (std::vector<trajectoryPrediction::TrajectoryItem>
       while (i < length)
         {
           // Exclude the negotiation time from the evaluation
-          double t = trajectory_HV[i].time;
+          int t = trajectory_HV[i].time.GetMilliSeconds();
           if (t >= negotiation_time)
             {
               // Remember: SUMO positions refer always to the front bumper of the vehicles
@@ -560,8 +565,8 @@ foresee::trajectoryEvaluation (std::vector<trajectoryPrediction::TrajectoryItem>
   // In case the start_time has already been computed, do just a simple check on TTC at the estimated coordination time (i.e., start_time)
   else if (type == trajectoryPrediction::ActorType::RVAhead || type == trajectoryPrediction::ActorType::HVAhead)
     {
-      trajectoryPrediction::TrajectoryItem HV = *std::find_if(trajectory_HV.begin(), trajectory_HV.end(), [&time = start_time] (const trajectoryPrediction::TrajectoryItem item) {return item.time == time;});
-      trajectoryPrediction::TrajectoryItem other = *std::find_if(trajectory_other.begin(), trajectory_other.end(), [&time = start_time] (const trajectoryPrediction::TrajectoryItem item) {return item.time == time;});
+      trajectoryPrediction::TrajectoryItem HV = *std::find_if(trajectory_HV.begin(), trajectory_HV.end(), [&time = start_time] (const trajectoryPrediction::TrajectoryItem item) {return item.time.GetMilliSeconds() == time;});
+      trajectoryPrediction::TrajectoryItem other = *std::find_if(trajectory_other.begin(), trajectory_other.end(), [&time = start_time] (const trajectoryPrediction::TrajectoryItem item) {return item.time.GetMilliSeconds() == time;});
       double gap = std::max (std::abs (HV.x - other.x) - leader_length, 0.1);
       double delta_v = std::max (std::abs (HV.speed - other.speed), 0.1);
       double ttc = gap / delta_v;
@@ -577,7 +582,7 @@ foresee::trajectoryEvaluation (std::vector<trajectoryPrediction::TrajectoryItem>
 }
 
 void
-foresee::startCoordination (long RV_id, long RVAhead_id, long HVAhead_id, bool left_criterion)
+foresee::startCoordination (long RV_id, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RV, trajectoryPrediction::TrajectoryItem ref_RV, long RVAhead_id, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RVAhead, trajectoryPrediction::TrajectoryItem ref_RVAhead, long HVAhead_id, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HVAhead, trajectoryPrediction::TrajectoryItem ref_HVAhead, bool left_criterion)
 {
   MCSpecification specification;
   // Choose the container
@@ -594,16 +599,43 @@ foresee::startCoordination (long RV_id, long RVAhead_id, long HVAhead_id, bool l
       csac->choice.stayInLane = 1;
       adv.currentStateAdvisedChange = csac;
 
-      // Allocate and fill the submanoeuvre
-      Submanoeuvre_t* subm = specification.create<Submanoeuvre_t>();
-      subm->submanoeuvreId = ManeuverID::Slowdown;
-      subm->advisedTargetRoadResource = nullptr;
-      subm->advisedTrajectory = nullptr;
+      uint8_t total = trajectory_RV.size();
+      libsumo::TraCIPosition ref = m_traci->simulation.convertXYtoLonLat(ref_RV.x, ref_RV.y);
+      double prev_lat = ref.y, prev_lon = ref.x;
+      for (uint8_t i = 0; i < total; i += TRAJECTORY_PER_SUBM)
+        {
+          Submanoeuvre_t* subm = specification.create<Submanoeuvre_t>();
+          subm->submanoeuvreId = ManeuverID::Slowdown;
+          subm->advisedTrajectory = specification.create<Trajectory>();
+          subm->advisedTrajectory->wayPointType = WayPointType_intermediateWayPoint;
+          subm->advisedTargetRoadResource = nullptr;
 
-      // Add it to adv.submaneuvres directly — no need for a separate Submanoeuvres allocation
-      specification.add (asn_DEF_Submanoeuvre, &adv.submaneuvres, subm);
+          uint8_t end = std::min((uint8_t)(i + TRAJECTORY_PER_SUBM), total);
+          for (uint8_t j = i; j < end; ++j)
+            {
+              // Speed
+              Speed* sp = specification.create<Speed>();
+              sp->speedValue = trajectory_RV[j].speed * CENTI;
+              sp->speedConfidence = SpeedConfidence_unavailable;
+              specification.add(asn_DEF_Speed, &subm->advisedTrajectory->speed, sp);
+
+              // WayPoint
+              PathPoint_t* wp = (PathPoint_t*) calloc(1, sizeof(PathPoint_t));
+              wp->pathPosition.deltaAltitude = DeltaAltitude_unavailable;
+              libsumo::TraCIPosition pos = m_traci->simulation.convertXYtoLonLat(trajectory_RV[j].x, trajectory_RV[j].y);
+              double wp_lon = pos.x;
+              double wp_lat = pos.y;
+              wp->pathPosition.deltaLatitude  = (long)((wp_lat - prev_lat) * 1e7);
+              wp->pathPosition.deltaLongitude  = (long)((wp_lon - prev_lon) * 1e7);
+              prev_lat = wp_lat;
+              prev_lon = wp_lon;
+              specification.add(asn_DEF_WayPoint, &subm->advisedTrajectory->wayPoints, wp);
+            }
+          specification.add(asn_DEF_Submanoeuvre, &adv.submaneuvres, subm);
+        }
 
       specification.pushManeuverAdvice(adv);
+
     }
 
   if (RVAhead_id >= 0)
@@ -617,15 +649,40 @@ foresee::startCoordination (long RV_id, long RVAhead_id, long HVAhead_id, bool l
       csac->choice.stayInLane = 1;
       adv.currentStateAdvisedChange = csac;
 
-      // Allocate and fill the submanoeuvre
-      Submanoeuvre_t* subm = specification.create<Submanoeuvre_t>();
-      subm->submanoeuvreId = ManeuverID::Accelerate;
-      subm->advisedTargetRoadResource = nullptr;
-      subm->advisedTrajectory = nullptr;
+      uint8_t total = trajectory_RV.size();
+      libsumo::TraCIPosition ref = m_traci->simulation.convertXYtoLonLat(ref_RVAhead.x, ref_RVAhead.y);
+      double prev_lat = ref.y, prev_lon = ref.x;
+      for (uint8_t i = 0; i < total; i += TRAJECTORY_PER_SUBM)
+        {
+          Submanoeuvre_t* subm = specification.create<Submanoeuvre_t>();
+          subm->submanoeuvreId = ManeuverID::Slowdown;
+          subm->advisedTrajectory = specification.create<Trajectory>();
+          subm->advisedTrajectory->wayPointType = WayPointType_intermediateWayPoint;
+          subm->advisedTargetRoadResource = nullptr;
 
-      // Add it to adv.submaneuvres directly — no need for a separate Submanoeuvres allocation
-      specification.add (asn_DEF_Submanoeuvre, &adv.submaneuvres, subm);
+          uint8_t end = std::min((uint8_t)(i + TRAJECTORY_PER_SUBM), total);
+          for (uint8_t j = i; j < end; ++j)
+            {
+              // Speed
+              Speed* sp = specification.create<Speed>();
+              sp->speedValue = trajectory_RV[j].speed * CENTI;
+              sp->speedConfidence = SpeedConfidence_unavailable;
+              specification.add(asn_DEF_Speed, &subm->advisedTrajectory->speed, sp);
 
+              // WayPoint
+              PathPoint_t* wp = (PathPoint_t*) calloc(1, sizeof(PathPoint_t));
+              wp->pathPosition.deltaAltitude = DeltaAltitude_unavailable;
+              libsumo::TraCIPosition pos = m_traci->simulation.convertXYtoLonLat(trajectory_RV[j].x, trajectory_RV[j].y);
+              double wp_lon = pos.x;
+              double wp_lat = pos.y;
+              wp->pathPosition.deltaLatitude  = (long)((wp_lat - prev_lat) * 1e7);
+              wp->pathPosition.deltaLongitude  = (long)((wp_lon - prev_lon) * 1e7);
+              prev_lat = wp_lat;
+              prev_lon = wp_lon;
+              specification.add(asn_DEF_WayPoint, &subm->advisedTrajectory->wayPoints, wp);
+            }
+          specification.add(asn_DEF_Submanoeuvre, &adv.submaneuvres, subm);
+        }
       specification.pushManeuverAdvice(adv);
     }
 
@@ -640,26 +697,56 @@ foresee::startCoordination (long RV_id, long RVAhead_id, long HVAhead_id, bool l
       csac->choice.stayInLane = 1;
       adv.currentStateAdvisedChange = csac;
 
-      // Allocate and fill the submanoeuvre
-      Submanoeuvre_t* subm = specification.create<Submanoeuvre_t>();
-      subm->submanoeuvreId = ManeuverID::Undefined;
-      subm->advisedTargetRoadResource = nullptr;
-      subm->advisedTrajectory = nullptr;
+      uint8_t total = trajectory_RV.size();
+      libsumo::TraCIPosition ref = m_traci->simulation.convertXYtoLonLat(ref_HVAhead.x, ref_HVAhead.y);
+      double prev_lat = ref.y, prev_lon = ref.x;
+      for (uint8_t i = 0; i < total; i += TRAJECTORY_PER_SUBM)
+        {
+          Submanoeuvre_t* subm = specification.create<Submanoeuvre_t>();
+          subm->submanoeuvreId = ManeuverID::Slowdown;
+          subm->advisedTrajectory = specification.create<Trajectory>();
+          subm->advisedTrajectory->wayPointType = WayPointType_intermediateWayPoint;
+          subm->advisedTargetRoadResource = nullptr;
 
-      // Add it to adv.submaneuvres directly — no need for a separate Submanoeuvres allocation
-      specification.add (asn_DEF_Submanoeuvre, &adv.submaneuvres, subm);
+          uint8_t end = std::min((uint8_t)(i + TRAJECTORY_PER_SUBM), total);
+          for (uint8_t j = i; j < end; ++j)
+            {
+              // Speed
+              Speed* sp = specification.create<Speed>();
+              sp->speedValue = trajectory_RV[j].speed * CENTI;
+              sp->speedConfidence = SpeedConfidence_unavailable;
+              specification.add(asn_DEF_Speed, &subm->advisedTrajectory->speed, sp);
 
+              // WayPoint
+              PathPoint_t* wp = (PathPoint_t*) calloc(1, sizeof(PathPoint_t));
+              wp->pathPosition.deltaAltitude = DeltaAltitude_unavailable;
+              libsumo::TraCIPosition pos = m_traci->simulation.convertXYtoLonLat(trajectory_RV[j].x, trajectory_RV[j].y);
+              double wp_lon = pos.x;
+              double wp_lat = pos.y;
+              wp->pathPosition.deltaLatitude  = (long)((wp_lat - prev_lat) * 1e7);
+              wp->pathPosition.deltaLongitude  = (long)((wp_lon - prev_lon) * 1e7);
+              prev_lat = wp_lat;
+              prev_lon = wp_lon;
+              specification.add(asn_DEF_WayPoint, &subm->advisedTrajectory->wayPoints, wp);
+            }
+          specification.add(asn_DEF_Submanoeuvre, &adv.submaneuvres, subm);
+        }
       specification.pushManeuverAdvice(adv);
     }
 
   specification.setMCMConcept (0); // MCM Goal will be set
   specification.setMCMCost (0); // Default, it is not used for this use case
   specification.setMCMGoal (ManoeuvreCooperationGoal_localTrafficManagement); // FORESEE manages local traffic interactions
-  specification.setMCMType (McmType_request); // HV asks the others for a cooperation
+  specification.setMCMType (McmType::McmType_request); // HV asks the others for a cooperation
   specification.setManeuverID (left_criterion ? ManeuverID::GoToLeftLane : ManeuverID::GoToRightLane);
   // FORESEE is designed for passenger cars and trucks
   specification.setVehicleType (m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon);
   // The logic for the coordination process will be: Request -> ACK -> SYN ACK
+  // TODO add a call at the end of negotiation time to check that all the map members answered affirmatively
+  if(RV_id >= 0) m_acceptance_map[RV_id] = false;
+  if(RVAhead_id >= 0) m_acceptance_map[RVAhead_id] = false;
+  if(HVAhead_id >= 0) m_acceptance_map[HVAhead_id] = false;
+  m_coordinator = true;
   m_mcs_ptr->generateAndEncodeMCM (&specification);
   // Free the CurrentStateAdvisedChange we allocated above
   // Simulator::Schedule(MilliSeconds(m_negotiation_time), &foresee::startCoordination, this);
@@ -674,6 +761,7 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
   mcm->payload.basicContainer.generationDeltaTime;
   McmType_t type = mcm->payload.basicContainer.mcmType;
   McmContainer_PR present_container = mcm->payload.mcmContainer.present;
+  McmItssRole_t sender_role = mcm->payload.basicContainer.itssRole;
 
   // Container extraction
   bool no_containers = false;
@@ -738,20 +826,49 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
   switch (type)
     {
     case McmType::McmType_request:
-      // TODO check if the message is for me
-      if (m_busy_with_maneuver)
+      // Accept the coordination if the request is for us
+      if (advice_container)
         {
-          // Refuse the coordination
-          MCSpecification specification;
-          specification.setResponseContainer();
-          specification.setMCMItsRole (McmItssRole_targetVehicle);
-          specification.setMCMResponse (1);
-          m_mcs_ptr->generateAndEncodeMCM (&specification);
-        }
-      else
-        {
-          // Accept the coordination if the request is for us
-          m_busy_with_maneuver = true;
+          bool accept = false;
+          int subms_size = asn1cpp::sequenceof::getSize(adc);
+          for(int i = 0; i < subms_size; ++i)
+            {
+              auto subms = asn1cpp::sequenceof::getSeq(adc, ManoeuvreAdvice, i);
+              StationId_t id = subms->executantID;
+              if (id == std::stol(m_vehicle_id.substr(3)))
+                {
+                  if (m_busy_with_maneuver)
+                    {
+                      break;
+                    }
+                  else
+                    {
+                      // TODO calculate the acceleration/deceleration based on trajectory
+                      accept = true;
+                    }
+                }
+            }
+          if (accept)
+            {
+              // Accept the coordination
+              MCSpecification specification;
+              specification.setResponseContainer();
+              specification.setMCMItsRole (McmItssRole_targetVehicle);
+              specification.setMCMType(McmType::McmType_response);
+              specification.setMCMResponse (0);
+              m_busy_with_maneuver = true;
+              m_mcs_ptr->generateAndEncodeMCM (&specification);
+            }
+          else
+            {
+              // Refuse the coordination
+              MCSpecification specification;
+              specification.setResponseContainer();
+              specification.setMCMItsRole (McmItssRole_targetVehicle);
+              specification.setMCMResponse (1);
+              specification.setMCMType(McmType::McmType_response);
+              m_mcs_ptr->generateAndEncodeMCM (&specification);
+            }
         }
       break;
     case McmType::McmType_termination:
@@ -759,8 +876,41 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
       m_busy_with_maneuver = false;
       break;
     case McmType::McmType_acknowledgment:
+      // TODO
       break;
     case McmType::McmType_response:
+      if (resp_container)
+        {
+          if (m_coordinator && sender_role == McmItssRole::McmItssRole_targetVehicle)
+            {
+              // The coordinator is waiting the ACK from the others
+              ManouevreResponse_t response = resp.manouevreResponse;
+              if (response == ManouevreResponse::ManouevreResponse_accept)
+                {
+                  // ACK received
+                  // One of the vehicles accepted to be involved in the coordination
+                  m_acceptance_map[sender] = true;
+                  // Send a SYN-ACK
+                  MCSpecification specification;
+                  specification.setAcknowledgmentContainer();
+                  specification.setMCMItsRole (McmItssRole_coordinatingItss);
+                  specification.setMCMType (McmType::McmType_acknowledgment);
+                  m_mcs_ptr->generateAndEncodeMCM (&specification);
+                }
+              else
+                {
+                  // Terminate the coordination in case of refuse
+                  MCSpecification specification;
+                  specification.setTerminatorContainer();
+                  specification.setMCMItsRole (McmItssRole_coordinatingItss);
+                  specification.setMCMType (McmType::McmType_cancellationRequest);
+                  m_mcs_ptr->generateAndEncodeMCM (&specification);
+                }
+            }
+        }
+      break;
+    case McmType::McmType_cancellationRequest:
+      // TODO
       break;
     default:
       break;

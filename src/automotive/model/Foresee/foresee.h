@@ -16,6 +16,7 @@
 #define MIN_TTC 3
 #define DEFAULT_ACC_VALUE 500
 #define ACCEL_DECEL 3
+#define TRAJECTORY_PER_SUBM 10
 
 namespace ns3
 {
@@ -54,10 +55,10 @@ public:
   void setCoordinationAvoidanceRange(float ca_range) {m_ca_range = ca_range;};
   void setMCBasicService(Ptr<MCBasicService> mcs_ptr) {m_mcs_ptr = mcs_ptr;};
   void setStartTime(uint8_t startTime) {m_start_time = startTime;};
-  void setTrajectoryPredictor(double horizon_time, double step_time, double negotiation_time, double deceleration_time, double lc_duration, PredictionType prediction_type);
-  static std::tuple<bool, double> trajectoryEvaluation(std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other, double leader_length, double step_time, double negotiation_time, double lc_duration, trajectoryPrediction::ActorType type, double start_time);
+  void setTrajectoryPredictor(int horizon_time, int step_time, int negotiation_time, int deceleration_time, int lc_duration, PredictionType prediction_type);
+  static std::tuple<bool, double> trajectoryEvaluation(std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other, double leader_length, int step_time, int negotiation_time, int lc_duration, trajectoryPrediction::ActorType type, int start_time);
   void terminateCoordination ();
-  void startCoordination (long RV_id, long RVAhead_id, long HVAhead_id, bool left_criterion);
+  void startCoordination (long RV_id, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RV, trajectoryPrediction::TrajectoryItem ref_RV, long RVAhead_id, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RVAhead, trajectoryPrediction::TrajectoryItem ref_RVAhead, long HVAhead_id, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HVAhead, trajectoryPrediction::TrajectoryItem ref_HVAhead, bool left_criterion);
   void addMCMRxCallback();
   void receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info);
 
@@ -74,15 +75,15 @@ private:
   double m_delta_ds = 0.5;
   double m_offset = 0.3;
   int m_num_lanes = 0;
-  double m_time_to_lc;
+  int m_time_to_lc;
   std::unordered_map<ulong, std::tuple<float, float, float>>* m_lc_data_structure;
   float m_ca_range;
   Ptr<MCBasicService> m_mcs_ptr;
   uint8_t m_start_time;
   trajectoryPrediction* m_traj_predictor;
   PredictionType m_prediction_type = UNKNOWN;
-  double m_step_time;
-  double m_negotiation_time;
+  int m_step_time;
+  int m_negotiation_time;
   int m_FORESEE_max_time = 10000;
   bool m_busy_with_maneuver = false;
   EventId m_termination_event;
@@ -92,6 +93,8 @@ private:
   std::function<void(asn1cpp::Seq<MCM>, Address, StationID_t, StationType_t, SignalInfo)> m_MCMReceiveCallbackExtended = nullptr;
   bool m_real_time;
   Strategy m_strategy;
+  bool m_coordinator = false;
+  std::unordered_map<StationID_t, bool> m_acceptance_map;
 };
 }
 
