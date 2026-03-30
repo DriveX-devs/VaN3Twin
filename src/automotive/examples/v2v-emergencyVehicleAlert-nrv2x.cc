@@ -48,6 +48,11 @@
 using namespace ns3;
 using json = nlohmann::json;
 
+#include <fstream>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+
 NS_LOG_COMPONENT_DEFINE("v2v-nrv2x");
 
 /**
@@ -155,6 +160,40 @@ main (int argc, char *argv[])
   bool enableChannelRandomness = false;
   uint16_t channelUpdatePeriod = 500; //ms
   uint8_t mcs = config.value("mcs", 14);
+
+  // === JSON CONFIG PARSER ===
+  try
+  {
+    std::ifstream f("src/automotive/examples/config.json");
+    json config = json::parse(f);
+
+    realtime          = config.value("realtime", realtime);
+    sumo_gui          = config.value("sumo_gui", sumo_gui);
+    sumo_updates      = config.value("sumo_updates", sumo_updates);
+    sumo_folder       = config.value("sumo_folder", sumo_folder);
+    mob_trace         = config.value("mob_trace", mob_trace);
+    sumo_config       = config.value("sumo_config", sumo_config);
+    vehicle_vis       = config.value("vehicle_visualizer", vehicle_vis);
+    penetrationRate   = config.value("penetrationRate", penetrationRate);
+    simTime           = config.value("sim_time", simTime);
+
+    txPower           = config.value("tx_power", txPower);
+    slSubchannelSize  = config.value("sizeSubchannel", slSubchannelSize);
+    slMaxNumPerReserve= config.value("numSubchannel", slMaxNumPerReserve);
+    t1                = config.value("T1", t1);
+    t2                = config.value("T2", t2);
+    mcs               = config.value("mcs", mcs);
+    reservationPeriod = config.value("pRsvp", reservationPeriod);
+    slProbResourceKeep= config.value("probResourceKeep", slProbResourceKeep);
+    m_baseline_prr    = config.value("baseline", m_baseline_prr);
+    m_metric_sup      = config.value("metric_supervisor", m_metric_sup);
+
+    NS_LOG_INFO("Configuration loaded from JSON");
+  }
+  catch (const std::exception& e)
+  {
+    NS_FATAL_ERROR("Error parsing config.json: " << e.what());
+  }
 
   /*
    * From here, we instruct the ns3::CommandLine class of all the input parameters
