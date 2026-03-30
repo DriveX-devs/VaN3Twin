@@ -3819,3 +3819,9 @@ build_lib(
     ${libsionna}
   TEST_SOURCES ${test_sources}
 )
+
+target_include_directories(libautomotive PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/utils>
+)
+
+

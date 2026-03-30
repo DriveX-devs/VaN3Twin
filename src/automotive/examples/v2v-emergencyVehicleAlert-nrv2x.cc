@@ -38,13 +38,15 @@
 #include "ns3/sumo_xml_parser.h"
 #include "ns3/vehicle-visualizer-module.h"
 #include "ns3/MetricSupervisor.h"
-#include "../utils/json.hpp"
+#include "json.hpp"
+#include <fstream>
 
 #include <unistd.h>
 #include "ns3/core-module.h"
 
 
 using namespace ns3;
+using json = nlohmann::json;
 
 NS_LOG_COMPONENT_DEFINE("v2v-nrv2x");
 
@@ -53,6 +55,8 @@ NS_LOG_COMPONENT_DEFINE("v2v-nrv2x");
  * \param slBitMapString The sidelink bitmap string
  * \param slBitMapVector The vector passed to store the converted sidelink bitmap
  */
+ 
+ 
 void
 GetSlBitmapFromString (std::string slBitMapString, std::vector <std::bitset<1> > &slBitMapVector)
 {
@@ -86,35 +90,45 @@ int
 main (int argc, char *argv[])
 {
 
+  json config;
+  std::ifstream f("src/automotive/examples/config.json");
+
+  if (f.is_open()) {
+      f >> config;
+      std::cout << "Config loaded: " << config.dump() << std::endl;
+  } else {
+      std::cout << "ERROR: cannot open config.json" << std::endl;
+  }
+
   // std::string sumo_folder = "src/automotive/examples/sumo_files_v2v_map/";
   // std::string mob_trace = "cars.rou.xml";
   // std::string sumo_config ="src/automotive/examples/sumo_files_v2v_map/map.sumo.cfg";
-  std::string sumo_folder = "src/automotive/examples/sumo_files_v2v_accident/";
-  std::string mob_trace = "simple.rou.xml";
-  std::string sumo_config ="src/automotive/examples/sumo_files_v2v_accident/simple.sumo.cfg";
+  std::string sumo_folder = config.value("sumo_folder", std::string(""));
+  std::string mob_trace = config.value("mob_trace", std::string(""));
+  std::string sumo_config = config.value("sumo_config", std::string(""));
 
   /*** 0.a App Options ***/
   bool verbose = true;
-  bool realtime = false;
-  bool sumo_gui = true;
-  double sumo_updates = 0.01;
+  bool realtime = config.value("realtime", false);
+  bool sumo_gui = config.value("sumo_gui", true);
+  double sumo_updates = config.value("sumo_updates", 0.01);
   std::string csv_name;
-  std::string csv_name_cumulative;
+  std::string csv_name_cumulative = config.value("csv_name_cumulative", std::string(""));
   std::string sumo_netstate_file_name;
-  bool vehicle_vis = false;
+  bool vehicle_vis = config.value("vehicle_vis", false);
 
   int numberOfNodes;
   uint32_t nodeCounter = 0;
 
-  double penetrationRate = 0.7;
+  double penetrationRate = config.value("penetrationRate", 0.7);
 
   xmlDocPtr rou_xml_file;
-  double m_baseline_prr = 150.0;
-  bool m_metric_sup = false;
+  double m_baseline_prr = config.value("m_baseline_prr", 150.0);
+  bool m_metric_sup = config.value("m_metric_sup", false);
 
 
   // Simulation parameters.
-  double simTime = 100.0;
+  double simTime = config.value("simTime", 100.0);
   //Sidelink bearers activation time
   Time slBearersActivationTime = Seconds (2.0);
 
@@ -123,24 +137,24 @@ main (int argc, char *argv[])
   // will pass them inside the NR module.
   double centralFrequencyBandSl = 5.89e9; // band n47  TDD //Here band is analogous to channel
   uint16_t bandwidthBandSl = 400;
-  double txPower = 23; //dBm
+  double txPower = config.value("tx_power", 23.0); //dBm
   std::string tddPattern = "UL|UL|UL|UL|UL|UL|UL|UL|UL|UL|";
   std::string slBitMap = "1|1|1|1|1|1|1|1|1|1";
   uint16_t numerologyBwpSl = 2;
   uint16_t slSensingWindow = 100; // T0 in ms
   uint16_t slSelectionWindow = 5; // T2min
-  uint16_t slSubchannelSize = 10;
-  uint16_t slMaxNumPerReserve = 3;
-  double slProbResourceKeep = 0.0;
+  uint16_t slSubchannelSize = config.value("slSubchannelSize", 10);
+  uint16_t slMaxNumPerReserve = config.value("slMaxNumPerReserve", 3);
+  double slProbResourceKeep = config.value("slProbResourceKeep", 0.0);
   uint16_t slMaxTxTransNumPssch = 5;
-  uint16_t reservationPeriod = 20; // in ms
+  uint16_t reservationPeriod = config.value("reservationPeriod", 20); // in ms
   bool enableSensing = false;
-  uint16_t t1 = 2;
-  uint16_t t2 = 81;
+  uint16_t t1 = config.value("t1", 2);
+  uint16_t t2 = config.value("t2", 81);
   int slThresPsschRsrp = -128;
   bool enableChannelRandomness = false;
   uint16_t channelUpdatePeriod = 500; //ms
-  uint8_t mcs = 14;
+  uint8_t mcs = config.value("mcs", 14);
 
   /*
    * From here, we instruct the ns3::CommandLine class of all the input parameters
