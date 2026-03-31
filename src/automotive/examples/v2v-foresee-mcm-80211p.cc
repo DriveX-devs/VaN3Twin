@@ -200,8 +200,8 @@ int main (int argc, char *argv[])
   double max_speed_trucks = avg_speed_trucks * (1.0 + deviation);
 
   // Random number generator
-  std::random_device rd;
-  std::mt19937 gen(rd());  // Mersenne Twister engine
+  const unsigned int SEED = 42;
+  std::mt19937 gen(SEED);
   std::uniform_real_distribution<double> dist1(min_speed_cars, max_speed_cars);
   std::uniform_real_distribution<double> dist2(min_speed_trucks, max_speed_trucks);
 

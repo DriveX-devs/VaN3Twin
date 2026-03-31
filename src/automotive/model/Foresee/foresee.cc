@@ -7,6 +7,103 @@
 
 namespace ns3
 {
+
+foresee::IDMParams foresee::getIDMParams(StationType type) {
+  if (type == StationType::StationType_passengerCar) {
+      return {m_desired_speed, 0.8, 2.0, 1.5, 1.5};
+    } else if (type == StationType::StationType_lightTruck) { // passenger car
+      return {m_desired_speed, 1.0, 2.0, 1.5, 2.0};
+    }
+}
+
+double foresee::idmAcceleration(double v, double v_lead, double gap, double v0,
+                          double T, double s0, double a, double b) {
+  // Desired minimum gap
+  double s_star = s0 + std::max(0.0, v * T + (v * (v - v_lead)) / (2.0 * std::sqrt(a * b)));
+  // IDM acceleration
+  return a * (1.0 - std::pow(v / v0, 4) - std::pow(s_star / std::max(gap, 0.1), 2));
+}
+
+double foresee::computeRequiredAcceleration(double speed_leader, double speed_follower,
+                                      double current_gap, IDMParams p,
+                                      double dt, double horizon)
+{
+  // Binary search on acceleration of leader in [0, a_max]
+  double lo = 0.0;
+  double hi = p.a; // max acceleration
+  for(int iter = 0; iter < MAX_LOOPS; iter++)
+    {
+      double a_candidate = (lo + hi) / 2.0;
+      // Simulate gap evolution over horizon
+      double gap   = current_gap;
+      double v_f = speed_follower;
+      double v_l  = speed_leader;
+      double a_f_final = -200;
+      for(double t = 0; t < horizon; t += dt)
+        {
+          // Follower IDM behind the leader
+          double a_f = idmAcceleration(v_f, v_l, gap,
+                                        p.v0, p.T, p.s0, p.a, p.b);
+          if (a_f >= MIN_DECELERATION)
+            {
+              break;
+            }
+          // Leader accelerates with candidate acceleration
+          v_l  = std::min(v_l + a_candidate * dt, p.v0);
+          // Update gap
+          gap  += (v_l - v_f) * dt;
+        }
+      // Check if at end of horizon ego can merge comfortably
+      if(a_f_final >= MIN_DECELERATION)
+        hi = a_candidate; // enough, try less
+      else
+        lo = a_candidate; // not enough, need more
+    }
+  if(std::abs(hi - (-p.a)) < 0.01)
+    return NO_SOLUTION;
+  return hi; // minimum acceleration RVAhead needs to apply
+}
+
+double foresee::computeRequiredDeceleration(double speed_leader, double speed_follower,
+                                      double current_gap, IDMParams p,
+                                      double dt, double horizon)
+{
+  // Binary search on deceleration of follower in [0, a_max]
+  double lo = -p.a;
+  double hi = 0.0; // max deceleration
+  for(int iter = 0; iter < MAX_LOOPS; iter++)
+    {
+      double d_candidate = (lo + hi) / 2.0;
+      // Simulate gap evolution over horizon
+      double gap = current_gap;
+      double v_f = speed_follower;
+      double v_l = speed_leader;
+      double a_f_final = -200;
+      for(double t = 0; t < horizon; t += dt)
+        {
+          // Follower IDM behind the leader
+          double a_f = idmAcceleration(v_f, v_l, gap,
+                                        p.v0, p.T, p.s0, p.a, p.b);
+          if (a_f >= MIN_DECELERATION)
+            {
+              break;
+            }
+          // Follower decelerates with candidate deceleration
+          v_f  = std::min(v_f + d_candidate * dt, 0.0);
+          // Update gap
+          gap  += (v_l - v_f) * dt;
+        }
+      // Check if at end of horizon ego can merge comfortably
+      if(a_f_final >= MIN_DECELERATION)
+        lo = d_candidate; // enough, try less deceleration (less negative)
+      else
+        hi = d_candidate; // not enough, need more deceleration (more negative)
+    }
+  if(std::abs(lo - (-p.a)) < 0.01)
+    return NO_SOLUTION;
+  return lo; // minimum deceleration
+}
+
 void
 foresee::setTrajectoryPredictor (int horizon_time, int step_time, int negotiation_time,
                                  int deceleration_time, int lc_duration, PredictionType prediction_type)
@@ -223,13 +320,11 @@ foresee::FORESEEMobilityModel ()
     }
 
   // Determine if a lane change is possible and initiate coordination if needed
-  bool could_change_lane;
   // Direction for TraCI: {-1=right, 1=left}
   int8_t lc_direction = 0;
   if (left_criterion) lc_direction = 1;
   else if (right_criterion) lc_direction = -1;
   assert (lc_direction == 0 || lc_direction == 1 || lc_direction == -1);
-  bool startManeuver = false;
   if (lc_direction != 0)
     // At least one incentive criterion is satisfied
     // Check the comfort criterion
@@ -239,6 +334,7 @@ foresee::FORESEEMobilityModel ()
       // Take the four roles, target, ahead ego, ahead target
       std::string RV, HVAhead, RVAhead;
       long RV_id = -1, RVAhead_id = -1, HVAhead_id = -1;
+      StationType RV_type;
       // Check whether there is another maneuver coordination that is happening within the ahead range
       // If yes, ego vehicle cannot perform maneuver coordination
       for (auto it = (*m_lc_data_structure).begin(); it != (*m_lc_data_structure).end(); ++it)
@@ -261,7 +357,6 @@ foresee::FORESEEMobilityModel ()
       if (!found_coordination)
         {
           // No other coordination in progress, check the comfort criterion
-          startManeuver = true;
           double x_RV, x_RVAhead, x_HVAhead;
           double y_RV, y_RVAhead, y_HVAhead;
           double speed_RV, speed_RVAhead, speed_HVAhead;
@@ -309,6 +404,7 @@ foresee::FORESEEMobilityModel ()
                               x_RV = pos.x;
                               y_RV = pos.y;
                               speed_RV = it->vehData.speed_ms;
+                              RV_type = static_cast<StationType> (it->vehData.stationType);
                             }
                         }
                     }
@@ -334,6 +430,45 @@ foresee::FORESEEMobilityModel ()
                     }
                 }
             }
+
+          if(RVAhead_id >= 0)
+            {
+              bool possible_hv = true;
+              IDMParams ego_params = getIDMParams(static_cast<StationType> (m_station_type));
+              // Acceleration HV would experience with RVAhead as new leader
+              double a_ego_after = idmAcceleration(my_speed, speed_RVAhead, min_dist_rv_ahead,
+                                             ego_params.v0, ego_params.T,
+                                             ego_params.s0, ego_params.a, ego_params.b);
+              if(a_ego_after < MIN_DECELERATION) possible_hv = false;
+              if(!possible_hv)
+                {
+                  // It is needed to open the gap between RVAhead and HV
+                  // RVAhead needs to accelerate
+                  double a = computeRequiredAcceleration (speed_RVAhead, my_speed, min_dist_rv_ahead, ego_params);
+                  if (a == NO_SOLUTION) std::cout << "Not Possible" << std::endl;
+                  std::cout << a << std::endl;
+                }
+            }
+
+          if(RV_id >= 0)
+            {
+              bool possible_rv = true;
+              IDMParams params = getIDMParams(RV_type);
+              // Acceleration HV would experience with RVAhead as new leader
+              double a_ego_after = idmAcceleration(speed_RV, my_speed, min_dist_rv,
+                                                    params.v0, params.T,
+                                                    params.s0, params.a, params.b);
+              if(a_ego_after < MIN_DECELERATION) possible_rv = false;
+              if(!possible_rv)
+                {
+                  // It is needed to open the gap between RVAhead and HV
+                  // RVAhead needs to accelerate
+                  double a = computeRequiredDeceleration (my_speed, speed_RV, min_dist_rv, params);
+                  if (a == NO_SOLUTION) std::cout << "Not Possible" << std::endl;
+                  std::cout << a << std::endl;
+                }
+            }
+          /*
           int start_time = -1;
           int8_t sign = my_heading == 270 ? -1 : 1;
           bool feasible_for_RV = false, feasible_for_RVAhead = false, feasible_for_HVAhead = false;
@@ -484,7 +619,7 @@ foresee::FORESEEMobilityModel ()
                   target_lane = 3 - target_lane;
                   m_traci->vehicle.changeLane (m_vehicle_id, target_lane, m_time_to_lc);
                 }
-            }
+            }*/
         }
     }
   Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);

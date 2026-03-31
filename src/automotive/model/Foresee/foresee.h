@@ -15,8 +15,10 @@
 #define ACCELERATION_STEP 0.5
 #define MIN_TTC 3
 #define DEFAULT_ACC_VALUE 500
-#define ACCEL_DECEL 3
 #define TRAJECTORY_PER_SUBM 10
+#define MIN_DECELERATION -2
+#define MAX_LOOPS 50
+#define NO_SOLUTION 200
 
 namespace ns3
 {
@@ -37,10 +39,21 @@ public:
     double HVAhead_acceleration;
   } Strategy;
 
+  struct IDMParams { double v0, T, s0, a, b; };
+
   foresee() = default;
   ~foresee() {
       delete m_traj_predictor;
   };
+  IDMParams getIDMParams(StationType type);
+  double idmAcceleration(double v, double v_lead, double gap, double v0,
+                          double T, double s0, double a, double b);
+  double computeRequiredDeceleration(double speed_leader, double speed_follower,
+                                               double current_gap, IDMParams p,
+                                               double dt = 0.1, double horizon = 3.0);
+  double computeRequiredAcceleration(double speed_leader, double speed_follower,
+                                      double current_gap, IDMParams p,
+                                      double dt = 0.1, double horizon = 3.0);
   void WrapperFORESEEMobilityModel();
   void FORESEEMobilityModel();
   void setStationType(StationType_t type) {m_station_type = type;};
