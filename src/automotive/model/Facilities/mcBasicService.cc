@@ -46,31 +46,31 @@ namespace ns3
   {
     for (auto &adv : m_maneuver_advice)
       {
-        if (adv.currentStateAdvisedChange != nullptr)
+        if (adv->currentStateAdvisedChange != nullptr)
           {
-            ASN_STRUCT_FREE(asn_DEF_CurrentStateAdvisedChange, adv.currentStateAdvisedChange);
+            ASN_STRUCT_FREE(asn_DEF_CurrentStateAdvisedChange, adv->currentStateAdvisedChange);
           }
         //ASN_STRUCT_FREE(asn_DEF_Submanoeuvres, &adv.submaneuvres);
-        ASN_STRUCT_FREE_CONTENTS_ONLY(asn_DEF_Submanoeuvres, &adv.submaneuvres);
+        ASN_STRUCT_FREE_CONTENTS_ONLY(asn_DEF_Submanoeuvres, &adv->submaneuvres);
       }
 
     for (auto &subm : m_submaneuver_description)
       {
-        if (subm.kinematicsCharacteristics != nullptr)
+        if (subm->kinematicsCharacteristics != nullptr)
           {
-            ASN_STRUCT_FREE(asn_DEF_KinematicsCharacteristics, subm.kinematicsCharacteristics);
+            ASN_STRUCT_FREE(asn_DEF_KinematicsCharacteristics, subm->kinematicsCharacteristics);
           }
-        if (subm.targetRoadResourceIContainer != nullptr)
+        if (subm->targetRoadResourceIContainer != nullptr)
           {
-            ASN_STRUCT_FREE(asn_DEF_TrrDescription, subm.targetRoadResourceIContainer);
+            ASN_STRUCT_FREE(asn_DEF_TrrDescription, subm->targetRoadResourceIContainer);
           }
-        if (subm.referenceTrajectory != nullptr)
+        if (subm->referenceTrajectory != nullptr)
           {
-            ASN_STRUCT_FREE(asn_DEF_Trajectory, subm.referenceTrajectory);
+            ASN_STRUCT_FREE(asn_DEF_Trajectory, subm->referenceTrajectory);
           }
-        if (subm.submanoeuvreStrategy != nullptr)
+        if (subm->submanoeuvreStrategy != nullptr)
           {
-            ASN_STRUCT_FREE(asn_DEF_SubmanoeuvreStrategy, subm.submanoeuvreStrategy);
+            ASN_STRUCT_FREE(asn_DEF_SubmanoeuvreStrategy, subm->submanoeuvreStrategy);
           }
       }
   }
