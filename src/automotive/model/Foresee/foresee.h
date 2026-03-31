@@ -48,10 +48,10 @@ public:
   IDMParams getIDMParams(StationType type);
   double idmAcceleration(double v, double v_lead, double gap, double v0,
                           double T, double s0, double a, double b);
-  double computeRequiredDeceleration(double speed_leader, double speed_follower,
+  std::tuple<double, double> computeRequiredDeceleration(double speed_leader, double speed_follower,
                                                double current_gap, IDMParams p,
                                                double dt = 0.1, double horizon = 3.0);
-  double computeRequiredAcceleration(double speed_leader, double speed_follower,
+  std::tuple<double, double> computeRequiredAcceleration(double speed_leader, double speed_follower,
                                       double current_gap, IDMParams p,
                                       double dt = 0.1, double horizon = 3.0);
   void WrapperFORESEEMobilityModel();
@@ -69,9 +69,9 @@ public:
   void setMCBasicService(Ptr<MCBasicService> mcs_ptr) {m_mcs_ptr = mcs_ptr;};
   void setStartTime(uint8_t startTime) {m_start_time = startTime;};
   void setTrajectoryPredictor(int horizon_time, int step_time, int negotiation_time, int deceleration_time, int lc_duration, PredictionType prediction_type);
-  static std::tuple<bool, double> trajectoryEvaluation(std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other, double leader_length, int step_time, int negotiation_time, int lc_duration, trajectoryPrediction::ActorType type, int start_time);
+  // static std::tuple<bool, double> trajectoryEvaluation(std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other, double leader_length, int step_time, int negotiation_time, int lc_duration, trajectoryPrediction::ActorType type, int start_time);
   void terminateCoordination ();
-  void startCoordination (long RV_id, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RV, trajectoryPrediction::TrajectoryItem ref_RV, long RVAhead_id, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_RVAhead, trajectoryPrediction::TrajectoryItem ref_RVAhead, long HVAhead_id, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HVAhead, trajectoryPrediction::TrajectoryItem ref_HVAhead, bool left_criterion);
+  void startCoordination (long RV_id, long RVAhead_id, double dec_rv, double acc_rv_ahead, double time_rv, double time_rv_ahead, bool left_criterion);
   void addMCMRxCallback();
   void receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info);
 
