@@ -74,7 +74,7 @@ int main (int argc, char *argv[])
   int txPower = 33.0; // IEEE 802.11p transmission power in dBm (default: 23 dBm)
   xmlDocPtr rou_xml_file;
   double simTime = 100.0; // Total simulation time (default: 100 seconds)
-  bool sumo_gui = false;
+  bool sumo_gui = true;
 
   // Set here the path to the SUMO XML files
   std::string sumo_folder = "src/automotive/examples/sumo_files_v2v_foresee/";

@@ -34,6 +34,7 @@ public:
 
   typedef struct Strategy
   {
+    bool accepted;
     double acceleration;
     double time;
   } Strategy;
@@ -107,8 +108,8 @@ private:
   bool m_real_time;
   Strategy m_strategy;
   bool m_coordinator = false;
-  std::unordered_map<StationID_t, std::tuple<bool, Strategy>> m_acceptance_map;
-  StationId_t  m_
+  std::unordered_map<StationID_t, Strategy> m_acceptance_map;
+  StationId_t m_target;
 };
 }
 

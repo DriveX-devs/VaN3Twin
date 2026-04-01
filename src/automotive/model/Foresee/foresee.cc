@@ -591,8 +591,8 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
   specification.setManeuverID (left_criterion ? ManeuverID::GoToLeftLane : ManeuverID::GoToRightLane);
   // FORESEE is designed for passenger cars and trucks
   specification.setVehicleType (m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon);
-  if(RV_id >= 0) m_acceptance_map[RV_id] = std::make_tuple<bool, Strategy> (false, {dec_rv, time_rv});
-  if(RVAhead_id >= 0) m_acceptance_map[RVAhead_id] = std::make_tuple<bool, Strategy> (false, {acc_rv_ahead, time_rv_ahead});
+  if(RV_id >= 0) m_acceptance_map[RV_id] = {false, dec_rv, time_rv};
+  if(RVAhead_id >= 0) m_acceptance_map[RVAhead_id] = {false, acc_rv_ahead, time_rv_ahead};
   m_coordinator = true;
   m_busy_with_maneuver = true;
   m_mcs_ptr->generateAndEncodeMCM (&specification);
@@ -607,8 +607,8 @@ void foresee::negotiationPhase(bool left_criterion)
   for (auto it : m_acceptance_map)
     {
       // Found an actor that doesn't want to coordinate
-      if(!std::get<0>(it.second)) {its_ok = false; break;}
-      times.push_back(std::get<1>(it.second).time);
+      if(!it.second.accepted) {its_ok = false; break;}
+      times.push_back(it.second.time);
     }
   if(its_ok)
     {
@@ -626,7 +626,7 @@ void foresee::negotiationPhase(bool left_criterion)
       m_mcs_ptr->generateAndEncodeMCM (&specification);
       // TODO here coordinate by looking the time needed
       // TODO start the execution phase from here
-      double time_to_wait = std::max(times);
+      double time_to_wait = *std::max_element(times.begin(), times.end());
     }
   else
     {
@@ -780,9 +780,9 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
               ManouevreResponse_t response = resp.manouevreResponse;
               if (response == ManouevreResponse::ManouevreResponse_accept)
                 {
-                  // ACK received
+                  // Response received
                   // One of the vehicles accepted to be involved in the coordination
-                  m_acceptance_map[sender] = true;
+                  m_acceptance_map[sender].accepted = true;
                   // Send a SYN-ACK
                   MCSpecification specification;
                   specification.setAcknowledgmentContainer();

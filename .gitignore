@@ -147,7 +147,6 @@ gitignorer.sh
 /.clang-format
 /.hgignore
 /.hgtags
-/.vscode/*
 
 # Student applications
 /src/automotive/examples/sumo_files_v2v_map_student/
