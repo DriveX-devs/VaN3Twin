@@ -9,8 +9,8 @@
         "--sumo-gui=true"
     ],
     "env": {
-        "DISPLAY": ""
+        "DISPLAY": "",
+        "LIBGL_ALWAYS_INDIRECT": "1",
     }
 },
-"cmake.runConfig": {}
 }

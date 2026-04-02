@@ -86,19 +86,36 @@ The user is also encouraged to use the `sumo_files_v2v_map` and `sumo_files_v2i_
 # Working with an IDE
 
 Although not necessarily required, you can also configure an IDE in order to more comfortably work with VaN3Twin.
-The suggested IDEs, which has also been used for the development of VaN3Twin, are _QtCreator_ and _CLion_.
+The suggested IDEs, which has also been used for the development of VaN3Twin, are _QtCreator_, _CLion_, and _Visual Studio Code_.
+
+## Use Display forwarding to run the simulations on a remote server and visualize them on your local machine.
+
+To run the simulations on a remote server and visualize them on your local machine, you can use X11 forwarding. This allows you to run graphical applications on the remote server and have their display forwarded to your local machine. This option ihas been tested and verified to work using _CLion_ and _Visual Studio Code_ as IDEs.
+
+To set up X11 forwarding, follow these steps:
+* On your local machine, make sure you have an X server installed and running. For Linux, this is typically already set up. For Windows, you can use an X server like Xming or VcXsrv. For macOS, you can use XQuartz.
+* When connecting to the remote server via SSH (using a separate terminal), use the `-X` or `-Y` option to enable X11 forwarding. For example:
+  ```sh
+  ssh -X username@remote_server_ip
+  ```
+  or
+  ```sh
+  ssh -Y username@remote_server_ip
+  ```
+* If you are using CLion, you can configure the SSH connection with X11 forwarding in the Remote Development settings. Make sure to enable the option for X11 forwarding in the SSH configuration.
+* Once connected to the remote server, you can run your simulations as you normally would. The graphical output (e.g., SUMO GUI) will be forwarded to your local machine, allowing you to visualize the simulations in real-time.
 
 ## QtCreator
 
 You can find all the instructions for setting up QtCreator with ns-3 (and the same applies to VaN3Twin, as it is based on ns-3) on the [official ns-3 Wiki](https://www.nsnam.org/wiki/HOWTO_configure_QtCreator_with_ns-3).
 
-QtCreator can be installed on Debian/Ubuntu with:
+* QtCreator can be installed on Debian/Ubuntu with:
 `sudo apt install qtcreator`
 
-You need also to install the `libclang-common-8-dev` package (the command for Debian/Ubuntu is reported below):
+* You need also to install the `libclang-common-8-dev` package (the command for Debian/Ubuntu is reported below):
 `sudo apt install libclang-common-8-dev`
 
-Not installing `libclang-common-8-dev` may result in QtCreator wrongly highlighting several errors and not recognizing some types, when opening any source or header file, even if the code compiles correctly.
+* Not installing `libclang-common-8-dev` may result in QtCreator wrongly highlighting several errors and not recognizing some types, when opening any source or header file, even if the code compiles correctly.
 
 **Important**: if `libclang-common-8-dev` is not available, you can try installing a newer version. For example, on Ubuntu 22, we verified that `libclang-common-15-dev` works well too.
 
@@ -106,7 +123,62 @@ Not installing `libclang-common-8-dev` may result in QtCreator wrongly highlight
 
 CLion can be easily installed with the [JetBrains Toolbox App](https://www.jetbrains.com/toolbox-app/).
 
-You can find all the instructions for setting up CLion with ns-3 (and the same applies to VaN3Twin, as it is based on ns-3) on our [documentation](https://ms-van3ts-documentation.readthedocs.io/en/master/IDE.html#clion).
+* After opening CLion, go to File > Open.. and select the path/to/VaN3Twin/ns-3-dev/
+
+* Click on trust project.
+* Leave the default toolchain and click Next
+* Setup the CMake configuration as seen in the picture, you may change the build folder name if desired. Recommended Cmake Options (change debug for a different desired build type):
+
+  ```
+  -G Ninja -DCMAKE_BUILD_TYPE=debug -Wall -DNS3_WARNINGS_AS_ERRORS=OFF -DNS3_EXAMPLES=ON
+  ```
+* Go to File and click on Reload CMake Project.
+* Select the desired target, either libautomotive for building the entire module or a specific example target (e.g., v2i-areaSpeedAdvisor-80211p), and click build.
+* Before running a given target go to Edit configurations.
+* Enter the path/to/VaN3Twin/ns-3-dev as Working directory and desired command-line arguments as Program Arguments.
+* If you want to run the simulation with display forwarding, add to Environment variables the following line: `DISPLAY=yourdisplay;LIBGL_ALWAYS_INDIRECT=1`.
+
+You can find all the instructions above for setting up CLion with ns-3 (and the same applies to VaN3Twin, as it is based on ns-3) on our [documentation](https://ms-van3ts-documentation.readthedocs.io/en/master/IDE.html#clion).
+
+## Visual Studio Code
+
+Visual Studio Code can be easily installed with the [Microsoft Visual Studio Code website](https://code.visualstudio.com/).
+
+* After opening Visual Studio Code, go to File > Open Folder.. and select the path/to/VaN3Twin/ns-3-dev/
+
+* Install the CMake Tools extension by Microsoft.
+
+* Install clangd extension by LLVM, and then, when required, install also the clangd server.
+
+* Go to the Command Palette (Ctrl+Shift+P) and select: > CMake: Open CMake Settings (JSON)
+
+* To the opened settings.json file insert the following lines:
+
+  ```
+  {
+    ...
+    "cmake.generator": "Ninja",
+    "cmake.configureArgs": [
+        "-DCMAKE_BUILD_TYPE=Debug",
+        "-DNS3_WARNINGS_AS_ERRORS=OFF",
+        "-DNS3_EXAMPLES=ON"
+    ],
+    "cmake.buildArgs": ["-j", "13"],
+    // Change 13 based on the performance of your machine
+    "cmake.debugConfig": {"cwd": "${workspaceFolder}"},
+    ...
+  }
+  ```
+* Save the settings.json
+* Go to the Command Palette (Ctrl+Shift+P) and select: > CMake: Delete Cache and Reconfigure
+* In the `.vscode/` folder you can find three files: settings.json, task.json, and launch.json
+* To configure launch parameters, refer to `.vscode/settings.json`, particularly in the `cmake.debugConfig` section, where you can set the working directory and other debug configurations.
+* To build a specific target, go to the Command Palette (Ctrl+Shift+P) and select: > CMake: Build Target, then choose the desired target (e.g. v2i-areaSpeedAdvisor-80211p).
+* The selected target will be the default one for the next run/debug commands. To change it, repeat the previous step and select a different target.
+* You can also change the target by directly open the left sidebar, clicking on the CMake Projects tab, and selecting the desired target from the list of available targets.
+* To run/debug the selected target, you can use the standard Visual Studio Code debug options (e.g., F5 to start debugging, Ctrl+F5 to run without debugging), or the button in the toolbar.
+* If you want to run the simulation with display forwarding, add to `cmake.debugConfig` the following line: `"env": {"DISPLAY": "yourdisplay", "LIBGL_ALWAYS_INDIRECT": "1"}`. Then in your Visual Studio Code terminal, before running the simulation, set the DISPLAY variable with the command: `export DISPLAY=yourdisplay` (this operation must be done for each run/debug launch).
+
 
 # VaN3Twin-CARLA extension
 
