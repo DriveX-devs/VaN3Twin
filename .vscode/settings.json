@@ -1,0 +1,16 @@
+{
+"C_Cpp.intelliSenseEngine": "disabled",
+"clangd.arguments": [
+  "--compile-commands-dir=cmake-build-debug",
+  "--background-index"
+],
+"cmake.debugConfig": {
+    "args": [
+        "--sumo-gui=true"
+    ],
+    "env": {
+        "DISPLAY": "",
+        "LIBGL_ALWAYS_INDIRECT": "1",
+    }
+},
+}
