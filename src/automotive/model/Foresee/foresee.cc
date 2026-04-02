@@ -4,6 +4,7 @@
 
 #include "foresee.h"
 #include "ns3/foresee.h"
+#include "ns3/sumo-TraCIDefs.h"
 
 namespace ns3
 {
@@ -144,17 +145,6 @@ foresee::addMCMRxCallback ()
                  std::placeholders::_5);
   m_MCMReceiveCallbackExtended = rx_callback;
   m_mcs_ptr->addMCRxCallbackExtended (m_MCMReceiveCallbackExtended);
-}
-
-void
-foresee::setTrajectoryPredictor (double horizon_time, double step_time, double negotiation_time,
-                                 double deceleration_time, double lc_duration, PredictionType prediction_type)
-{
-  m_traj_predictor = new trajectoryPrediction(horizon_time, step_time, negotiation_time, deceleration_time);
-  m_step_time = step_time;
-  m_negotiation_time = negotiation_time;
-  m_time_to_lc = lc_duration;
-  m_prediction_type = prediction_type;
 }
 
 void
@@ -371,19 +361,13 @@ foresee::FORESEEMobilityModel ()
       StationType RV_type;
       // Check whether there is another maneuver coordination that is happening within the ahead range
       // If yes, ego vehicle cannot perform maneuver coordination
-      for (auto it = (*m_lc_data_structure).begin(); it != (*m_lc_data_structure).end(); ++it)
+      for (auto it = m_blocked_by_other_coordinations.begin(); it != m_blocked_by_other_coordinations.end(); ++it)
         {
           auto v = it->second;
-          float heading = std::get<0>(v);
-          if (heading != my_heading) continue;
-          float x = std::get<1>(v);
-          // Filter behind vehicles
-          if (my_heading == 90 && x < my_x) continue;
-          if (my_heading == 270 && x > my_x) continue;
-          float y = std::get<2>(v);
-          float dist = std::sqrt (std::pow(my_x - x, 2) + std::pow(my_y - y, 2));
-          if (dist <= m_ca_range)
+          if (v)
             {
+              // We found a coordination in the Coordination Avoidance range
+              // For the moment we cannot coordinate
               found_coordination = true;
               break;
             }
@@ -534,7 +518,6 @@ foresee::FORESEEMobilityModel ()
               else
                 {
                   // Need a coordination
-                  (*m_lc_data_structure)[m_vehicle_id_int] = std::make_tuple (my_heading, my_x, my_y);
                   startCoordination(RV_id, RVAhead_id, dec_rv, acc_rv_ahead, time_rv, time_rv_ahead, left_criterion);
                 }
 
@@ -548,6 +531,7 @@ void
 foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double acc_rv_ahead, double time_rv, double time_rv_ahead, bool left_criterion)
 {
   MCSpecification specification;
+  specification.setForesee();
   // Choose the container
   specification.setAdviseContainer();
   specification.setMCMItsRole (McmItssRole_coordinatingItss); // HV is the coordinator
@@ -627,6 +611,7 @@ void foresee::negotiationPhase(bool left_criterion)
       // Start the maneuver
       // First send the ACK to the others
       MCSpecification specification;
+      specification.setForesee();
       specification.setAcknowledgmentContainer();
       specification.setMCMItsRole (McmItssRole_coordinatingItss);
       specification.setMCMType (McmType::McmType_acknowledgment);
@@ -644,6 +629,7 @@ void foresee::negotiationPhase(bool left_criterion)
     {
       // Cancel the maneuver
       MCSpecification specification;
+      specification.setForesee();
       specification.setTerminatorContainer();
       specification.setMCMItsRole (McmItssRole_coordinatingItss);
       specification.setMCMType (McmType::McmType_termination);
@@ -655,7 +641,6 @@ void foresee::negotiationPhase(bool left_criterion)
       m_mcs_ptr->generateAndEncodeMCM (&specification);
       m_busy_with_maneuver = false;
       m_coordinator = false;
-      (*m_lc_data_structure).erase(m_vehicle_id_int);
     }
 }
 
@@ -735,6 +720,7 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
       if (advice_container)
         {
           bool accept = false;
+          bool msg_for_me = false;
           int subms_size = asn1cpp::sequenceof::getSize(adc);
           for(int i = 0; i < subms_size; ++i)
             {
@@ -744,19 +730,22 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
                 {
                   if (m_busy_with_maneuver)
                     {
+                      msg_for_me = true;
                       break;
                     }
                   else
                     {
                       // TODO calculate the acceleration/deceleration based on trajectory
                       accept = true;
+                      msg_for_me = true;
                     }
                 }
             }
-          if (accept)
+          if (accept && msg_for_me)
             {
               // Accept the coordination
               MCSpecification specification;
+              specification.setForesee();
               specification.setResponseContainer();
               specification.setMCMItsRole (McmItssRole_targetVehicle);
               specification.setMCMType(McmType::McmType_response);
@@ -764,15 +753,26 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
               m_busy_with_maneuver = true;
               m_mcs_ptr->generateAndEncodeMCM (&specification);
             }
-          else
+          else if (!accept && msg_for_me)
             {
               // Refuse the coordination
               MCSpecification specification;
+              specification.setForesee();
               specification.setResponseContainer();
               specification.setMCMItsRole (McmItssRole_targetVehicle);
               specification.setMCMResponse (1);
               specification.setMCMType(McmType::McmType_response);
               m_mcs_ptr->generateAndEncodeMCM (&specification);
+            }
+            else if (!msg_for_me)
+            {
+              // The message was not for me but I received it
+              // If the direction is the same and the distance is within the coordination avoidance range, we populate the blocked list
+              double latitude = mcm->payload.basicContainer.position.latitude / DOT_ONE_MICRO;
+              double longitude = mcm->payload.basicContainer.position.latitude / DOT_ONE_MICRO;
+              libsumo::TraCIPosition pos = m_traci->simulation.convertLonLattoXY(longitude, latitude);
+              int direction = mcm->payload.basicContainer.direction;
+              // TODO from here
             }
         }
       break;
@@ -797,6 +797,7 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
                   m_acceptance_map[sender].accepted = true;
                   // Send a SYN-ACK
                   MCSpecification specification;
+                  specification.setForesee();
                   specification.setAcknowledgmentContainer();
                   specification.setMCMItsRole (McmItssRole_coordinatingItss);
                   specification.setMCMType (McmType::McmType_acknowledgment);
@@ -806,6 +807,7 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
                 {
                   // Terminate the coordination in case of refuse
                   MCSpecification specification;
+                  specification.setForesee();
                   specification.setTerminatorContainer();
                   specification.setMCMItsRole (McmItssRole_coordinatingItss);
                   specification.setMCMType (McmType::McmType_cancellationRequest);

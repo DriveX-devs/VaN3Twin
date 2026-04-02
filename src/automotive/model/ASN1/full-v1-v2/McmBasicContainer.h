@@ -28,6 +28,7 @@ extern "C" {
 
 /* Forward declarations */
 struct ManoeuvreCoordinationRational;
+typedef long Direction_t;
 
 /* McmBasicContainer */
 typedef struct McmBasicContainer {
@@ -39,6 +40,7 @@ typedef struct McmBasicContainer {
 	McmType_t	 mcmType;
 	ManoeuvreId_t	 manoeuvreId;
 	ManoeuvreCoordinationConcept_t	 concept;
+	Direction_t direction;
 	struct ManoeuvreCoordinationRational	*rational;	/* OPTIONAL */
 	ManoeuvreExecutionStatus_t	*executionStatus;	/* OPTIONAL */
 	
@@ -49,7 +51,7 @@ typedef struct McmBasicContainer {
 /* Implementation */
 extern asn_TYPE_descriptor_t asn_DEF_McmBasicContainer;
 extern asn_SEQUENCE_specifics_t asn_SPC_McmBasicContainer_specs_1;
-extern asn_TYPE_member_t asn_MBR_McmBasicContainer_1[10];
+extern asn_TYPE_member_t asn_MBR_McmBasicContainer_1[11];
 
 #ifdef __cplusplus
 }

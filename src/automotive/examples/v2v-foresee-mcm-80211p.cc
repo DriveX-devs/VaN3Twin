@@ -182,9 +182,6 @@ int main (int argc, char *argv[])
   packetSocket.Install(c);
 
   std::unordered_map<ulong, foresee> lc_model;
-  // Create the Lane Change data structure shared with the environment
-  // No need for a mutex since we are not in multi threading programming
-  std::unordered_map<ulong, std::tuple<float, float, float>> lc_data_structure;
   // Set the coordination avoidance range to check ahead of ego vehicle (in meters)
   float ca_range = 200;
 
@@ -248,13 +245,12 @@ int main (int argc, char *argv[])
       lc_model[nodeID].setVehicleID (vehicleID);
       lc_model[nodeID].setTraciAPI(sumoClient);
       lc_model[nodeID].setNumberOfLanes();
-      lc_model[nodeID].setCurrentLCData(&lc_data_structure);
       lc_model[nodeID].setCoordinationAvoidanceRange(ca_range);
       lc_model[nodeID].setMCBasicService(bs_container->getMCBasicService());
       lc_model[nodeID].addMCMRxCallback ();
       lc_model[nodeID].setStartTime(10);
       std::string my_type = sumoClient->vehicle.getTypeID (vehicleID);
-      lc_model[nodeID].setTrajectoryPredictor(HORIZON_TIME, STEP_TIME, NEGOTIATION_TIME, DECELERATION_TIME, LC_TIME_MSEC, foresee::PredictionType::CONSTANT_SPEED);
+      // lc_model[nodeID].setTrajectoryPredictor(HORIZON_TIME, STEP_TIME, NEGOTIATION_TIME, DECELERATION_TIME, LC_TIME_MSEC, foresee::PredictionType::CONSTANT_SPEED);
 
       lc_model[nodeID].WrapperFORESEEMobilityModel();
 

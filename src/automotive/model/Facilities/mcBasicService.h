@@ -75,7 +75,7 @@ enum ManeuverID
   public:
     MCSpecification()
         : m_mcm_type(0), m_mcm_its_role(0), m_mcm_status(0),
-          m_mcm_concept(0), m_mcm_goal(0), m_maneuver_id(Undefined), m_mcm_cost(0),
+          m_mcm_concept(0), m_mcm_goal(0), m_maneuver_id(ManeuverID::Undefined), m_mcm_cost(0),
           m_vehicle_maneuver_container(false),
           m_vehicle_advise_container(false),
           m_vehicle_acknowledgement_container(false),
@@ -103,7 +103,8 @@ enum ManeuverID
     }
 
     bool checkContainers();
-
+    void setForesee() {m_use_foresee = true;}
+    bool useForesee() {return m_use_foresee;}
     void setAdviseContainer() {m_vehicle_advise_container = true;};
     bool getAdviseContainer() {return m_vehicle_advise_container;};
     void setManeuverContainer() {m_vehicle_maneuver_container = true;};
@@ -167,6 +168,7 @@ enum ManeuverID
 
     Iso3833VehicleType m_vehicle_type;
     long m_mcm_response;
+     bool m_use_foresee = false;
   };
 
 

@@ -354,6 +354,18 @@ namespace ns3
         asn1cpp::setField(MCM_message->payload.basicContainer.mcmType, specification->getMCMType());
         asn1cpp::setField(MCM_message->payload.basicContainer.manoeuvreId, specification->getManeuverID());
         asn1cpp::setField(MCM_message->payload.basicContainer.concept, specification->getMCMConcept());
+        if (specification->useForesee())
+        {
+          int direction;
+          if (MCM_mandatory_data.heading.getValue() == 90) direction = 0;
+          else if (MCM_mandatory_data.heading.getValue() == 270) direction = 1;
+          asn1cpp::setField(MCM_message->payload.basicContainer.direction, direction);
+        }
+        else 
+        {
+          asn1cpp::setField(MCM_message->payload.basicContainer.direction, -1);
+        }
+        
         auto *rational = (ManoeuvreCoordinationRational_t*)CALLOC(1, sizeof(ManoeuvreCoordinationRational_t));
         if (specification->getMCMConcept() == 0) {
             asn1cpp::setField(rational->present, ManoeuvreCoordinationRational_PR_manoeuvreCooperationGoal);
@@ -368,14 +380,14 @@ namespace ns3
             asn1cpp::setField (MCM_message->payload.basicContainer.executionStatus, specification->getMCMStatus());
           }
       }
-   else
+    else
      {
        /* Fill the basicContainer for RSU*/
        asn1cpp::setField(MCM_message->payload.basicContainer.stationType, McmStationType_roadsideUnit);
        // TODO
      }
 
-   if (specification->getManeuverContainer())
+    if (specification->getManeuverContainer())
      {
        // Select this choice
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_vehicleManoeuvreContainer);
@@ -424,7 +436,8 @@ namespace ns3
              }
          }
      }
-   else if (specification->getAdviseContainer())
+   
+    else if (specification->getAdviseContainer())
      {
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_advisedManoeuvreContainer);
        auto &adv = MCM_message->payload.mcmContainer.choice.advisedManoeuvreContainer;
@@ -444,13 +457,14 @@ namespace ns3
              }
          }
      }
-   else if (specification->getAcknowledgmentContainer())
+   
+    if (specification->getAcknowledgmentContainer())
      {
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_acknowledgmentContainer);
        asn1cpp::setField(MCM_message->payload.mcmContainer.choice.acknowledgmentContainer.acknowledgedType, McmType_acknowledgment);
        asn1cpp::setField(MCM_message->payload.mcmContainer.choice.acknowledgmentContainer.generationDeltaTime, compute_timestampIts (m_real_time) % 65536);
      }
-   else if (specification->getResponseContainer())
+    else if (specification->getResponseContainer())
      {
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_responseContainer);
        if (specification->getMCMResponse() == 0)
@@ -462,11 +476,11 @@ namespace ns3
            asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.manouevreResponse, ManouevreResponse_decline);
          }
        }
-   else if (specification->getTerminatorContainer())
+    else if (specification->getTerminatorContainer())
      {
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_terminationContainer);
      }
-   else
+    else
      {
        NS_FATAL_ERROR ("No container specified.");
      }

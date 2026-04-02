@@ -7,9 +7,11 @@
 
 // #include "ns3/core-module.h"
 // #include "ns3/LDM.h"
+#include "ns3/asn_utils.h"
 #include "ns3/mcBasicService.h"
 #include "ns3/trajectoryPrediction.h"
 #include "ns3/geonet.h"
+#include <unordered_map>
 
 #define MAX_DIST_AHEAD_BEHIND 50
 #define ACCELERATION_STEP 0.5
@@ -64,7 +66,6 @@ public:
   void setVDP (VDP* vdp) {m_vdp = vdp;};
   void setDesiredSpeed (double speed) {m_desired_speed = speed;};
   void setVehicleID (std::string vehicleID) {m_vehicle_id = vehicleID; m_vehicle_id_int = std::stol(vehicleID.substr (3));};
-  void setCurrentLCData(std::unordered_map<ulong, std::tuple<float, float, float>>* lc_data_structure) {m_lc_data_structure = lc_data_structure;};
   void setCoordinationAvoidanceRange(float ca_range) {m_ca_range = ca_range;};
   void setMCBasicService(Ptr<MCBasicService> mcs_ptr) {m_mcs_ptr = mcs_ptr;};
   void setStartTime(uint8_t startTime) {m_start_time = startTime;};
@@ -92,7 +93,7 @@ private:
   int m_num_lanes = 0;
   int m_time_to_lc;
 
-  std::unordered_map<ulong, std::tuple<float, float, float>>* m_lc_data_structure;
+  std::unordered_map<StationID_t, bool> m_blocked_by_other_coordinations;
   float m_ca_range;
   Ptr<MCBasicService> m_mcs_ptr;
   uint8_t m_start_time;
@@ -105,7 +106,6 @@ private:
 
   EventId m_termination_event;
   Ptr<Node> m_node = nullptr;
-  std::unordered_map<std::string, Ptr<Socket>> m_socket_map;
   StationType_t m_station_type;
   std::function<void(asn1cpp::Seq<MCM>, Address, StationID_t, StationType_t, SignalInfo)> m_MCMReceiveCallbackExtended = nullptr;
   bool m_real_time;
