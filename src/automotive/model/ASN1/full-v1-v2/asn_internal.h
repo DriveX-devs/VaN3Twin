@@ -21,6 +21,9 @@
 extern "C" {
 #endif
 
+//#define ASN_EMIT_DEBUG 1
+//#define ASN_THREAD_SAFE 0
+
 #if !defined(ASN_DISABLE_UPER_SUPPORT)
 #include "uper_decoder.h"
 #include "uper_encoder.h"
@@ -41,6 +44,7 @@ int get_asn1c_environment_version(void);	/* Run-time version */
 
 // UNCOMMENT THIS
 //#define	asn_debug_indent	0
+
 #define ASN_DEBUG_INDENT_ADD(i) do{}while(0)
 
 #ifdef  EMIT_ASN_DEBUG
@@ -63,6 +67,7 @@ int get_asn1c_environment_version(void);	/* Run-time version */
 #undef  asn_debug_indent
 // UNCOMMENT THIS
 //extern int asn_debug_indent;
+
 #define ASN_DEBUG_INDENT_ADD(i) do { asn_debug_indent += i; } while(0)
 #endif	/* ASN_THREAD_SAFE */
 #define	ASN_DEBUG(fmt, args...)	do {			\

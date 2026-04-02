@@ -52,6 +52,7 @@ namespace ns3
           }
         //ASN_STRUCT_FREE(asn_DEF_Submanoeuvres, &adv.submaneuvres);
         ASN_STRUCT_FREE_CONTENTS_ONLY(asn_DEF_Submanoeuvres, &adv->submaneuvres);
+
       }
 
     for (auto &subm : m_submaneuver_description)

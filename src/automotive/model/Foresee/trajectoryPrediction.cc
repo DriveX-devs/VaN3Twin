@@ -59,6 +59,7 @@ trajectoryPrediction::predictConstantSpeed(double x, double y, double speed, dou
         }
     }
   return {reference, motion_plan};
+
 }
 
 std::vector<trajectoryPrediction::TrajectoryItem>

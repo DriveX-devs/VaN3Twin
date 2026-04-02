@@ -10,6 +10,7 @@
 #include "cmath"
 #include "ns3/nstime.h"
 
+
 namespace ns3 {
 class trajectoryPrediction
 {

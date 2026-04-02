@@ -76,6 +76,7 @@ public:
   void receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info);
   void negotiationPhase(bool left_criterion);
 
+
 private:
   std::string m_vehicle_id;
   uint64_t m_vehicle_id_int;
@@ -90,6 +91,7 @@ private:
   double m_offset = 0.3;
   int m_num_lanes = 0;
   int m_time_to_lc;
+
   std::unordered_map<ulong, std::tuple<float, float, float>>* m_lc_data_structure;
   float m_ca_range;
   Ptr<MCBasicService> m_mcs_ptr;
@@ -100,6 +102,7 @@ private:
   int m_negotiation_time;
   int m_FORESEE_max_time = 10000;
   bool m_busy_with_maneuver = false;
+
   EventId m_termination_event;
   Ptr<Node> m_node = nullptr;
   std::unordered_map<std::string, Ptr<Socket>> m_socket_map;
@@ -110,6 +113,7 @@ private:
   bool m_coordinator = false;
   std::unordered_map<StationID_t, Strategy> m_acceptance_map;
   StationId_t m_target;
+
 };
 }
 

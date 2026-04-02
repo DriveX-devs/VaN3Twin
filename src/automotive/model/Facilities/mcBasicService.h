@@ -164,6 +164,7 @@ enum ManeuverID
     bool m_vehicle_terminator_container;
     std::vector<SubmanoeuvreDescription*> m_submaneuver_description; // For Vehicle Maneuver Container
     std::vector<ManoeuvreAdvice*> m_maneuver_advice; // For Vehicle Maneuver Container and Vehicle Advice Container
+
     Iso3833VehicleType m_vehicle_type;
     long m_mcm_response;
   };
