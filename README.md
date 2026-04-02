@@ -104,6 +104,14 @@ To set up X11 forwarding, follow these steps:
   ```
 * If you are using CLion, you can configure the SSH connection with X11 forwarding in the Remote Development settings. Make sure to enable the option for X11 forwarding in the SSH configuration.
 * Once connected to the remote server, you can run your simulations as you normally would. The graphical output (e.g., SUMO GUI) will be forwarded to your local machine, allowing you to visualize the simulations in real-time.
+* For individual IDE configuration, refer to the sections below for CLion and Visual Studio Code, where you can set the environment variables to enable display forwarding.
+
+## Ninja build system
+It is highly recommended to use the Ninja build system for building the project, as it significantly speeds up the build process compared to the default Makefiles.
+_CLion_ and _Visual Studio Code_ also support Ninja as a build system, and it is the recommended option when using these IDEs.
+To install Ninja on Debian/Ubuntu, you can use the following command:
+`sudo apt install ninja-build`.
+The verify that Ninja is properly installed, you can run `ninja --version` in your terminal, and it should return the version of Ninja installed on your system.
 
 ## QtCreator
 
@@ -177,7 +185,7 @@ Visual Studio Code can be easily installed with the [Microsoft Visual Studio Cod
 * The selected target will be the default one for the next run/debug commands. To change it, repeat the previous step and select a different target.
 * You can also change the target by directly open the left sidebar, clicking on the CMake Projects tab, and selecting the desired target from the list of available targets.
 * To run/debug the selected target, you can use the standard Visual Studio Code debug options (e.g., F5 to start debugging, Ctrl+F5 to run without debugging), or the button in the toolbar.
-* If you want to run the simulation with display forwarding, add to `cmake.debugConfig` the following line: `"env": {"DISPLAY": "yourdisplay", "LIBGL_ALWAYS_INDIRECT": "1"}`. Then in your Visual Studio Code terminal, before running the simulation, set the DISPLAY variable with the command: `export DISPLAY=yourdisplay` (this operation must be done for each run/debug launch).
+* If you want to run the simulation with display forwarding, in `.vscode/settings.json`, add to `cmake.debugConfig` the following line: `"env": {"DISPLAY": "yourdisplay", "LIBGL_ALWAYS_INDIRECT": "1"}`. Then in your Visual Studio Code terminal, before running the simulation, set the DISPLAY variable with the command: `export DISPLAY=yourdisplay` (this operation must be done for each run/debug launch).
 
 
 # VaN3Twin-CARLA extension
@@ -360,7 +368,7 @@ DCC is **not implicitly enabled by default**. Instead, each vehicle that should 
     std::unordered_map<Ptr<Node>, Ptr<DCC>> dcc_per_node;
     for (uint8_t i = 0; i < dcc_nodes; i++)
     {
-    dcc_per_node[c.Get(i)] = CreateObject<DCC>();
+      dcc_per_node[c.Get(i)] = CreateObject<DCC>();
     }
     ```
 
