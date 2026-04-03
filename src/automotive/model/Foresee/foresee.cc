@@ -3,7 +3,10 @@
 //
 
 #include "foresee.h"
+#include "ns3/asn_utils.h"
 #include "ns3/foresee.h"
+#include "ns3/mcBasicService.h"
+#include "ns3/simulator.h"
 #include "ns3/sumo-TraCIDefs.h"
 
 namespace ns3
@@ -225,10 +228,18 @@ foresee::FORESEEMobilityModel ()
   if (m_busy_with_maneuver)
     {
       // FORESEE cannot be activated in this case because we are involved in another maneuver
-
       Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
       return;
     }
+  // Check whether there is another maneuver coordination that is happening within the ahead range
+  // If yes, ego vehicle cannot perform maneuver coordination
+  bool found_coordination = m_blocked_by_other_coordinations.empty() ? false : true;
+  if (found_coordination)
+  {
+    // FORESEE cannot be activated in this case because the CA range is not free
+    Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+    return;
+  }
   // Data structures to store vehicle speeds and IDs per lane
   std::unordered_map<long, std::vector<double>> speeds_per_lane;
   std::unordered_map<long, std::vector<std::string>> veh_per_lane;
@@ -353,174 +364,134 @@ foresee::FORESEEMobilityModel ()
     // At least one incentive criterion is satisfied
     // Check the comfort criterion
     {
-      // Check the coordination avoidance range
-      bool found_coordination = false;
       // Take the four roles, target, ahead ego, ahead target
       std::string RV, HVAhead, RVAhead;
-      long RV_id = -1, RVAhead_id = -1, HVAhead_id = -1;
+      long RV_id = -1, RVAhead_id = -1;
       StationType RV_type;
-      // Check whether there is another maneuver coordination that is happening within the ahead range
-      // If yes, ego vehicle cannot perform maneuver coordination
-      for (auto it = m_blocked_by_other_coordinations.begin(); it != m_blocked_by_other_coordinations.end(); ++it)
+      // Check the comfort criterion
+      double x_RV, x_RVAhead;
+      double y_RV, y_RVAhead;
+      double speed_RV, speed_RVAhead;
+      double min_dist_rv_ahead = 10000;
+      double min_dist_rv = 10000;
+      // Target lane
+      int target_lane = left_criterion ? my_lane.getData() - 1 : my_lane.getData() + 1;
+      // Vehicles ahead of HV in the target lane
+      auto& vec1 = veh_per_lane[target_lane];
+      // Vehicles ahead of HV in the same lane
+      auto& vec2 = veh_per_lane[my_lane.getData()];
+      for(auto it = vehicles.begin(); it != vehicles.end(); ++it)
         {
-          auto v = it->second;
-          if (v)
+          if (it->vehData.lanePosition.getData() == target_lane)
             {
-              // We found a coordination in the Coordination Avoidance range
-              // For the moment we cannot coordinate
-              found_coordination = true;
-              break;
-            }
-        }
-      if (!found_coordination)
-        {
-          // No other coordination in progress, check the comfort criterion
-          double x_RV, x_RVAhead, x_HVAhead;
-          double y_RV, y_RVAhead, y_HVAhead;
-          double speed_RV, speed_RVAhead, speed_HVAhead;
-          double min_dist_rv_ahead = 10000;
-          double min_dist_rv = 10000;
-          double min_dist_hv_ahead = 10000;
-          // Target lane
-          int target_lane = left_criterion ? my_lane.getData() - 1 : my_lane.getData() + 1;
-          // Vehicles ahead of HV in the target lane
-          auto& vec1 = veh_per_lane[target_lane];
-          // Vehicles ahead of HV in the same lane
-          auto& vec2 = veh_per_lane[my_lane.getData()];
-          for(auto it = vehicles.begin(); it != vehicles.end(); ++it)
-            {
-              if (it->vehData.lanePosition.getData() == target_lane)
+              auto pos = m_traci->simulation.convertLonLattoXY (it->vehData.lon, it->vehData.lat);
+              double dist = std::sqrt (std::pow (my_x - pos.x, 2) + std::pow (my_y - pos.y, 2));
+              auto it_found = std::find (vec1.begin (), vec1.end (),
+                                          std::to_string (it->vehData.stationID));
+              if (it_found != vec1.end ())
                 {
-                  auto pos = m_traci->simulation.convertLonLattoXY (it->vehData.lon, it->vehData.lat);
-                  double dist = std::sqrt (std::pow (my_x - pos.x, 2) + std::pow (my_y - pos.y, 2));
-                  auto it_found = std::find (vec1.begin (), vec1.end (),
-                                             std::to_string (it->vehData.stationID));
-                  if (it_found != vec1.end ())
+                  // Vehicle is in the target lane ahead of ego, can be RVAhead
+                  if (dist < min_dist_rv_ahead && dist < MAX_DIST_AHEAD_BEHIND)
                     {
-                      // Vehicle is in the target lane ahead of ego, can be RVAhead
-                      if (dist < min_dist_rv_ahead && dist < MAX_DIST_AHEAD_BEHIND)
-                        {
-                          min_dist_rv_ahead = dist;
-                          RVAhead = "veh" + std::to_string (it->vehData.stationID);
-                          RVAhead_id = it->vehData.stationID;
-                          x_RVAhead = pos.x;
-                          y_RVAhead = pos.y;
-                          speed_RVAhead = it->vehData.speed_ms;
-                        }
+                      min_dist_rv_ahead = dist;
+                      RVAhead = "veh" + std::to_string (it->vehData.stationID);
+                      RVAhead_id = it->vehData.stationID;
+                      x_RVAhead = pos.x;
+                      y_RVAhead = pos.y;
+                      speed_RVAhead = it->vehData.speed_ms;
                     }
-                  else
+                }
+              else
+                {
+                  // Can be RV
+                  OptionalDataItem<long> lane = it->vehData.lanePosition;
+                  if (lane.isAvailable () && lane.getData () == target_lane)
                     {
-                      // Can be RV
-                      OptionalDataItem<long> lane = it->vehData.lanePosition;
-                      if (lane.isAvailable () && lane.getData () == target_lane)
+                      if (dist < min_dist_rv && dist < MAX_DIST_AHEAD_BEHIND)
                         {
-                          if (dist < min_dist_rv && dist < MAX_DIST_AHEAD_BEHIND)
-                            {
-                              min_dist_rv = dist;
-                              RV = "veh" + std::to_string (it->vehData.stationID);
-                              RV_id = it->vehData.stationID;
-                              x_RV = pos.x;
-                              y_RV = pos.y;
-                              speed_RV = it->vehData.speed_ms;
-                              RV_type = static_cast<StationType> (it->vehData.stationType);
-                            }
+                          min_dist_rv = dist;
+                          RV = "veh" + std::to_string (it->vehData.stationID);
+                          RV_id = it->vehData.stationID;
+                          x_RV = pos.x;
+                          y_RV = pos.y;
+                          speed_RV = it->vehData.speed_ms;
+                          RV_type = static_cast<StationType> (it->vehData.stationType);
                         }
                     }
                 }
-              else if (it->vehData.lanePosition.getData() == my_lane.getData())
+            }
+        }
+
+      if (RV_id <= 0 && RVAhead_id <= 0)
+        {
+          // No RV and RVAhead present, we can directly change the lane
+          target_lane = 3 - target_lane;
+          m_traci->vehicle.changeLane (m_vehicle_id, target_lane, 0.5);
+        }
+      else
+        {
+          // Check the comfort criterion
+          double acc_rv_ahead = DEFAULT_ACC_VALUE, dec_rv = DEFAULT_ACC_VALUE;
+          double time_rv_ahead, time_rv;
+          bool possible_hv = true;
+          bool possible_rv = true;
+          if(RVAhead_id >= 0)
+            {
+              IDMParams ego_params = getIDMParams(static_cast<StationType> (m_station_type));
+              // Acceleration HV would experience with RVAhead as new leader
+              double a_ego_after = idmAcceleration(my_speed, speed_RVAhead, min_dist_rv_ahead,
+                                                    ego_params.v0, ego_params.T,
+                                                    ego_params.s0, ego_params.a, ego_params.b);
+              if(a_ego_after < MIN_DECELERATION) possible_hv = false;
+              if(!possible_hv)
                 {
-                  auto pos = m_traci->simulation.convertLonLattoXY (it->vehData.lon, it->vehData.lat);
-                  double dist = std::sqrt (std::pow (my_x - pos.x, 2) + std::pow (my_y - pos.y, 2));
-                  auto it_found = std::find (vec2.begin (), vec2.end (),
-                                             std::to_string (it->vehData.stationID));
-                  if (it_found != vec1.end ())
+                  // It is needed to open the gap between RVAhead and HV
+                  // RVAhead needs to accelerate
+                  std::tuple<double, double> tuple = computeRequiredAcceleration (speed_RVAhead, my_speed, min_dist_rv_ahead, ego_params);
+                  double a = std::get<0>(tuple);
+                  double time = std::get<1>(tuple);
+                  if (a != NO_SOLUTION)
                     {
-                      // Can be HVAhead
-                      if (dist < min_dist_rv_ahead && dist < MAX_DIST_AHEAD_BEHIND)
-                        {
-                          min_dist_hv_ahead = dist;
-                          HVAhead = "veh" + std::to_string (it->vehData.stationID);
-                          HVAhead_id = it->vehData.stationID;
-                          x_HVAhead = pos.x;
-                          y_HVAhead = pos.y;
-                          speed_HVAhead = it->vehData.speed_ms;
-                        }
+                      acc_rv_ahead = a;
+                      time_rv_ahead = time;
+                      possible_hv = true;
                     }
                 }
             }
 
-          if (RV_id <= 0 && RVAhead_id <= 0)
+          if(RV_id >= 0)
             {
-              // No RV and RVAhead present, we can directly change the lane
+              IDMParams params = getIDMParams(RV_type);
+              // Acceleration HV would experience with RVAhead as new leader
+              double a_ego_after = idmAcceleration(speed_RV, my_speed, min_dist_rv,
+                                                    params.v0, params.T,
+                                                    params.s0, params.a, params.b);
+              if(a_ego_after < MIN_DECELERATION) possible_rv = false;
+              if(!possible_rv)
+                {
+                  // It is needed to open the gap between RVAhead and HV
+                  // RVAhead needs to accelerate
+                  std::tuple<double, double> tuple = computeRequiredDeceleration (my_speed, speed_RV, min_dist_rv, params);
+                  double a = std::get<0>(tuple);
+                  double time = std::get<1>(tuple);
+                  if (a != NO_SOLUTION)
+                    {
+                      dec_rv = a;
+                      time_rv = time;
+                      possible_rv = true;
+                    }
+                }
+            }
+          if ((possible_hv && acc_rv_ahead == DEFAULT_ACC_VALUE) && (possible_rv && dec_rv == DEFAULT_ACC_VALUE))
+            {
+              // No need to change the motion of RV and RVAhead, we can directly change lane
               target_lane = 3 - target_lane;
               m_traci->vehicle.changeLane (m_vehicle_id, target_lane, 0.5);
             }
           else
             {
-              // Check the comfort criterion
-              double acc_rv_ahead = DEFAULT_ACC_VALUE, dec_rv = DEFAULT_ACC_VALUE;
-              double time_rv_ahead, time_rv;
-              bool possible_hv = true;
-              bool possible_rv = true;
-              if(RVAhead_id >= 0)
-                {
-                  IDMParams ego_params = getIDMParams(static_cast<StationType> (m_station_type));
-                  // Acceleration HV would experience with RVAhead as new leader
-                  double a_ego_after = idmAcceleration(my_speed, speed_RVAhead, min_dist_rv_ahead,
-                                                        ego_params.v0, ego_params.T,
-                                                        ego_params.s0, ego_params.a, ego_params.b);
-                  if(a_ego_after < MIN_DECELERATION) possible_hv = false;
-                  if(!possible_hv)
-                    {
-                      // It is needed to open the gap between RVAhead and HV
-                      // RVAhead needs to accelerate
-                      std::tuple<double, double> tuple = computeRequiredAcceleration (speed_RVAhead, my_speed, min_dist_rv_ahead, ego_params);
-                      double a = std::get<0>(tuple);
-                      double time = std::get<1>(tuple);
-                      if (a != NO_SOLUTION)
-                        {
-                          acc_rv_ahead = a;
-                          time_rv_ahead = time;
-                          possible_hv = true;
-                        }
-                    }
-                }
-
-              if(RV_id >= 0)
-                {
-                  IDMParams params = getIDMParams(RV_type);
-                  // Acceleration HV would experience with RVAhead as new leader
-                  double a_ego_after = idmAcceleration(speed_RV, my_speed, min_dist_rv,
-                                                        params.v0, params.T,
-                                                        params.s0, params.a, params.b);
-                  if(a_ego_after < MIN_DECELERATION) possible_rv = false;
-                  if(!possible_rv)
-                    {
-                      // It is needed to open the gap between RVAhead and HV
-                      // RVAhead needs to accelerate
-                      std::tuple<double, double> tuple = computeRequiredDeceleration (my_speed, speed_RV, min_dist_rv, params);
-                      double a = std::get<0>(tuple);
-                      double time = std::get<1>(tuple);
-                      if (a != NO_SOLUTION)
-                        {
-                          dec_rv = a;
-                          time_rv = time;
-                          possible_rv = true;
-                        }
-                    }
-                }
-              if ((possible_hv && acc_rv_ahead == DEFAULT_ACC_VALUE) && (possible_rv && dec_rv == DEFAULT_ACC_VALUE))
-                {
-                  // No need to change the motion of RV and RVAhead, we can directly change lane
-                  target_lane = 3 - target_lane;
-                  m_traci->vehicle.changeLane (m_vehicle_id, target_lane, 0.5);
-                }
-              else
-                {
-                  // Need a coordination
-                  startCoordination(RV_id, RVAhead_id, dec_rv, acc_rv_ahead, time_rv, time_rv_ahead, left_criterion);
-                }
-
+              // Need a coordination
+              startCoordination(RV_id, RVAhead_id, dec_rv, acc_rv_ahead, time_rv, time_rv_ahead, left_criterion);
             }
         }
     }
@@ -624,6 +595,7 @@ void foresee::negotiationPhase(bool left_criterion)
       // TODO here coordinate by looking the time needed
       // TODO start the execution phase from here
       double time_to_wait = *std::max_element(times.begin(), times.end());
+      // TODO schedule the sending of termination when terminated
     }
   else
     {
@@ -641,7 +613,24 @@ void foresee::negotiationPhase(bool left_criterion)
       m_mcs_ptr->generateAndEncodeMCM (&specification);
       m_busy_with_maneuver = false;
       m_coordinator = false;
+      m_acceptance_map.clear();
     }
+}
+
+void foresee::targetCheckACK()
+{
+  if (!m_my_coordinator_responded)
+  {
+    MCSpecification specification;
+    specification.setForesee();
+    specification.setTerminatorContainer();
+    specification.setMCMItsRole (McmItssRole_targetVehicle);
+    specification.setMCMType (McmType::McmType_cancellationRequest);
+    m_mcs_ptr->generateAndEncodeMCM (&specification);
+    m_my_coordinator = -1;
+    m_my_coordinator_responded = false;
+    m_busy_with_maneuver = false;
+  }
 }
 
 void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info)
@@ -735,7 +724,7 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
                     }
                   else
                     {
-                      // TODO calculate the acceleration/deceleration based on trajectory
+                      // TODO extract the deceleration and time
                       accept = true;
                       msg_for_me = true;
                     }
@@ -751,7 +740,11 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
               specification.setMCMType(McmType::McmType_response);
               specification.setMCMResponse (0);
               m_busy_with_maneuver = true;
+              m_my_coordinator = sender;
+              m_my_coordinator_responded = false;
               m_mcs_ptr->generateAndEncodeMCM (&specification);
+              // Schedule the check to receive the ACK from coordinator (max 1s)
+              m_ack_event = Simulator::Schedule(MilliSeconds(1000), &foresee::targetCheckACK, this);
             }
           else if (!accept && msg_for_me)
             {
@@ -764,29 +757,35 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
               specification.setMCMType(McmType::McmType_response);
               m_mcs_ptr->generateAndEncodeMCM (&specification);
             }
-            else if (!msg_for_me)
+          else if (!msg_for_me)
             {
               // The message was not for me but I received it
               // If the direction is the same and the distance is within the coordination avoidance range, we populate the blocked list
               double latitude = mcm->payload.basicContainer.position.latitude / DOT_ONE_MICRO;
-              double longitude = mcm->payload.basicContainer.position.latitude / DOT_ONE_MICRO;
+              double longitude = mcm->payload.basicContainer.position.longitude / DOT_ONE_MICRO;
               libsumo::TraCIPosition pos = m_traci->simulation.convertLonLattoXY(longitude, latitude);
               int direction = mcm->payload.basicContainer.direction;
-              // TODO from here
+              // Check if direction is the same
+              double my_heading = m_vdp->getHeadingValue();
+              bool same_direction = false;
+              if ((my_heading == 90 && direction == 0) || (my_heading == 270 && direction == 1)) same_direction = true;
+              if (same_direction && !m_busy_with_maneuver)
+              {
+                // I am currently free, so I register the coordination if in my CA range
+                double dist = std::abs(pos.x - m_vdp->getPositionXY().x);
+                if (dist <= m_ca_range)
+                {
+                  m_blocked_by_other_coordinations.insert(sender);
+                }
+              }
             }
         }
       break;
-    case McmType::McmType_termination:
-      // Termination reception, the vehicle is now free to do other coordinations
-      m_busy_with_maneuver = false;
-      break;
-    case McmType::McmType_acknowledgment:
-      // TODO
-      break;
+
     case McmType::McmType_response:
       if (resp_container)
         {
-          if (m_coordinator && sender_role == McmItssRole::McmItssRole_targetVehicle)
+          if (m_coordinator && sender_role == McmItssRole::McmItssRole_targetVehicle && m_acceptance_map.find(sender) != m_acceptance_map.end())
             {
               // The coordinator is waiting the ACK from the others
               ManouevreResponse_t response = resp.manouevreResponse;
@@ -794,30 +793,54 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
                 {
                   // Response received
                   // One of the vehicles accepted to be involved in the coordination
+                  // Update the map to be checked in the checkNegotiation function
                   m_acceptance_map[sender].accepted = true;
-                  // Send a SYN-ACK
-                  MCSpecification specification;
-                  specification.setForesee();
-                  specification.setAcknowledgmentContainer();
-                  specification.setMCMItsRole (McmItssRole_coordinatingItss);
-                  specification.setMCMType (McmType::McmType_acknowledgment);
-                  m_mcs_ptr->generateAndEncodeMCM (&specification);
-                }
-              else
-                {
-                  // Terminate the coordination in case of refuse
-                  MCSpecification specification;
-                  specification.setForesee();
-                  specification.setTerminatorContainer();
-                  specification.setMCMItsRole (McmItssRole_coordinatingItss);
-                  specification.setMCMType (McmType::McmType_cancellationRequest);
-                  m_mcs_ptr->generateAndEncodeMCM (&specification);
                 }
             }
         }
       break;
+
+    case McmType::McmType_termination:
+      // Termination reception, the vehicle is now free to do other coordinations
+      if (sender_role == McmItssRole_coordinatingItss && sender != m_my_coordinator && m_blocked_by_other_coordinations.find(sender) != m_blocked_by_other_coordinations.end())
+      {
+        // A maneuver is terminated, erase it from the set if it is not my maneuver
+        // Must be the coordinator to stop the menauver
+        m_blocked_by_other_coordinations.erase(sender);
+      }
+      else if (sender_role == McmItssRole_coordinatingItss && sender == m_my_coordinator)
+      {
+        // If it is my maneuver, now I am free for others
+        m_busy_with_maneuver = false;
+        m_my_coordinator_responded = false;
+        m_my_coordinator = -1;
+      }
+      break;
+
+    case McmType::McmType_acknowledgment:
+      if (sender == m_my_coordinator)
+      {
+        // We can start the maneuver
+        m_my_coordinator_responded = true;
+        // We can cancel the check for the ACK
+        Simulator::Cancel(m_ack_event);
+      }
+      break;
+
     case McmType::McmType_cancellationRequest:
-      // TODO
+      // One target asked for cancellation, approve
+      if (m_coordinator && m_acceptance_map.find(sender) != m_acceptance_map.end())
+      {
+        MCSpecification specification;
+        specification.setForesee();
+        specification.setTerminatorContainer();
+        specification.setMCMItsRole (McmItssRole_coordinatingItss);
+        specification.setMCMType (McmType::McmType_termination);
+        m_mcs_ptr->generateAndEncodeMCM (&specification);
+        m_coordinator = false;
+        m_busy_with_maneuver = false;
+         m_acceptance_map.clear();
+      }
       break;
     default:
       break;

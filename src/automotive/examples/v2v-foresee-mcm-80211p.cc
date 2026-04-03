@@ -183,7 +183,7 @@ int main (int argc, char *argv[])
 
   std::unordered_map<ulong, foresee> lc_model;
   // Set the coordination avoidance range to check ahead of ego vehicle (in meters)
-  float ca_range = 200;
+  double ca_range = 200;
 
   std::cout << "A transmission power of " << txPower << " dBm  will be used." << std::endl;
 

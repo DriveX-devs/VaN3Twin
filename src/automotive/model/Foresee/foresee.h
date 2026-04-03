@@ -8,6 +8,7 @@
 // #include "ns3/core-module.h"
 // #include "ns3/LDM.h"
 #include "ns3/asn_utils.h"
+#include "ns3/event-id.h"
 #include "ns3/mcBasicService.h"
 #include "ns3/trajectoryPrediction.h"
 #include "ns3/geonet.h"
@@ -66,7 +67,7 @@ public:
   void setVDP (VDP* vdp) {m_vdp = vdp;};
   void setDesiredSpeed (double speed) {m_desired_speed = speed;};
   void setVehicleID (std::string vehicleID) {m_vehicle_id = vehicleID; m_vehicle_id_int = std::stol(vehicleID.substr (3));};
-  void setCoordinationAvoidanceRange(float ca_range) {m_ca_range = ca_range;};
+  void setCoordinationAvoidanceRange(double ca_range) {m_ca_range = ca_range;};
   void setMCBasicService(Ptr<MCBasicService> mcs_ptr) {m_mcs_ptr = mcs_ptr;};
   void setStartTime(uint8_t startTime) {m_start_time = startTime;};
   void setTrajectoryPredictor(int horizon_time, int step_time, int negotiation_time, int deceleration_time, int lc_duration, PredictionType prediction_type);
@@ -76,7 +77,7 @@ public:
   void addMCMRxCallback();
   void receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info);
   void negotiationPhase(bool left_criterion);
-
+  void targetCheckACK();
 
 private:
   std::string m_vehicle_id;
@@ -93,8 +94,8 @@ private:
   int m_num_lanes = 0;
   int m_time_to_lc;
 
-  std::unordered_map<StationID_t, bool> m_blocked_by_other_coordinations;
-  float m_ca_range;
+  std::set<StationID_t> m_blocked_by_other_coordinations;
+  double m_ca_range;
   Ptr<MCBasicService> m_mcs_ptr;
   uint8_t m_start_time;
   trajectoryPrediction* m_traj_predictor;
@@ -112,8 +113,9 @@ private:
   Strategy m_strategy;
   bool m_coordinator = false;
   std::unordered_map<StationID_t, Strategy> m_acceptance_map;
-  StationId_t m_target;
-
+  StationId_t m_my_coordinator;
+  bool m_my_coordinator_responded = false;
+  EventId m_ack_event;
 };
 }
 
