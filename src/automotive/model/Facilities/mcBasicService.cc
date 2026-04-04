@@ -457,8 +457,7 @@ namespace ns3
              }
          }
      }
-   
-    if (specification->getAcknowledgmentContainer())
+    else if (specification->getAcknowledgmentContainer())
      {
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_acknowledgmentContainer);
        asn1cpp::setField(MCM_message->payload.mcmContainer.choice.acknowledgmentContainer.acknowledgedType, McmType_acknowledgment);

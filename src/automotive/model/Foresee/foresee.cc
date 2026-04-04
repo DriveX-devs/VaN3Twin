@@ -3,6 +3,7 @@
 //
 
 #include "foresee.h"
+#include "ns3/LongitudinalAcceleration.h"
 #include "ns3/asn_utils.h"
 #include "ns3/foresee.h"
 #include "ns3/mcBasicService.h"
@@ -125,6 +126,7 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
   return {lo, delta_t}; // minimum deceleration
 }
 
+/*
 void
 foresee::setTrajectoryPredictor (int horizon_time, int step_time, int negotiation_time,
                                  int deceleration_time, int lc_duration, PredictionType prediction_type)
@@ -135,6 +137,7 @@ foresee::setTrajectoryPredictor (int horizon_time, int step_time, int negotiatio
   m_time_to_lc = lc_duration;
   m_prediction_type = prediction_type;
 }
+*/
 
 void
 foresee::addMCMRxCallback ()
@@ -758,12 +761,16 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
                     }
                   else
                     {
-                      // TODO extract the deceleration and time
                       auto subm = asn1cpp::sequenceof::getSeq(adv->submaneuvres, Submanoeuvre, 0);
                       auto sub_id = asn1cpp::getField(subm->submanoeuvreId, Identifier1B_t);
-                      auto acc = asn1cpp::getField(subm->acceleration, LongitudinalAcceleration_t);
+                      auto acc = asn1cpp::getField(subm->acceleration.longitudinalAccelerationValue, LongitudinalAccelerationValue);
                       auto time = (double) asn1cpp::getField(subm->durationDeltaTime, DeltaTimeMilliSecondPositive_t) / CENTI;
-                      double acc_value = (double) acc.longitudinalAccelerationValue / CENTI;
+                      double acc_value = (double) acc / CENTI;
+                      if ((sub_id == ManeuverID::Accelerate && acc_value < 0) || (sub_id == ManeuverID::Slowdown && acc_value > 0))
+                      {
+                        msg_for_me = true;
+                        break;
+                      }
                       m_required_acceleration_time = std::make_tuple(acc_value, time);
                       accept = true;
                       msg_for_me = true;

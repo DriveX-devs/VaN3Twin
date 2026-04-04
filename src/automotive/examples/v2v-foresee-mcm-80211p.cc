@@ -215,7 +215,7 @@ int main (int argc, char *argv[])
       // Set the desired speed
       sumoClient->vehicle.setMaxSpeed(vehicleID, speed);
       // Prevent uncontrolled lane change
-      sumoClient->vehicle.setParameter(vehicleID, "laneChangeMode", "0");
+      sumoClient->vehicle.setParameter(vehicleID, "laneChangeMode", "256");
 
       // Create a new ETSI GeoNetworking socket, thanks to the GeoNet::createGNPacketSocket() function, accepting as argument a pointer to the current node
       Ptr<Socket> sock;
