@@ -44,6 +44,22 @@ public:
 
   struct IDMParams { double v0, T, s0, a, b; };
 
+  struct CoordinationLog {
+      // Feature al trigger
+      double gap_hv_rv;
+      double gap_hv_rvahead;
+      double speed_hv, speed_rv, speed_rvahead;
+      double rel_speed_hv_rv;       // speed_hv - speed_rv
+      double rel_speed_hv_rvahead;  // speed_hv - speed_rvahead
+      double dec_rv_requested;
+      double acc_rvahead_requested;
+      double time_rv, time_rv_ahead;
+      int density_approx;           // n. veicoli in range
+      // Outcome
+      bool negotiation_success;
+      bool execution_success;
+  };
+
   foresee() = default;
   ~foresee() {
       delete m_traj_predictor;
@@ -53,10 +69,10 @@ public:
                           double T, double s0, double a, double b);
   std::tuple<double, double> computeRequiredDeceleration(double speed_leader, double speed_follower,
                                                double current_gap, IDMParams p,
-                                               double dt = 0.1, double horizon = 3.0);
+                                               double dt = 0.1, double horizon = 5.0);
   std::tuple<double, double> computeRequiredAcceleration(double speed_leader, double speed_follower,
                                       double current_gap, IDMParams p,
-                                      double dt = 0.1, double horizon = 3.0);
+                                      double dt = 0.1, double horizon = 5.0);
   void WrapperFORESEEMobilityModel();
   void FORESEEMobilityModel();
   void setStationType(StationType_t type) {m_station_type = type;};
@@ -73,11 +89,12 @@ public:
   void setTrajectoryPredictor(int horizon_time, int step_time, int negotiation_time, int deceleration_time, int lc_duration, PredictionType prediction_type);
   // static std::tuple<bool, double> trajectoryEvaluation(std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other, double leader_length, int step_time, int negotiation_time, int lc_duration, trajectoryPrediction::ActorType type, int start_time);
   void terminateCoordination ();
-  void startCoordination (long RV_id, long RVAhead_id, double dec_rv, double acc_rv_ahead, double time_rv, double time_rv_ahead, bool left_criterion);
+  void startCoordination (long RV_id, long RVAhead_id, double dec_rv, double acc_rv_ahead, double time_rv, double time_rv_ahead, bool left_criterion, int target_lane);
   void addMCMRxCallback();
   void receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info);
-  void negotiationPhase(bool left_criterion);
+  void negotiationPhase(bool left_criterion, int target_lane);
   void targetCheckACK();
+  void executeManeuver();
 
 private:
   std::string m_vehicle_id;
@@ -92,9 +109,9 @@ private:
   double m_delta_ds = 0.5;
   double m_offset = 0.3;
   int m_num_lanes = 0;
-  int m_time_to_lc;
+  int m_time_to_lc = 0;
 
-  std::set<StationID_t> m_blocked_by_other_coordinations;
+  std::unordered_map<StationId_t, long> m_blocked_by_other_coordinations;
   double m_ca_range;
   Ptr<MCBasicService> m_mcs_ptr;
   uint8_t m_start_time;
@@ -103,7 +120,6 @@ private:
   int m_step_time;
   int m_negotiation_time;
   int m_FORESEE_max_time = 10000;
-  bool m_busy_with_maneuver = false;
 
   EventId m_termination_event;
   Ptr<Node> m_node = nullptr;
@@ -113,9 +129,12 @@ private:
   Strategy m_strategy;
   bool m_coordinator = false;
   std::unordered_map<StationID_t, Strategy> m_acceptance_map;
-  StationId_t m_my_coordinator;
+  StationId_t m_my_coordinator = -1;
   bool m_my_coordinator_responded = false;
   EventId m_ack_event;
+  bool m_busy_with_maneuver = false;
+  int m_coordination_timeout_ms = 7000;
+  std::tuple<double, double> m_required_acceleration_time;
 };
 }
 
