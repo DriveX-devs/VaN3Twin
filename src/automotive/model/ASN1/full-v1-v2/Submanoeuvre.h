@@ -24,11 +24,13 @@ extern "C" {
 struct Trajectory;
 struct AdvisedTrrContainer;
 
+typedef long ManeuverAcceleration_t;
+
 /* Submanoeuvre */
 typedef struct Submanoeuvre {
 	Identifier1B_t	 submanoeuvreId;
-        LongitudinalAcceleration_t acceleration;
-        DeltaTimeMilliSecondPositive_t durationDeltaTime;
+	ManeuverAcceleration_t *acceleration; /* OPTIONAL */
+	DeltaTimeMilliSecondPositive_t *durationDeltaTime; /* OPTIONAL*/
 	struct Trajectory	*advisedTrajectory;	/* OPTIONAL */
 	struct AdvisedTrrContainer	*advisedTargetRoadResource;	/* OPTIONAL */
 	

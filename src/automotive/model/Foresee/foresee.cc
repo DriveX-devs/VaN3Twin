@@ -535,9 +535,10 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
 
       Submanoeuvre_t* subm = specification.create<Submanoeuvre_t>();
       asn1cpp::setField(subm->submanoeuvreId, ManeuverID::Slowdown);
-      asn1cpp::setField(subm->acceleration.longitudinalAccelerationValue, dec_rv * CENTI);
-      asn1cpp::setField(subm->acceleration.longitudinalAccelerationConfidence, AccelerationConfidence::AccelerationConfidence_unavailable);
-      asn1cpp::setField(subm->durationDeltaTime, time_rv * CENTI);
+      asn1cpp::setField(subm->acceleration, 
+                  static_cast<ManeuverAcceleration_t>(dec_rv * CENTI));
+      asn1cpp::setField(subm->durationDeltaTime, 
+                  static_cast<DeltaTimeMilliSecondPositive_t>(time_rv * CENTI));
       subm->advisedTrajectory = nullptr;
       subm->advisedTargetRoadResource = nullptr;
       specification.add(asn_DEF_Submanoeuvre, &adv->submaneuvres, subm);
@@ -557,9 +558,10 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
 
       Submanoeuvre_t* subm = specification.create<Submanoeuvre_t>();
       asn1cpp::setField(subm->submanoeuvreId, ManeuverID::Accelerate);
-      asn1cpp::setField(subm->acceleration.longitudinalAccelerationValue, acc_rv_ahead * CENTI);
-      asn1cpp::setField(subm->acceleration.longitudinalAccelerationConfidence, AccelerationConfidence::AccelerationConfidence_unavailable);
-      asn1cpp::setField(subm->durationDeltaTime, time_rv_ahead * CENTI);
+      asn1cpp::setField(subm->acceleration, 
+                  static_cast<ManeuverAcceleration_t>(acc_rv_ahead * CENTI));
+      asn1cpp::setField(subm->durationDeltaTime, 
+                  static_cast<DeltaTimeMilliSecondPositive_t>(time_rv_ahead * CENTI));
       subm->advisedTrajectory = nullptr;
       subm->advisedTargetRoadResource = nullptr;
       specification.add(asn_DEF_Submanoeuvre, &adv->submaneuvres, subm);
@@ -763,7 +765,7 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
                     {
                       auto subm = asn1cpp::sequenceof::getSeq(adv->submaneuvres, Submanoeuvre, 0);
                       auto sub_id = asn1cpp::getField(subm->submanoeuvreId, Identifier1B_t);
-                      auto acc = asn1cpp::getField(subm->acceleration.longitudinalAccelerationValue, LongitudinalAccelerationValue);
+                      auto acc = (double) asn1cpp::getField(subm->acceleration, ManeuverAcceleration_t) / CENTI;
                       auto time = (double) asn1cpp::getField(subm->durationDeltaTime, DeltaTimeMilliSecondPositive_t) / CENTI;
                       double acc_value = (double) acc / CENTI;
                       if ((sub_id == ManeuverID::Accelerate && acc_value < 0) || (sub_id == ManeuverID::Slowdown && acc_value > 0))
