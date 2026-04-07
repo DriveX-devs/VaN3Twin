@@ -126,7 +126,7 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
           hi = d_candidate; // not enough, need more deceleration (more negative)
         }
     }
-  if(std::abs(lo - (-p.a)) < 0.01)
+  if(std::abs(lo - (-p.d)) < 0.01)
     return {NO_SOLUTION, -1};
   return {lo, delta_t}; // minimum deceleration
 }
@@ -521,6 +521,9 @@ foresee::FORESEEMobilityModel ()
             {
               // Need a coordination
               target_lane = 3 - target_lane;
+              // Manage RV and RVAhead IDs if we don't need they to coordinate
+              if (RV_id >= 0 && dec_rv == DEFAULT_ACC_VALUE) RV_id = -1;
+              if (RVAhead_id >= 0 && acc_rv_ahead == DEFAULT_ACC_VALUE) RVAhead_id = -1;
               startCoordination(RV_id, RVAhead_id, dec_rv, acc_rv_ahead, time_rv, time_rv_ahead, left_criterion, target_lane);
             }
         }

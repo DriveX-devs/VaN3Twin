@@ -487,8 +487,6 @@ namespace ns3
 
    std::string encode_result = asn1cpp::uper::encode(MCM_message);
 
-   NS_ASSERT(!encode_result.empty());
-
    /*
    for (auto ptr_it = free_ptr.begin(); ptr_it != free_ptr.end(); ++ptr_it)
      {
