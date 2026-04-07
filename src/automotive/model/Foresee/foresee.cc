@@ -6,6 +6,7 @@
 #include "ns3/ForeseeIndication.h"
 #include "ns3/LongitudinalAcceleration.h"
 #include "ns3/asn_utils.h"
+#include "ns3/caBasicService_v1.h"
 #include "ns3/foresee.h"
 #include "ns3/mcBasicService.h"
 #include "ns3/simulator.h"
@@ -13,14 +14,16 @@
 #include "ns3/vdp.h"
 #include <tuple>
 
+#define DOUBLE_TOLERANCE 0.5
+
 namespace ns3
 {
 
 foresee::IDMParams foresee::getIDMParams(StationType type) {
   if (type == StationType::StationType_passengerCar) {
-      return {m_desired_speed, 0.8, 2.0, 1.5, 1.5};
+      return {m_desired_speed, 0.8, 2.0, 1.5, 2.0, 1.5};
     } else if (type == StationType::StationType_lightTruck) { // passenger car
-      return {m_desired_speed, 1.0, 2.0, 1.5, 2.0};
+      return {m_desired_speed, 1.0, 2.0, 1.5, 2.0, 2.0};
     }
 }
 
@@ -85,7 +88,7 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
                                       double dt, double horizon)
 {
   // Binary search on deceleration of follower in [0, a_max]
-  double lo = -p.a;
+  double lo = -p.d;
   double hi = 0.0; // max deceleration
   double delta_t;
   for(int iter = 0; iter < MAX_LOOPS; iter++)
@@ -109,9 +112,9 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
               break;
             }
           // Follower decelerates with candidate deceleration
-          v_f  = std::min(v_f + d_candidate * dt, 0.0);
+          v_f = v_f + d_candidate * dt;
           // Update gap
-          gap  += (v_l - v_f) * dt;
+          gap += (v_l - v_f) * dt;
         }
       // Check if at end of horizon ego can merge comfortably
       if(a_f_final >= MIN_DECELERATION)
@@ -223,7 +226,6 @@ foresee::setNumberOfLanes ()
 void
 foresee::FORESEEMobilityModel ()
 {
-  startCoordination(2, 3, 1.5, 1.9, 0.5, 1.2, true, 2);
   // Retrieve all connected vehicles (CVs) from the LDM
   std::vector<LDM::returnedVehicleData_t> vehicles;
   bool res = m_LDM->getAllCVs (vehicles);
@@ -276,12 +278,13 @@ foresee::FORESEEMobilityModel ()
   for(auto it = vehicles.begin(); it != vehicles.end(); ++it)
     {
       // Skip vehicles in different directions
-      if (it->vehData.heading != my_heading) continue;
+      if ((it->vehData.heading - my_heading) > DOUBLE_TOLERANCE) continue;
       auto pos = m_traci->simulation.convertLonLattoXY (it->vehData.lon, it->vehData.lat);
+      // Take the back bumper position
       double x = pos.x;
       // Skip vehicles behind the ego vehicle
-      if (my_heading == 90 && x < my_x) continue;
-      if (my_heading == 270 && x > my_x) continue;
+      if (std::abs(my_heading - 90) < DOUBLE_TOLERANCE && x < my_x) continue;
+      if (std::abs(my_heading - 270) < DOUBLE_TOLERANCE && x > my_x) continue;
       OptionalDataItem<long> lane = it->vehData.lanePosition;
       if (lane.isAvailable())
         {
@@ -385,7 +388,7 @@ foresee::FORESEEMobilityModel ()
       // Take the four roles, target, ahead ego, ahead target
       std::string RV, HVAhead, RVAhead;
       long RV_id = -1, RVAhead_id = -1;
-      StationType RV_type;
+      StationType RV_type, RVAhead_type;
       // Check the comfort criterion
       double x_RV, x_RVAhead;
       double y_RV, y_RVAhead;
@@ -396,19 +399,22 @@ foresee::FORESEEMobilityModel ()
       int target_lane = left_criterion ? my_lane.getData() - 1 : my_lane.getData() + 1;
       // Vehicles ahead of HV in the target lane
       auto& vec1 = veh_per_lane[target_lane];
-      // Vehicles ahead of HV in the same lane
-      auto& vec2 = veh_per_lane[my_lane.getData()];
       for(auto it = vehicles.begin(); it != vehicles.end(); ++it)
         {
+          if ((it->vehData.heading - my_heading) > DOUBLE_TOLERANCE) continue;
           if (it->vehData.lanePosition.getData() == target_lane)
             {
               auto pos = m_traci->simulation.convertLonLattoXY (it->vehData.lon, it->vehData.lat);
-              double dist = std::sqrt (std::pow (my_x - pos.x, 2) + std::pow (my_y - pos.y, 2));
               auto it_found = std::find (vec1.begin (), vec1.end (),
                                           std::to_string (it->vehData.stationID));
               if (it_found != vec1.end ())
                 {
                   // Vehicle is in the target lane ahead of ego, can be RVAhead
+                  // Transform the distance into a front-back bumper distance
+                  double leader_length = (double) it->vehData.vehicleLength.getData() / DECI;
+                  double dist = std::abs(my_x - pos.x);
+                  if (leader_length < dist) dist = dist - leader_length;
+                  else dist = 0;
                   if (dist < min_dist_rv_ahead && dist < MAX_DIST_AHEAD_BEHIND)
                     {
                       min_dist_rv_ahead = dist;
@@ -422,6 +428,11 @@ foresee::FORESEEMobilityModel ()
               else
                 {
                   // Can be RV
+                  // Transform the distance into a front-back bumper distance
+                  double leader_length = m_vdp->getVehicleLength();
+                  double dist = std::abs(my_x - pos.x);
+                  if (leader_length < dist) dist = dist - leader_length;
+                  else dist = 0;
                   OptionalDataItem<long> lane = it->vehData.lanePosition;
                   if (lane.isAvailable () && lane.getData () == target_lane)
                     {
@@ -468,7 +479,7 @@ foresee::FORESEEMobilityModel ()
                   std::tuple<double, double> tuple = computeRequiredAcceleration (speed_RVAhead, my_speed, min_dist_rv_ahead, ego_params);
                   double a = std::get<0>(tuple);
                   double time = std::get<1>(tuple);
-                  if (a != NO_SOLUTION)
+                  if (std::abs(a - NO_SOLUTION) > DOUBLE_TOLERANCE)
                     {
                       acc_rv_ahead = a;
                       time_rv_ahead = time;
@@ -492,7 +503,7 @@ foresee::FORESEEMobilityModel ()
                   std::tuple<double, double> tuple = computeRequiredDeceleration (my_speed, speed_RV, min_dist_rv, params);
                   double a = std::get<0>(tuple);
                   double time = std::get<1>(tuple);
-                  if (a != NO_SOLUTION)
+                  if (std::abs(a - NO_SOLUTION) > DOUBLE_TOLERANCE)
                     {
                       dec_rv = a;
                       time_rv = time;
@@ -542,7 +553,9 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
       subm->foreseeIndication = specification.create<ForeseeIndication_t>();
       asn1cpp::setField(subm->foreseeIndication->acceleration.longitudinalAccelerationValue, dec_rv * CENTI);
       asn1cpp::setField(subm->foreseeIndication->acceleration.longitudinalAccelerationConfidence, AccelerationConfidence::AccelerationConfidence_unavailable);
-      asn1cpp::setField(subm->foreseeIndication->duration, time_rv * CENTI);
+      // Transform into Milliseconds
+      time_rv = time_rv * 1e3;
+      asn1cpp::setField(subm->foreseeIndication->duration, time_rv);
       subm->advisedTrajectory = nullptr;
       subm->advisedTargetRoadResource = nullptr;
       specification.add(asn_DEF_Submanoeuvre, &adv->submaneuvres, subm);
@@ -566,7 +579,9 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
       subm->foreseeIndication = specification.create<ForeseeIndication_t>();
       asn1cpp::setField(subm->foreseeIndication->acceleration.longitudinalAccelerationValue, acc_rv_ahead * CENTI);
       asn1cpp::setField(subm->foreseeIndication->acceleration.longitudinalAccelerationConfidence, AccelerationConfidence::AccelerationConfidence_unavailable);
-      asn1cpp::setField(subm->foreseeIndication->duration, time_rv_ahead * CENTI);
+      // Transform into Milliseconds
+      time_rv_ahead = time_rv_ahead * 1e3;
+      asn1cpp::setField(subm->foreseeIndication->duration, time_rv_ahead);
       subm->advisedTrajectory = nullptr;
       subm->advisedTargetRoadResource = nullptr;
       specification.add(asn_DEF_Submanoeuvre, &adv->submaneuvres, subm);
@@ -770,15 +785,15 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
                     {
                       auto subm = asn1cpp::sequenceof::getSeq(adv->submaneuvres, Submanoeuvre, 0);
                       auto sub_id = asn1cpp::getField(subm->submanoeuvreId, Identifier1B_t);
-                      /*auto acc = (double) asn1cpp::getField(subm->acceleration, ManeuverAcceleration_t) / CENTI;
-                      //auto time = (double) asn1cpp::getField(subm->durationDeltaTime, DeltaTimeMilliSecondPositive_t) / CENTI;
+                      auto acc = (double) asn1cpp::getField(subm->foreseeIndication->acceleration.longitudinalAccelerationValue, LongitudinalAccelerationValue) / CENTI;
+                      auto time_ms = (double) asn1cpp::getField(subm->foreseeIndication->duration, DeltaTimeMilliSecondPositive_t);
                       double acc_value = (double) acc / CENTI;
                       if ((sub_id == ManeuverID::Accelerate && acc_value < 0) || (sub_id == ManeuverID::Slowdown && acc_value > 0))
                       {
                         msg_for_me = true;
                         break;
                       }
-                      m_required_acceleration_time = std::make_tuple(acc_value, time);*/
+                      m_required_acceleration_time = std::make_tuple(acc_value, time_ms);
                       accept = true;
                       msg_for_me = true;
                       break;
@@ -829,7 +844,7 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
               // Check if direction is the same
               double my_heading = m_vdp->getHeadingValue();
               bool same_direction = false;
-              if ((my_heading == 90 && direction == 0) || (my_heading == 270 && direction == 1)) same_direction = true;
+              if ((std::abs(my_heading - 90) < DOUBLE_TOLERANCE && direction == 0) || (std::abs(my_heading - 270) < DOUBLE_TOLERANCE && direction == 1)) same_direction = true;
               if (same_direction && !m_busy_with_maneuver)
               {
                 // I am currently free, so I register the coordination if in my CA range

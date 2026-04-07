@@ -42,7 +42,7 @@ public:
     double time;
   } Strategy;
 
-  struct IDMParams { double v0, T, s0, a, b; };
+  struct IDMParams { double v0, T, s0, a, d, b; };
 
   struct CoordinationLog {
       // Feature al trigger

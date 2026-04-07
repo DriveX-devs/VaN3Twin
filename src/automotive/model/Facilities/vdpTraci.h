@@ -74,6 +74,8 @@ namespace ns3 {
      */
     CPM_mandatory_data_t getCPMMandatoryData();
 
+    double getVehicleLength(){return m_traci_client->TraCIAPI::vehicle.getLength (m_id);}
+
     /**
      * @brief This functio returns the vehicle's speed.
      * @return

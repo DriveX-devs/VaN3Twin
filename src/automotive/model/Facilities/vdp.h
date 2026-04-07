@@ -239,6 +239,7 @@ namespace ns3
       virtual double getSpeedValue() = 0;
       virtual double getTravelledDistance() = 0;
       virtual double getHeadingValue() = 0;
+      virtual double getVehicleLength() = 0;
 
       // These methods shall return a position either cartesian or geodetic (needed mainly by the GeoNetworking module)
       // getPositionLatLon() shall return the current position of the object as (Latitude,Longitude,Altitude)

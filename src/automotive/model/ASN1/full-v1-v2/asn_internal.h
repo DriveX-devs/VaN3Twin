@@ -44,7 +44,7 @@ int get_asn1c_environment_version(void);	/* Run-time version */
 #define	FREEMEM(ptr)		free(ptr)
 
 // UNCOMMENT THIS TO ENABLE DEBUG ASN
-#define	asn_debug_indent	0
+// #define	asn_debug_indent	0
 
 #define ASN_DEBUG_INDENT_ADD(i) do{}while(0)
 
