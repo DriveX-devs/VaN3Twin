@@ -26,6 +26,7 @@
 #include "ns3/SetOf.hpp"
 #include "ns3/SequenceOf.hpp"
 #include "ns3/BitString.hpp"
+#include "ns3/assert.h"
 #include "ns3/vdp.h"
 #include "asn_utils.h"
 #include <cmath>
@@ -444,7 +445,7 @@ namespace ns3
        for (auto it = specification->getManeuverAdvice().begin(); it != specification->getManeuverAdvice().end(); ++it)
          {
            auto *advice = (ManoeuvreAdvice *)CALLOC(1, sizeof(ManoeuvreAdvice));
-           if (asn_copy(&asn_DEF_ManoeuvreAdvice, (void**)&advice, &(*it)) == 0)
+           if (asn_copy(&asn_DEF_ManoeuvreAdvice, (void**)&advice, *it) == 0)
              {
                if (ASN_SEQUENCE_ADD (&adv, advice) != 0)
                  {
@@ -485,6 +486,8 @@ namespace ns3
      }
 
    std::string encode_result = asn1cpp::uper::encode(MCM_message);
+
+   NS_ASSERT(!encode_result.empty());
 
    /*
    for (auto ptr_it = free_ptr.begin(); ptr_it != free_ptr.end(); ++ptr_it)

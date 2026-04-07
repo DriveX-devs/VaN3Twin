@@ -1413,6 +1413,7 @@ Set(source_files
         model/ASN1/full-v1-v2/SubmanoeuvreDescription.c
         model/ASN1/full-v1-v2/SubmanoeuvreStrategy.c
         model/ASN1/full-v1-v2/Submanoeuvres.c
+        model/ASN1/full-v1-v2/ForeseeIndication.c
         model/ASN1/full-v1-v2/TRRLength.c
         model/ASN1/full-v1-v2/TRRWidth.c
         model/ASN1/full-v1-v2/TemporalCharacteristics.c
@@ -3118,6 +3119,7 @@ set(header_files
         model/ASN1/full-v1-v2/SubmanoeuvreDescription.h
         model/ASN1/full-v1-v2/SubmanoeuvreStrategy.h
         model/ASN1/full-v1-v2/Submanoeuvres.h
+        model/ASN1/full-v1-v2/ForeseeIndication.h
         model/ASN1/full-v1-v2/TRRLength.h
         model/ASN1/full-v1-v2/TRRWidth.h
         model/ASN1/full-v1-v2/TemporalCharacteristics.h

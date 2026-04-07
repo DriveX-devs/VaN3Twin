@@ -3,12 +3,14 @@
 //
 
 #include "foresee.h"
+#include "ns3/ForeseeIndication.h"
 #include "ns3/LongitudinalAcceleration.h"
 #include "ns3/asn_utils.h"
 #include "ns3/foresee.h"
 #include "ns3/mcBasicService.h"
 #include "ns3/simulator.h"
 #include "ns3/sumo-TraCIDefs.h"
+#include "ns3/vdp.h"
 #include <tuple>
 
 namespace ns3
@@ -221,6 +223,7 @@ foresee::setNumberOfLanes ()
 void
 foresee::FORESEEMobilityModel ()
 {
+  startCoordination(2, 3, 1.5, 1.9, 0.5, 1.2, true, 2);
   // Retrieve all connected vehicles (CVs) from the LDM
   std::vector<LDM::returnedVehicleData_t> vehicles;
   bool res = m_LDM->getAllCVs (vehicles);
@@ -535,10 +538,11 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
 
       Submanoeuvre_t* subm = specification.create<Submanoeuvre_t>();
       asn1cpp::setField(subm->submanoeuvreId, ManeuverID::Slowdown);
-      asn1cpp::setField(subm->acceleration, 
-                  static_cast<ManeuverAcceleration_t>(dec_rv * CENTI));
-      asn1cpp::setField(subm->durationDeltaTime, 
-                  static_cast<DeltaTimeMilliSecondPositive_t>(time_rv * CENTI));
+
+      subm->foreseeIndication = specification.create<ForeseeIndication_t>();
+      asn1cpp::setField(subm->foreseeIndication->acceleration.longitudinalAccelerationValue, dec_rv * CENTI);
+      asn1cpp::setField(subm->foreseeIndication->acceleration.longitudinalAccelerationConfidence, AccelerationConfidence::AccelerationConfidence_unavailable);
+      asn1cpp::setField(subm->foreseeIndication->duration, time_rv * CENTI);
       subm->advisedTrajectory = nullptr;
       subm->advisedTargetRoadResource = nullptr;
       specification.add(asn_DEF_Submanoeuvre, &adv->submaneuvres, subm);
@@ -558,10 +562,11 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
 
       Submanoeuvre_t* subm = specification.create<Submanoeuvre_t>();
       asn1cpp::setField(subm->submanoeuvreId, ManeuverID::Accelerate);
-      asn1cpp::setField(subm->acceleration, 
-                  static_cast<ManeuverAcceleration_t>(acc_rv_ahead * CENTI));
-      asn1cpp::setField(subm->durationDeltaTime, 
-                  static_cast<DeltaTimeMilliSecondPositive_t>(time_rv_ahead * CENTI));
+
+      subm->foreseeIndication = specification.create<ForeseeIndication_t>();
+      asn1cpp::setField(subm->foreseeIndication->acceleration.longitudinalAccelerationValue, acc_rv_ahead * CENTI);
+      asn1cpp::setField(subm->foreseeIndication->acceleration.longitudinalAccelerationConfidence, AccelerationConfidence::AccelerationConfidence_unavailable);
+      asn1cpp::setField(subm->foreseeIndication->duration, time_rv_ahead * CENTI);
       subm->advisedTrajectory = nullptr;
       subm->advisedTargetRoadResource = nullptr;
       specification.add(asn_DEF_Submanoeuvre, &adv->submaneuvres, subm);
@@ -765,15 +770,15 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
                     {
                       auto subm = asn1cpp::sequenceof::getSeq(adv->submaneuvres, Submanoeuvre, 0);
                       auto sub_id = asn1cpp::getField(subm->submanoeuvreId, Identifier1B_t);
-                      auto acc = (double) asn1cpp::getField(subm->acceleration, ManeuverAcceleration_t) / CENTI;
-                      auto time = (double) asn1cpp::getField(subm->durationDeltaTime, DeltaTimeMilliSecondPositive_t) / CENTI;
+                      /*auto acc = (double) asn1cpp::getField(subm->acceleration, ManeuverAcceleration_t) / CENTI;
+                      //auto time = (double) asn1cpp::getField(subm->durationDeltaTime, DeltaTimeMilliSecondPositive_t) / CENTI;
                       double acc_value = (double) acc / CENTI;
                       if ((sub_id == ManeuverID::Accelerate && acc_value < 0) || (sub_id == ManeuverID::Slowdown && acc_value > 0))
                       {
                         msg_for_me = true;
                         break;
                       }
-                      m_required_acceleration_time = std::make_tuple(acc_value, time);
+                      m_required_acceleration_time = std::make_tuple(acc_value, time);*/
                       accept = true;
                       msg_for_me = true;
                       break;

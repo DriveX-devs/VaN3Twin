@@ -7,7 +7,6 @@
 #ifndef	_Submanoeuvre_H_
 #define	_Submanoeuvre_H_
 
-
 #include "asn_application.h"
 
 /* Including external dependencies */
@@ -23,14 +22,12 @@ extern "C" {
 /* Forward declarations */
 struct Trajectory;
 struct AdvisedTrrContainer;
-
-typedef long ManeuverAcceleration_t;
+struct ForeseeIndication;
 
 /* Submanoeuvre */
 typedef struct Submanoeuvre {
 	Identifier1B_t	 submanoeuvreId;
-	ManeuverAcceleration_t *acceleration; /* OPTIONAL */
-	DeltaTimeMilliSecondPositive_t *durationDeltaTime; /* OPTIONAL*/
+	struct ForeseeIndication *foreseeIndication; /* OPTIONAL */
 	struct Trajectory	*advisedTrajectory;	/* OPTIONAL */
 	struct AdvisedTrrContainer	*advisedTargetRoadResource;	/* OPTIONAL */
 	
@@ -41,7 +38,7 @@ typedef struct Submanoeuvre {
 /* Implementation */
 extern asn_TYPE_descriptor_t asn_DEF_Submanoeuvre;
 extern asn_SEQUENCE_specifics_t asn_SPC_Submanoeuvre_specs_1;
-extern asn_TYPE_member_t asn_MBR_Submanoeuvre_1[5];
+extern asn_TYPE_member_t asn_MBR_Submanoeuvre_1[4];
 
 #ifdef __cplusplus
 }
@@ -50,6 +47,7 @@ extern asn_TYPE_member_t asn_MBR_Submanoeuvre_1[5];
 /* Referred external types */
 #include "Trajectory.h"
 #include "AdvisedTrrContainer.h"
+#include "ForeseeIndication.h"
 
 #endif	/* _Submanoeuvre_H_ */
 #include "asn_internal.h"

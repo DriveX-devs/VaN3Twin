@@ -248,7 +248,7 @@ int main (int argc, char *argv[])
       lc_model[nodeID].setCoordinationAvoidanceRange(ca_range);
       lc_model[nodeID].setMCBasicService(bs_container->getMCBasicService());
       lc_model[nodeID].addMCMRxCallback ();
-      lc_model[nodeID].setStartTime(10);
+      lc_model[nodeID].setStartTime(2);
       std::string my_type = sumoClient->vehicle.getTypeID (vehicleID);
       // lc_model[nodeID].setTrajectoryPredictor(HORIZON_TIME, STEP_TIME, NEGOTIATION_TIME, DECELERATION_TIME, LC_TIME_MSEC, foresee::PredictionType::CONSTANT_SPEED);
 

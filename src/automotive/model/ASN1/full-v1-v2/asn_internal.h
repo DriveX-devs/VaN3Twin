@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 // UNCOMMENT THIS TO ENABLE DEBUG ASN
-#define ASN_EMIT_DEBUG 1
+// #define ASN_EMIT_DEBUG 1
 //#define ASN_THREAD_SAFE 0
 
 #if !defined(ASN_DISABLE_UPER_SUPPORT)
@@ -179,8 +179,9 @@ ASN__STACK_OVERFLOW_CHECK(const asn_codec_ctx_t *ctx) {
 
 		/* double negative required to avoid int wrap-around */
 		if(usedstack < -(ptrdiff_t)ctx->max_stack_size) {
-			ASN_DEBUG("Stack limit %ld reached",
-				(long)ctx->max_stack_size);
+            // COMMENT THIS TO ENABLE DEBUG ASN
+			//ASN_DEBUG("Stack limit %ld reached",
+			//	(long)ctx->max_stack_size);
 			return -1;
 		}
 	}
