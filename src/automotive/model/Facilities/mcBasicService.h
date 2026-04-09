@@ -309,7 +309,7 @@ enum ManeuverID
      * @param rx_callback   The callback function to be called when a MCM message is received
      */
     void addMCRxCallback(std::function<void(asn1cpp::Seq<MCM>, Address)> rx_callback) {m_MCReceiveCallback=rx_callback;}
-    void addMCRxCallbackExtended(std::function<void(asn1cpp::Seq<MCM>, Address, StationId_t, StationType_t, SignalInfo)> rx_callback) {m_MCReceiveCallbackExtended=rx_callback;}
+    void addMCRxCallbackExtended(std::function<void(const asn1cpp::Seq<MCM>&, Address, StationId_t, StationType_t, SignalInfo)> rx_callback) {m_MCReceiveCallbackExtended=rx_callback;}
     void setRealTime(bool real_time){m_real_time=real_time;}
 
     /**
@@ -370,7 +370,7 @@ enum ManeuverID
     // std::function<void(MCM_t *, Address)> m_CAReceiveCallback;
     std::function<void(asn1cpp::Seq<MCM>, Address)> m_MCReceiveCallback;
     std::function<void(asn1cpp::Seq<MCM>, Address, Ptr<Packet>)> m_MCReceiveCallbackPkt;
-    std::function<void(asn1cpp::Seq<MCM>, Address, StationId_t, StationType_t, SignalInfo)> m_MCReceiveCallbackExtended;
+    std::function<void(const asn1cpp::Seq<MCM>&, Address, StationId_t, StationType_t, SignalInfo)> m_MCReceiveCallbackExtended;
 
     Ptr<btp> m_btp; //! BTP object
 

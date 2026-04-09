@@ -12,6 +12,7 @@
 #include "ns3/mcBasicService.h"
 #include "ns3/trajectoryPrediction.h"
 #include "ns3/geonet.h"
+#include <cstdint>
 #include <unordered_map>
 
 #define MAX_DIST_AHEAD_BEHIND 50
@@ -85,13 +86,14 @@ public:
   void setVehicleID (std::string vehicleID) {m_vehicle_id = vehicleID; m_vehicle_id_int = std::stol(vehicleID.substr (3));};
   void setCoordinationAvoidanceRange(double ca_range) {m_ca_range = ca_range;};
   void setMCBasicService(Ptr<MCBasicService> mcs_ptr) {m_mcs_ptr = mcs_ptr;};
-  void setStartTime(uint8_t startTime) {m_start_time = startTime;};
+  void setStartTime(int startTime) {m_start_time = startTime;};
+  void setNegotiationTime(int negotiationTime) {m_negotiation_time = negotiationTime;}
   // void setTrajectoryPredictor(int horizon_time, int step_time, int negotiation_time, int deceleration_time, int lc_duration, PredictionType prediction_type);
   // static std::tuple<bool, double> trajectoryEvaluation(std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other, double leader_length, int step_time, int negotiation_time, int lc_duration, trajectoryPrediction::ActorType type, int start_time);
   void terminateCoordination ();
   void startCoordination (long RV_id, long RVAhead_id, double dec_rv, double acc_rv_ahead, double time_rv, double time_rv_ahead, bool left_criterion, int target_lane);
   void addMCMRxCallback();
-  void receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info);
+  void receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info);
   void negotiationPhase(bool left_criterion, int target_lane);
   void targetCheckACK();
   void executeManeuver();
@@ -114,7 +116,7 @@ private:
   std::unordered_map<StationId_t, long> m_blocked_by_other_coordinations;
   double m_ca_range;
   Ptr<MCBasicService> m_mcs_ptr;
-  uint8_t m_start_time;
+  int m_start_time;
   trajectoryPrediction* m_traj_predictor;
   PredictionType m_prediction_type = UNKNOWN;
   int m_step_time;
@@ -124,7 +126,7 @@ private:
   EventId m_termination_event;
   Ptr<Node> m_node = nullptr;
   StationType_t m_station_type;
-  std::function<void(asn1cpp::Seq<MCM>, Address, StationID_t, StationType_t, SignalInfo)> m_MCMReceiveCallbackExtended = nullptr;
+  std::function<void(const asn1cpp::Seq<MCM>& mcm, Address, StationID_t, StationType_t, SignalInfo)> m_MCMReceiveCallbackExtended = nullptr;
   bool m_real_time;
   Strategy m_strategy;
   bool m_coordinator = false;

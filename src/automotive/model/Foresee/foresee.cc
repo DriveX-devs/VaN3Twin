@@ -6,12 +6,14 @@
 #include "ns3/ForeseeIndication.h"
 #include "ns3/LongitudinalAcceleration.h"
 #include "ns3/asn_utils.h"
+#include "ns3/assert.h"
 #include "ns3/caBasicService_v1.h"
 #include "ns3/foresee.h"
 #include "ns3/mcBasicService.h"
 #include "ns3/simulator.h"
 #include "ns3/sumo-TraCIDefs.h"
 #include "ns3/vdp.h"
+#include <cassert>
 #include <tuple>
 
 #define DOUBLE_TOLERANCE 0.5
@@ -47,9 +49,9 @@ std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_lea
     {
       double a_candidate = (lo + hi) / 2.0;
       // Simulate gap evolution over horizon
-      double gap   = current_gap;
+      double gap = current_gap;
       double v_f = speed_follower;
-      double v_l  = speed_leader;
+      double v_l = speed_leader;
       double a_f_final = -200;
       double t = 0;
       for(; t < horizon; t += dt)
@@ -78,7 +80,7 @@ std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_lea
           lo = a_candidate; // not enough, need more
         }
     }
-  if(std::abs(hi - (-p.a)) < 0.01)
+  if(std::abs(hi - p.a) < 0.01)
     return {NO_SOLUTION, -1};
   return {hi, delta_t}; // minimum acceleration RVAhead needs to apply
 }
@@ -126,7 +128,7 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
           hi = d_candidate; // not enough, need more deceleration (more negative)
         }
     }
-  if(std::abs(lo - (-p.d)) < 0.01)
+  if(std::abs(lo) - p.d < 0.01)
     return {NO_SOLUTION, -1};
   return {lo, delta_t}; // minimum deceleration
 }
@@ -147,7 +149,7 @@ foresee::setTrajectoryPredictor (int horizon_time, int step_time, int negotiatio
 void
 foresee::addMCMRxCallback ()
 {
-  std::function<void(asn1cpp::Seq<MCM>, Address, StationID_t, StationType_t, SignalInfo)> rx_callback =
+  std::function<void(const asn1cpp::Seq<MCM>&, Address, StationID_t, StationType_t, SignalInfo)> rx_callback =
       std::bind(&foresee::receiveMCM,
                  this,
                  std::placeholders::_1,
@@ -212,7 +214,7 @@ foresee::WrapperFORESEEMobilityModel()
       NS_FATAL_ERROR ("FORESEE Mobility Model needs the callback for MCM.");
     }
   // Schedule the FORESEE Mobility Model to start at the specified time
-  Simulator::Schedule (Seconds(m_start_time), &foresee::FORESEEMobilityModel, this);
+  Simulator::Schedule (MilliSeconds(m_start_time), &foresee::FORESEEMobilityModel, this);
 }
 
 void
@@ -260,6 +262,8 @@ foresee::FORESEEMobilityModel ()
     Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
     return;
   }
+  // TODO check that the vehicle has already done some meters (check on the map)
+  
   // Data structures to store vehicle speeds and IDs per lane
   std::unordered_map<long, std::vector<double>> speeds_per_lane;
   std::unordered_map<long, std::vector<std::string>> veh_per_lane;
@@ -479,6 +483,7 @@ foresee::FORESEEMobilityModel ()
                   std::tuple<double, double> tuple = computeRequiredAcceleration (speed_RVAhead, my_speed, min_dist_rv_ahead, ego_params);
                   double a = std::get<0>(tuple);
                   double time = std::get<1>(tuple);
+                  NS_ASSERT((time >= 0.0 && time <= 5.0) || time == -1.0);
                   if (std::abs(a - NO_SOLUTION) > DOUBLE_TOLERANCE)
                     {
                       acc_rv_ahead = a;
@@ -503,6 +508,7 @@ foresee::FORESEEMobilityModel ()
                   std::tuple<double, double> tuple = computeRequiredDeceleration (my_speed, speed_RV, min_dist_rv, params);
                   double a = std::get<0>(tuple);
                   double time = std::get<1>(tuple);
+                  NS_ASSERT((time >= 0.0 && time <= 5.0) || time == -1.0);
                   if (std::abs(a - NO_SOLUTION) > DOUBLE_TOLERANCE)
                     {
                       dec_rv = a;
@@ -517,7 +523,7 @@ foresee::FORESEEMobilityModel ()
               target_lane = 3 - target_lane;
               m_traci->vehicle.changeLane (m_vehicle_id, target_lane, m_time_to_lc);
             }
-          else
+          else if (possible_hv && possible_rv)
             {
               // Need a coordination
               target_lane = 3 - target_lane;
@@ -695,7 +701,7 @@ void foresee::targetCheckACK()
   m_busy_with_maneuver = false;
 }
 
-void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info)
+void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info)
 {
   StationId_t sender = mcm->header.stationId;
   long now = compute_timestampIts (m_real_time) % 65536;
@@ -775,7 +781,7 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
           int adv_size = asn1cpp::sequenceof::getSize(adc);
           for(int i = 0; i < adv_size; ++i)
             {
-              auto adv = asn1cpp::sequenceof::getSeq(adc, ManoeuvreAdvice, i);
+              auto adv = adc.list.array[i];
               StationId_t id = adv->executantID;
               if (id == std::stol(m_vehicle_id.substr(3)))
                 {
@@ -786,13 +792,14 @@ void foresee::receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_sta
                     }
                   else
                     {
-                      auto subm = asn1cpp::sequenceof::getSeq(adv->submaneuvres, Submanoeuvre, 0);
+                      // In FORESEE we have just one submaneuver per each executant
+                      auto subm = adv->submaneuvres.list.array[0];
                       auto sub_id = asn1cpp::getField(subm->submanoeuvreId, Identifier1B_t);
-                      auto acc = (double) asn1cpp::getField(subm->foreseeIndication->acceleration.longitudinalAccelerationValue, LongitudinalAccelerationValue) / CENTI;
-                      auto time_ms = (double) asn1cpp::getField(subm->foreseeIndication->duration, DeltaTimeMilliSecondPositive_t);
-                      double acc_value = (double) acc / CENTI;
+                      auto acc_value = (double) asn1cpp::getField(subm->foreseeIndication->acceleration.longitudinalAccelerationValue, LongitudinalAccelerationValue) / CENTI;
+                      auto time_ms = (double) asn1cpp::getField(subm->foreseeIndication->duration, DeltaTimeMilliSecondPositive_t) / MILLI;
                       if ((sub_id == ManeuverID::Accelerate && acc_value < 0) || (sub_id == ManeuverID::Slowdown && acc_value > 0))
                       {
+                        // Error in message generation: acceleration/deceleration required but acceleration sign is not consistent
                         msg_for_me = true;
                         break;
                       }

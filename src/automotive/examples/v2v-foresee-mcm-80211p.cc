@@ -60,9 +60,17 @@ NS_LOG_COMPONENT_DEFINE ("V2VSimpleMCMExchange80211p");
 // Variables defined here should always be "static"
 static int packet_count=0;
 BSMap basicServices;
-void receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info)
+void receiveCAM(asn1cpp::Seq<CAM> cam, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info)
 {
-
+  packet_count++;
+  // Logging the distance with respect to the RSSI
+  double lat_sender=asn1cpp::getField(cam->cam.camParameters.basicContainer.referencePosition.latitude,double)/1e7;
+  double lon_sender=asn1cpp::getField(cam->cam.camParameters.basicContainer.referencePosition.longitude,double)/1e7;
+  //
+  libsumo::TraCIPosition pos=basicServices.get(my_stationID)->getTraCIclient ()->TraCIAPI::vehicle.getPosition("veh" + std::to_string(my_stationID));
+  pos=basicServices.get(my_stationID)->getTraCIclient ()->TraCIAPI::simulation.convertXYtoLonLat(pos.x,pos.y);
+  //
+  double distance=haversineDist (lat_sender, lon_sender, pos.y, pos.x);
 }
 
 int main (int argc, char *argv[])
@@ -231,6 +239,8 @@ int main (int argc, char *argv[])
 
       // Set the function which will be called every time a CAM is received, i.e., receiveCAM()
       // bs_container->addMCMRxCallback (std::bind(&receiveMCM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
+      // bs_container->addMCMRxCallback (std::bind(&receiveMCM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
+      bs_container->addCAMRxCallback (std::bind(&receiveCAM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
       bs_container->setupContainer(true,false,false,false,true,false);
 
       // Store the container for this vehicle inside a local global BSMap, i.e., a structure (similar to a hash table) which allows you to easily
@@ -249,6 +259,7 @@ int main (int argc, char *argv[])
       lc_model[nodeID].setMCBasicService(bs_container->getMCBasicService());
       lc_model[nodeID].addMCMRxCallback ();
       lc_model[nodeID].setStartTime(2);
+      lc_model[nodeID].setNegotiationTime(1000);
       std::string my_type = sumoClient->vehicle.getTypeID (vehicleID);
       // lc_model[nodeID].setTrajectoryPredictor(HORIZON_TIME, STEP_TIME, NEGOTIATION_TIME, DECELERATION_TIME, LC_TIME_MSEC, foresee::PredictionType::CONSTANT_SPEED);
 
