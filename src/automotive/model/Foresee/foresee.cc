@@ -18,6 +18,12 @@
 
 #define DOUBLE_TOLERANCE 0.5
 
+/*
+TODO List:
+- Understand why in most of the cases the time required is 4.9s, i.e. horizon - delta_t
+- Check that both the maneuver and the lane change are performed (create a log to show the delta v of the cooperant and the final lane)
+*/
+
 namespace ns3
 {
 
@@ -82,6 +88,7 @@ std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_lea
     }
   if(std::abs(hi - p.a) < 0.01)
     return {NO_SOLUTION, -1};
+  if (hi < 0.1) hi = 0.0;
   return {hi, delta_t}; // minimum acceleration RVAhead needs to apply
 }
 
@@ -130,6 +137,7 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
     }
   if(std::abs(lo) - p.d < 0.01)
     return {NO_SOLUTION, -1};
+  if (lo < 0.1) lo = 0.0;
   return {lo, delta_t}; // minimum deceleration
 }
 
@@ -262,7 +270,6 @@ foresee::FORESEEMobilityModel ()
     Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
     return;
   }
-  // TODO check that the vehicle has already done some meters (check on the map)
   
   // Data structures to store vehicle speeds and IDs per lane
   std::unordered_map<long, std::vector<double>> speeds_per_lane;
@@ -641,8 +648,8 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
       m_mcs_ptr->generateAndEncodeMCM (&specification);
       double time_to_wait = *std::max_element(times.begin(), times.end());
       // Add some extra delay for safety
-      time_to_wait += 0.5;
-      Simulator::Schedule(MilliSeconds(time_to_wait * 1e3), [this, target_lane]() {
+      time_to_wait += 500;
+      Simulator::Schedule(MilliSeconds(time_to_wait), [this, target_lane]() {
           if (!m_busy_with_maneuver) return; // coordination was cancelled mid-wait
           // Command the lane change via TraCI
           m_traci->vehicle.changeLane(m_vehicle_id, target_lane, m_time_to_lc);

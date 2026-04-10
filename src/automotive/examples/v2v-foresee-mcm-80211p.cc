@@ -24,7 +24,7 @@
 #define DECELERATION_TIME 1000
 #define STEP_TIME 100
 #define LC_TIME_MSEC 1500
-
+#define START_TIME 5000
 
 #include "ns3/carla-module.h"
 
@@ -258,8 +258,8 @@ int main (int argc, char *argv[])
       lc_model[nodeID].setCoordinationAvoidanceRange(ca_range);
       lc_model[nodeID].setMCBasicService(bs_container->getMCBasicService());
       lc_model[nodeID].addMCMRxCallback ();
-      lc_model[nodeID].setStartTime(2);
-      lc_model[nodeID].setNegotiationTime(1000);
+      lc_model[nodeID].setStartTime(START_TIME);
+      lc_model[nodeID].setNegotiationTime(NEGOTIATION_TIME);
       std::string my_type = sumoClient->vehicle.getTypeID (vehicleID);
       // lc_model[nodeID].setTrajectoryPredictor(HORIZON_TIME, STEP_TIME, NEGOTIATION_TIME, DECELERATION_TIME, LC_TIME_MSEC, foresee::PredictionType::CONSTANT_SPEED);
 
