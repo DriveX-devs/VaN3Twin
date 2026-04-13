@@ -469,7 +469,7 @@ namespace ns3
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_responseContainer);
        if (specification->getMCMResponse() == 0)
          {
-           asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.manouevreResponse, ManouevreResponse_accept);
+          asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.manouevreResponse, ManouevreResponse_accept);
          }
        else
          {

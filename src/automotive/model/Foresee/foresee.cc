@@ -15,6 +15,7 @@
 #include "ns3/sumo-TraCIDefs.h"
 #include "ns3/vdp.h"
 #include <cassert>
+#include <cstddef>
 #include <string>
 #include <tuple>
 
@@ -22,9 +23,9 @@
 
 /*
 TODO List:
-- Understand why in most of the cases the time required is 4.9s, i.e. horizon - delta_t
-- Check that both the maneuver and the lane change are performed (create a log to show the delta v of the cooperand and the final lane)
-- Add in termination the acceleration of cooperating and the new laner of HV (in the logging phase)
+- When there is an actor that doesn't need to enlarge the gap with HV, keep it with constant speed (send a MCM, right now the behavior is not)
+- Understand how to make the actor with the lower time to execute the maneuver with a constant speed untile the other reach (HV should tell, the other should execute)
+- Collect data for the csv
 */
 
 namespace ns3
@@ -456,7 +457,11 @@ foresee::FORESEEMobilityModel ()
         {
           // No RV and RVAhead present, we can directly change the lane
           target_lane = 3 - target_lane;
-          m_traci->vehicle.changeLane (m_vehicle_id, target_lane, m_time_to_lc);
+          // m_traci->vehicle.changeLane (m_vehicle_id, target_lane, m_time_to_lc);
+          std::string edge_id = m_traci->vehicle.getRoadID(m_vehicle_id);
+          double pos = m_traci->vehicle.getLanePosition(m_vehicle_id);
+          std::string target_lane_id = edge_id + "_" + std::to_string(target_lane);
+          m_traci->vehicle.moveTo(m_vehicle_id, target_lane_id, pos);
         }
       else
         {
@@ -518,7 +523,11 @@ foresee::FORESEEMobilityModel ()
             {
               // No need to change the motion of RV and RVAhead, we can directly change lane
               target_lane = 3 - target_lane;
-              m_traci->vehicle.changeLane (m_vehicle_id, target_lane, m_time_to_lc);
+              // m_traci->vehicle.changeLane (m_vehicle_id, target_lane, m_time_to_lc);
+              std::string edge_id = m_traci->vehicle.getRoadID(m_vehicle_id);
+              double pos = m_traci->vehicle.getLanePosition(m_vehicle_id);
+              std::string target_lane_id = edge_id + "_" + std::to_string(target_lane);
+              m_traci->vehicle.moveTo(m_vehicle_id, target_lane_id, pos);
             }
           else if (possible_hv && possible_rv)
             {
@@ -615,15 +624,32 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
   if (!m_coordinator || !m_busy_with_maneuver) return;
   bool its_ok = true;
   std::vector<double> times;
+  std::vector<std::string> coordinators;
+  std::vector<double> accelerations;
   for (auto it : m_acceptance_map)
     {
       // Found an actor that doesn't want to coordinate
       if(!it.second.accepted) {its_ok = false; break;}
       times.push_back(it.second.time);
+      coordinators.push_back("veh" + std::to_string(it.first));
+      accelerations.push_back(it.second.acceleration);
       // Highlight vehicles involved
     }
   if(its_ok)
     {
+      if (m_verbose)
+      {
+        std::cout << "[NEGOTIATION OK]" << std::endl;
+        std::cout << m_vehicle_id << " will change lane from " << m_traci->vehicle.getLaneIndex(m_vehicle_id) << " to " << target_lane << std::endl;
+        int counter = 0;
+        for (auto it = coordinators.begin(); it != coordinators.end(); ++it)
+        {
+          double speed = m_traci->vehicle.getSpeed(*it);
+          double final_speed = speed + times[counter] / 1e3 * accelerations[counter];
+          std::cout << "Vehicle " << *it << " is going at " << speed << " and after " << times[counter] / 1e3 << " seconds will be at " << final_speed << std::endl;
+          counter ++;
+        }
+      }
       // Start the maneuver
       // First send the ACK to the others
       MCSpecification specification;
@@ -638,12 +664,27 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
       specification.setVehicleType (m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon);
       m_mcs_ptr->generateAndEncodeMCM (&specification);
       double time_to_wait = *std::max_element(times.begin(), times.end());
-      // Add some extra delay for safety
-      time_to_wait += 500;
-      Simulator::Schedule(MilliSeconds(time_to_wait), [this, target_lane]() {
+      // HV should keep constant speed
+      m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
+      m_traci->vehicle.setAcceleration(m_vehicle_id, 0, time_to_wait / 1e3);
+      Simulator::Schedule(MilliSeconds(time_to_wait), [this, target_lane, coordinators]() {
           if (!m_busy_with_maneuver) return; // coordination was cancelled mid-wait
+          if (m_verbose)
+          {
+            std::cout << "[LANE CHANGE TIME]" << std::endl;
+            std::cout << "Vehicle " << m_vehicle_id << " is trying to coordinate" << std::endl;
+            for (auto it = coordinators.begin(); it != coordinators.end(); ++it)
+            {
+              double speed = m_traci->vehicle.getSpeed(*it);
+              std::cout << "Vehicle " << *it << " is going at " << speed << " after coordination" << std::endl;
+            }
+          }
           // Command the lane change via TraCI
-          m_traci->vehicle.changeLane(m_vehicle_id, target_lane, m_time_to_lc);
+          // m_traci->vehicle.changeLane(m_vehicle_id, target_lane, m_time_to_lc);
+          std::string edge_id = m_traci->vehicle.getRoadID(m_vehicle_id);
+          double pos = m_traci->vehicle.getLanePosition(m_vehicle_id);
+          std::string target_lane_id = edge_id + "_" + std::to_string(target_lane);
+          m_traci->vehicle.moveTo(m_vehicle_id, target_lane_id, pos);
           // Send termination to free all targets
           MCSpecification specification;
           specification.setForesee();
@@ -658,10 +699,21 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
           m_coordinator = false;
           m_busy_with_maneuver = false;
           m_acceptance_map.clear();
+          Simulator::Schedule(MilliSeconds(1000), &foresee::checkLane, this);
+          for (auto it = coordinators.begin(); it != coordinators.end(); ++it)
+            {
+              m_traci->vehicle.setSpeedMode(*it, 31);
+            }
+          m_traci->vehicle.setSpeedMode(m_vehicle_id, 31);
       });
     }
   else
     {
+      if (m_verbose)
+      {
+        std::cout << "[NEGOTIATION FAILED]" << std::endl;
+        std::cout << "Vehicle " << m_vehicle_id << " will not change lane" << std::endl;
+      }
       // Cancel the maneuver
       MCSpecification specification;
       specification.setForesee();
@@ -942,7 +994,14 @@ void foresee::executeManeuver()
 {
   double acc = std::get<0>(m_required_acceleration_time);
   double duration = std::get<1>(m_required_acceleration_time);
+  m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
   m_traci->vehicle.setAcceleration(m_vehicle_id, acc, duration);
+}
+
+void foresee::checkLane()
+{
+  std::cout << "[CHANGE LANE CHECK]" << std::endl;
+  std::cout << "New lane for vehicle" << m_vehicle_id << " is " << m_traci->vehicle.getLaneIndex(m_vehicle_id) << std::endl;
 }
 
 }

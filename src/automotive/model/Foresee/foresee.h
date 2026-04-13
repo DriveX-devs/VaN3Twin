@@ -78,6 +78,7 @@ public:
   void setLDM (Ptr<LDM> ldm) {m_LDM = ldm;};
   void setTraciAPI (Ptr<TraciClient> traci) {m_traci = traci;};
   void setNumberOfLanes ();
+  void setVerobse() {m_verbose = true;};
   void setVDP (VDP* vdp) {m_vdp = vdp;};
   void setDesiredSpeed (double speed) {m_desired_speed = speed;};
   void setVehicleID (std::string vehicleID) {m_vehicle_id = vehicleID; m_vehicle_id_int = std::stol(vehicleID.substr (3));};
@@ -92,6 +93,7 @@ public:
   void negotiationPhase(bool left_criterion, int target_lane);
   void targetCheckACK();
   void executeManeuver();
+  void checkLane();
 
 private:
   std::string m_vehicle_id;
@@ -130,6 +132,7 @@ private:
   bool m_busy_with_maneuver = false;
   int m_coordination_timeout_ms = 7000;
   std::tuple<double, double> m_required_acceleration_time;
+  bool m_verbose = false;
 };
 }
 

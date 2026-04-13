@@ -260,6 +260,7 @@ int main (int argc, char *argv[])
       lc_model[nodeID].addMCMRxCallback ();
       lc_model[nodeID].setStartTime(START_TIME);
       lc_model[nodeID].setNegotiationTime(NEGOTIATION_TIME);
+      lc_model[nodeID].setVerobse();
       std::string my_type = sumoClient->vehicle.getTypeID (vehicleID);
 
       lc_model[nodeID].WrapperFORESEEMobilityModel();
