@@ -261,7 +261,6 @@ int main (int argc, char *argv[])
       lc_model[nodeID].setStartTime(START_TIME);
       lc_model[nodeID].setNegotiationTime(NEGOTIATION_TIME);
       std::string my_type = sumoClient->vehicle.getTypeID (vehicleID);
-      // lc_model[nodeID].setTrajectoryPredictor(HORIZON_TIME, STEP_TIME, NEGOTIATION_TIME, DECELERATION_TIME, LC_TIME_MSEC, foresee::PredictionType::CONSTANT_SPEED);
 
       lc_model[nodeID].WrapperFORESEEMobilityModel();
 

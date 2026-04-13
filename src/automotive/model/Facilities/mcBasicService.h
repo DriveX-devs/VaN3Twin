@@ -12,7 +12,6 @@
 #include "ns3/Getter.hpp"
 #include "ns3/LDM.h"
 #include "signalInfoUtils.h"
-#include "ns3/trajectoryPrediction.h"
 
 extern "C" {
   #include "ns3/MCM.h"

@@ -10,10 +10,12 @@
 #include "ns3/caBasicService_v1.h"
 #include "ns3/foresee.h"
 #include "ns3/mcBasicService.h"
+#include "ns3/nstime.h"
 #include "ns3/simulator.h"
 #include "ns3/sumo-TraCIDefs.h"
 #include "ns3/vdp.h"
 #include <cassert>
+#include <string>
 #include <tuple>
 
 #define DOUBLE_TOLERANCE 0.5
@@ -21,7 +23,8 @@
 /*
 TODO List:
 - Understand why in most of the cases the time required is 4.9s, i.e. horizon - delta_t
-- Check that both the maneuver and the lane change are performed (create a log to show the delta v of the cooperant and the final lane)
+- Check that both the maneuver and the lane change are performed (create a log to show the delta v of the cooperand and the final lane)
+- Add in termination the acceleration of cooperating and the new laner of HV (in the logging phase)
 */
 
 namespace ns3
@@ -50,7 +53,7 @@ std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_lea
   // Binary search on acceleration of leader in [0, a_max]
   double lo = 0.0;
   double hi = p.a; // max acceleration
-  double delta_t;
+  double delta_t = -1;
   for(int iter = 0; iter < MAX_LOOPS; iter++)
     {
       double a_candidate = (lo + hi) / 2.0;
@@ -68,7 +71,7 @@ std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_lea
           if (a_f >= MIN_DECELERATION)
             {
               a_f_final = a_f;
-              delta_t = t - dt;
+              delta_t = t;
               break;
             }
           // Leader accelerates with candidate acceleration
@@ -99,7 +102,7 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
   // Binary search on deceleration of follower in [0, a_max]
   double lo = -p.d;
   double hi = 0.0; // max deceleration
-  double delta_t;
+  double delta_t = -1;
   for(int iter = 0; iter < MAX_LOOPS; iter++)
     {
       double d_candidate = (lo + hi) / 2.0;
@@ -117,7 +120,7 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
           if (a_f >= MIN_DECELERATION)
             {
               a_f_final = a_f;
-              delta_t = t - dt;
+              delta_t = t;
               break;
             }
           // Follower decelerates with candidate deceleration
@@ -140,19 +143,6 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
   if (lo < 0.1) lo = 0.0;
   return {lo, delta_t}; // minimum deceleration
 }
-
-/*
-void
-foresee::setTrajectoryPredictor (int horizon_time, int step_time, int negotiation_time,
-                                 int deceleration_time, int lc_duration, PredictionType prediction_type)
-{
-  m_traj_predictor = new trajectoryPrediction(horizon_time, step_time, negotiation_time, deceleration_time);
-  m_step_time = step_time;
-  m_negotiation_time = negotiation_time;
-  m_time_to_lc = lc_duration;
-  m_prediction_type = prediction_type;
-}
-*/
 
 void
 foresee::addMCMRxCallback ()
@@ -630,6 +620,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
       // Found an actor that doesn't want to coordinate
       if(!it.second.accepted) {its_ok = false; break;}
       times.push_back(it.second.time);
+      // Highlight vehicles involved
     }
   if(its_ok)
     {
@@ -834,7 +825,7 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
               m_my_coordinator_responded = false;
               m_mcs_ptr->generateAndEncodeMCM (&specification);
               // Schedule the check to receive the ACK from coordinator (max 1s)
-              m_ack_event = Simulator::Schedule(MilliSeconds(1000), &foresee::targetCheckACK, this);
+              m_ack_event = Simulator::Schedule(MilliSeconds(1500), &foresee::targetCheckACK, this);
             }
           else if (!accept && msg_for_me)
             {

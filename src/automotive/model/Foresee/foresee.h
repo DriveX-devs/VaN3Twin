@@ -10,7 +10,6 @@
 #include "ns3/asn_utils.h"
 #include "ns3/event-id.h"
 #include "ns3/mcBasicService.h"
-#include "ns3/trajectoryPrediction.h"
 #include "ns3/geonet.h"
 #include <cstdint>
 #include <unordered_map>
@@ -62,9 +61,7 @@ public:
   };
 
   foresee() = default;
-  ~foresee() {
-      delete m_traj_predictor;
-  };
+  ~foresee() = default;
   IDMParams getIDMParams(StationType type);
   double idmAcceleration(double v, double v_lead, double gap, double v0,
                           double T, double s0, double a, double b);
@@ -88,8 +85,6 @@ public:
   void setMCBasicService(Ptr<MCBasicService> mcs_ptr) {m_mcs_ptr = mcs_ptr;};
   void setStartTime(int startTime) {m_start_time = startTime;};
   void setNegotiationTime(int negotiationTime) {m_negotiation_time = negotiationTime;}
-  // void setTrajectoryPredictor(int horizon_time, int step_time, int negotiation_time, int deceleration_time, int lc_duration, PredictionType prediction_type);
-  // static std::tuple<bool, double> trajectoryEvaluation(std::vector<trajectoryPrediction::TrajectoryItem> trajectory_HV, std::vector<trajectoryPrediction::TrajectoryItem> trajectory_other, double leader_length, int step_time, int negotiation_time, int lc_duration, trajectoryPrediction::ActorType type, int start_time);
   void terminateCoordination ();
   void startCoordination (long RV_id, long RVAhead_id, double dec_rv, double acc_rv_ahead, double time_rv, double time_rv_ahead, bool left_criterion, int target_lane);
   void addMCMRxCallback();
@@ -117,8 +112,6 @@ private:
   double m_ca_range;
   Ptr<MCBasicService> m_mcs_ptr;
   int m_start_time;
-  trajectoryPrediction* m_traj_predictor;
-  PredictionType m_prediction_type = UNKNOWN;
   int m_step_time;
   int m_negotiation_time;
   int m_FORESEE_max_time = 10000;

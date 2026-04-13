@@ -6,7 +6,6 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 link_libraries(${OpenCV_LIBS})
 
 Set(source_files
-        model/Foresee/trajectoryPrediction.cc
         model/LOS-NLOS/los_nlos.cc
         helper/areaSpeedAdvisorClient80211p-helper.cc
         helper/areaSpeedAdvisorServer80211p-helper.cc
@@ -1564,7 +1563,6 @@ Set(source_files
 )
 
 set(header_files
-        model/Foresee/trajectoryPrediction.h
         model/LOS-NLOS/los_nlos.h
         model/Measurements/MetricSupervisor.h
         helper/areaSpeedAdvisorClientLTE-helper.h
