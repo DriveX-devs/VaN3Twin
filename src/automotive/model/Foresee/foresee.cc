@@ -24,8 +24,8 @@
 
 /*
 TODO List:
-- Understand how to make the actor with the lower time to execute the maneuver with a constant speed untile the other reach (HV should tell, the other should execute)
-- Spread MCMs during the execution phase
+- Understand how to make the actor with the lower time to execute the maneuver with a constant speed until the other reach (until HV reaches the new lane)
+- Spread MCMs during the execution phase (?)
 - Collect data for the csv
 */
 
