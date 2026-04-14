@@ -80,6 +80,7 @@ public:
   void setNumberOfLanes ();
   void setVerobse() {m_verbose = true;};
   void setVDP (VDP* vdp) {m_vdp = vdp;};
+  void setManeuverHorizon(int horizon) {m_maneuver_horizon = horizon;};
   void setDesiredSpeed (double speed) {m_desired_speed = speed;};
   void setVehicleID (std::string vehicleID) {m_vehicle_id = vehicleID; m_vehicle_id_int = std::stol(vehicleID.substr (3));};
   void setCoordinationAvoidanceRange(double ca_range) {m_ca_range = ca_range;};
@@ -117,6 +118,7 @@ private:
   int m_step_time;
   int m_negotiation_time;
   int m_FORESEE_max_time = 10000;
+  int m_maneuver_horizon = 5000;
 
   EventId m_termination_event;
   Ptr<Node> m_node = nullptr;
