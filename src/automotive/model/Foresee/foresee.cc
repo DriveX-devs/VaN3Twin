@@ -33,11 +33,18 @@ namespace ns3
 {
 
 foresee::IDMParams foresee::getIDMParams(StationType type) {
-  if (type == StationType::StationType_passengerCar) {
-      return {m_desired_speed, 0.8, 2.0, 1.5, 2.0, 1.5};
-    } else if (type == StationType::StationType_lightTruck) { // passenger car
-      return {m_desired_speed, 1.0, 2.0, 1.5, 2.0, 2.0};
-    }
+  if (type == StationType::StationType_passengerCar)
+  {
+    return {m_desired_speed, 0.8, 2.0, 1.5, 2.0, 1.5};
+  } 
+  else if (type == StationType::StationType_lightTruck)
+  {
+    return {m_desired_speed, 1.0, 2.0, 1.5, 2.0, 2.0};
+  }
+  else
+  {
+    return {m_desired_speed, 1.0, 2.0, 1.5, 2.0, 2.0};
+  }
 }
 
 double foresee::idmAcceleration(double v, double v_lead, double gap, double v0,
@@ -613,20 +620,23 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
   m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
   m_traci->vehicle.setAcceleration(m_vehicle_id, 0, 1);
   m_mcs_ptr->generateAndEncodeMCM (&specification);
-  Simulator::Schedule(MilliSeconds(m_negotiation_time), &foresee::negotiationPhase, this, left_criterion, target_lane);
+  m_left_criterion = left_criterion;
+  m_target_lane = target_lane;
+  m_negotiation_event = Simulator::Schedule(MilliSeconds(m_negotiation_time), &foresee::negotiationPhase, this, left_criterion, target_lane);
 }
 
 void foresee::negotiationPhase(bool left_criterion, int target_lane)
 {
   if (!m_coordinator || !m_busy_with_maneuver) return;
   bool its_ok = true;
+  std::string veh_refused;
   std::vector<double> times;
   std::vector<std::string> coordinators;
   std::vector<double> accelerations;
   for (auto it : m_acceptance_map)
     {
       // Found an actor that doesn't want to coordinate
-      if(!it.second.accepted) {its_ok = false; break;}
+      if(!it.second.accepted) {its_ok = false; veh_refused = "veh" + std::to_string(it.first); break;}
       times.push_back(it.second.time);
       coordinators.push_back("veh" + std::to_string(it.first));
       accelerations.push_back(it.second.acceleration);
@@ -636,7 +646,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
     {
       if (m_verbose)
       {
-        std::cout << "[NEGOTIATION OK]" << std::endl;
+        std::cout << "\n[NEGOTIATION OK]" << std::endl;
         std::cout << m_vehicle_id << " will change lane from " << m_traci->vehicle.getLaneIndex(m_vehicle_id) << " to " << target_lane << std::endl;
         int counter = 0;
         for (auto it = coordinators.begin(); it != coordinators.end(); ++it)
@@ -668,7 +678,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
           if (!m_busy_with_maneuver) return; // coordination was cancelled mid-wait
           if (m_verbose)
           {
-            std::cout << "[LANE CHANGE TIME]" << std::endl;
+            std::cout << "\n[LANE CHANGE TIME]" << std::endl;
             std::cout << "Vehicle " << m_vehicle_id << " is trying to coordinate" << std::endl;
             for (auto it = coordinators.begin(); it != coordinators.end(); ++it)
             {
@@ -676,8 +686,59 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
               std::cout << "Vehicle " << *it << " is going at " << speed << " after coordination" << std::endl;
             }
           }
-          // Command the lane change via TraCI
-          // m_traci->vehicle.changeLane(m_vehicle_id, target_lane, m_time_to_lc);
+          double my_heading = m_vdp->getHeadingValue();
+          double my_x = m_vdp->getPositionXY().x;
+          double my_speed = m_vdp->getSpeedValue();
+          std::vector<LDM::returnedVehicleData_t> vehicles;
+          m_LDM->getAllCVs (vehicles);
+          // Check whether the comfort criteria is now respected for all the participants
+          for (auto it = coordinators.begin(); it != coordinators.end(); ++it)
+          {
+            auto item = std::find_if(vehicles.begin(), vehicles.end(), 
+            [&](const LDM::returnedVehicleData_t& veh)
+                {
+                    return veh.vehData.stationID == std::stol((*it).substr(3));
+                });
+
+            if (item != vehicles.end())
+            {
+              // Check the position of HV w.r.t. the coordinator, to check which one is the leader and which is the follower
+              bool behind = false;
+              if ((std::abs(my_heading - 90) < DOUBLE_TOLERANCE && item->vehData.x < my_x) || (std::abs(my_heading - 270) < DOUBLE_TOLERANCE && item->vehData.x > my_x)) behind = true;
+              double a;
+              auto pos = m_traci->simulation.convertLonLattoXY (item->vehData.lon, item->vehData.lat);
+              double x = pos.x;
+              double gap = std::abs(my_x - x);
+              if (behind)
+              {
+                // Coordinator is behind of the HV
+                double leader_length = m_vdp->getVehicleLength();
+                gap -= leader_length;
+                IDMParams params = getIDMParams(static_cast<StationType> (item->vehData.stationType));
+                a = idmAcceleration(item->vehData.speed_ms, my_speed, gap,
+                                                    params.v0, params.T,
+                                                    params.s0, params.a, params.b);
+              }
+              else 
+              {
+                // Coordinator is ahead of the HV
+                double leader_length = (double) item->vehData.vehicleLength.getData() / DECI;
+                gap -= leader_length;
+                IDMParams params = getIDMParams(static_cast<StationType> (m_station_type));
+                
+                a = idmAcceleration(my_speed, item->vehData.speed_ms, gap,
+                                                    params.v0, params.T,
+                                                    params.s0, params.a, params.b);
+              }
+              
+              if(a < MIN_DECELERATION)
+              {
+                // Comfort criterion if not reached for this item, coordination failed
+                return;
+              }
+            }
+          }
+          // For all the coordinators the comfort has been reached, we can coordinate
           std::string edge_id = m_traci->vehicle.getRoadID(m_vehicle_id);
           double pos = m_traci->vehicle.getLanePosition(m_vehicle_id);
           std::string target_lane_id = edge_id + "_" + std::to_string(target_lane);
@@ -704,8 +765,8 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
     {
       if (m_verbose)
       {
-        std::cout << "[NEGOTIATION FAILED]" << std::endl;
-        std::cout << "Vehicle " << m_vehicle_id << " will not change lane" << std::endl;
+        std::cout << "\n[NEGOTIATION FAILED]" << std::endl;
+        std::cout << "Vehicle " << m_vehicle_id << " will not change lane due to a refusal from " << veh_refused << std::endl;
       }
       // Cancel the maneuver
       MCSpecification specification;
@@ -730,7 +791,14 @@ void foresee::targetCheckACK()
 {
   // Guard: if we are no longer in a coordination or already responded, do nothing
   if (m_my_coordinator == -1 || m_my_coordinator_responded || !m_busy_with_maneuver)
-      return;
+  {
+    if (m_verbose)
+      {
+        std::cout << "\n[TARGET CHECK]" << std::endl;
+        std::cout << "Vehicle " << m_vehicle_id << " doesn't need to check" << std::endl;
+      }
+    return;
+  }
   MCSpecification specification;
   specification.setForesee();
   specification.setTerminatorContainer();
@@ -744,6 +812,11 @@ void foresee::targetCheckACK()
   m_traci->vehicle.setSpeedMode(m_vehicle_id, 31);
   m_my_coordinator_responded = false;
   m_busy_with_maneuver = false;
+  if (m_verbose)
+  {
+    std::cout << "\n[MANEUVER REFUSED]" << std::endl;
+    std::cout << "Vehicle " << m_vehicle_id << " is refusing the maneuver due to ACK not received " << std::endl;
+  }
 }
 
 void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info)
@@ -833,6 +906,11 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
                   msg_for_me = true;
                   if (m_busy_with_maneuver)
                     {
+                      if (m_verbose)
+                        {
+                          std::cout << "\n[MANEUVER REFUSED]" <<std::endl;
+                          std::cout << "Vehicle " << m_vehicle_id << " cannot accept maneuver from veh" << sender << " because it is busy with another" << std::endl;
+                        }
                       break;
                     }
                   else
@@ -845,6 +923,11 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
                       if ((sub_id == ManeuverID::Accelerate && acc_value < 0) || (sub_id == ManeuverID::Slowdown && acc_value > 0) || (sub_id == ManeuverID::StayInLane && acc_value != 0))
                       {
                         // Error in message generation: acceleration/deceleration required but acceleration sign is not consistent
+                        if (m_verbose)
+                        {
+                          std::cout << "\n[ERROR IN MESSAGE]" << std::endl;
+                          std::cout << "Acceleration or deceleration not right" << std::endl;
+                        }
                         break;
                       }
                       double current_speed = m_vdp->getSpeedValue();
@@ -853,8 +936,8 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
                       {
                         if (m_verbose)
                         {
-                          std::cout << "[MANEUVER REFUSED]" <<std::endl;
-                          std::cout << "The final speed would exceed the desired one: " << m_desired_speed << " < " << future_speed << std::endl;
+                          std::cout << "\n[MANEUVER REFUSED]" <<std::endl;
+                          std::cout << "For vehicle " << m_vehicle_id << " the final speed would exceed the desired one: " << m_desired_speed << " < " << future_speed << std::endl;
                         }
                         break;
                       }
@@ -866,6 +949,15 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
             }
           if (accept && msg_for_me)
             {
+              if (m_verbose)
+              {
+                std::cout << "\n[MANEUVER ACCEPTED]" <<std::endl;
+                std::cout << "For vehicle " << m_vehicle_id << " the maneuver requested by veh" << sender << " is feasible" << std::endl;
+                if (m_vehicle_id == "veh23")
+                {
+                  std::cout << std::endl;
+                }
+              }
               // Keep constant speed until the HV will start the maneuver
               m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
               m_traci->vehicle.setAcceleration(m_vehicle_id, 0, 1.5);
@@ -912,7 +1004,7 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
               double my_heading = m_vdp->getHeadingValue();
               bool same_direction = false;
               if ((std::abs(my_heading - 90) < DOUBLE_TOLERANCE && direction == 0) || (std::abs(my_heading - 270) < DOUBLE_TOLERANCE && direction == 1)) same_direction = true;
-              if (same_direction && !m_busy_with_maneuver)
+              if (same_direction)
               {
                 // I am currently free, so I register the coordination if in my CA range
                 double dist = std::abs(pos.x - m_vdp->getPositionXY().x);
@@ -928,17 +1020,50 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
     case McmType::McmType_response:
       if (resp_container)
         {
+          if (sender == 23)
+          {
+            std::cout << std::endl;
+          }
           if (m_coordinator && sender_role == McmItssRole::McmItssRole_targetVehicle && m_acceptance_map.find(sender) != m_acceptance_map.end())
             {
+              // Response received
               // The coordinator is waiting the ACK from the others
               ManouevreResponse_t response = resp.manouevreResponse;
               if (response == ManouevreResponse::ManouevreResponse_accept)
                 {
-                  // Response received
                   // One of the vehicles accepted to be involved in the coordination
-                  // Update the map to be checked in the checkNegotiation function
+                  // Update the map
                   m_acceptance_map[sender].accepted = true;
+                  if (m_verbose)
+                  {
+                    std::cout << "\n[ACCEPTANCE RECEIVED]" << std::endl;
+                    std::cout << "Vehicle " << m_vehicle_id << " has received the acceptance from veh" << sender << std::endl;
+                  }
+                  // Check if we have received all the acceptance, we can anticipate the negotiation end
+                  bool received_all = true;
+                  for (auto it = m_acceptance_map.begin(); it != m_acceptance_map.end(); ++it)
+                  {
+                    if (!it->second.accepted) {received_all = false; break;}
+                  }
+                  if (received_all)
+                  {
+                    Simulator::Cancel(m_negotiation_event);
+                    negotiationPhase(m_left_criterion, m_target_lane);
+                  }
                 }
+              else if (response == ManouevreResponse::ManouevreResponse_decline)
+              {
+                // One of the vehicles declined the coordination
+                // Update the map  and call the negotiation function
+                m_acceptance_map[sender].accepted = false;
+                if (m_verbose)
+                {
+                  std::cout << "\n[REFUSAL RECEIVED]" << std::endl;
+                  std::cout << "Vehicle " << m_vehicle_id << " has received the refusal from veh" << sender << std::endl;
+                }
+                Simulator::Cancel(m_negotiation_event);
+                negotiationPhase(m_left_criterion, m_target_lane);
+              }
             }
         }
       break;
@@ -1013,8 +1138,8 @@ void foresee::executeManeuver()
 
 void foresee::checkLane()
 {
-  std::cout << "[CHANGE LANE CHECK]" << std::endl;
-  std::cout << "New lane for vehicle" << m_vehicle_id << " is " << m_traci->vehicle.getLaneIndex(m_vehicle_id) << std::endl;
+  std::cout << "\n[CHANGE LANE CHECK]" << std::endl;
+  std::cout << "New lane for vehicle " << m_vehicle_id << " is " << m_traci->vehicle.getLaneIndex(m_vehicle_id) << std::endl;
 }
 
 }

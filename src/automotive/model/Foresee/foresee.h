@@ -121,6 +121,7 @@ private:
   int m_maneuver_horizon = 5000;
 
   EventId m_termination_event;
+  EventId m_negotiation_event;
   Ptr<Node> m_node = nullptr;
   StationType_t m_station_type;
   std::function<void(const asn1cpp::Seq<MCM>& mcm, Address, StationID_t, StationType_t, SignalInfo)> m_MCMReceiveCallbackExtended = nullptr;
@@ -132,9 +133,11 @@ private:
   bool m_my_coordinator_responded = false;
   EventId m_ack_event;
   bool m_busy_with_maneuver = false;
-  int m_coordination_timeout_ms = 7000;
+  int m_coordination_timeout_ms = 9000;
   std::tuple<double, double> m_required_acceleration_time;
   bool m_verbose = false;
+  bool m_left_criterion;
+  int m_target_lane;
 };
 }
 
