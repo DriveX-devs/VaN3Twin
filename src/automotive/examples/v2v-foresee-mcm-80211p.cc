@@ -83,7 +83,7 @@ int main (int argc, char *argv[])
   double m_baseline_prr = 150.0; // PRR baseline value (default: 150 m)
   int txPower = 33.0; // IEEE 802.11p transmission power in dBm (default: 23 dBm)
   xmlDocPtr rou_xml_file;
-  double simTime = 100.0; // Total simulation time (default: 100 seconds)
+  double simTime = 1000.0; // Total simulation time (default: 100 seconds)
   bool sumo_gui = true;
 
   // Set here the path to the SUMO XML files
@@ -158,7 +158,7 @@ int main (int argc, char *argv[])
   NetDeviceContainer devices = wifi80211p.Install (wifiPhy, wifi80211pMac, c);
 
   // Enable saving to Wireshark PCAP traces
-  wifiPhy.EnablePcap ("v2v-80211p-foresee-mcm", devices.Get (0));
+  wifiPhy.EnablePcap ("v2v-80211p-foresee-mcm", devices.Get (22));
 
   // Set up the link between SUMO and ns-3, to make each node "mobile" (i.e., linking each ns-3 node to each moving vehicle in ns-3,
   // which corresponds to installing the network stack to each SUMO vehicle)

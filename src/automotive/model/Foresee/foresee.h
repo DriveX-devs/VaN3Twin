@@ -94,6 +94,7 @@ public:
   void negotiationPhase(bool left_criterion, int target_lane);
   void targetCheckACK();
   void executeManeuver();
+  void continueWithConstantSpeed(StationId_t coordinator);
   void checkLane();
 
 private:
@@ -120,8 +121,10 @@ private:
   int m_FORESEE_max_time = 10000;
   int m_maneuver_horizon = 5000;
 
-  EventId m_termination_event;
   EventId m_negotiation_event;
+  EventId m_change_lane_event;
+  EventId m_tx_mcm_event;
+  EventId m_continue_constant_speed_event;
   Ptr<Node> m_node = nullptr;
   StationType_t m_station_type;
   std::function<void(const asn1cpp::Seq<MCM>& mcm, Address, StationID_t, StationType_t, SignalInfo)> m_MCMReceiveCallbackExtended = nullptr;

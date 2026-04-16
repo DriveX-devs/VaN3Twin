@@ -350,7 +350,7 @@ enum ManeuverID
      *
      * @return MCBasicService_error_t   The error code
      */
-    MCBasicService_error_t generateAndEncodeMCM(MCSpecification *specification);
+    MCBasicService_error_t generateAndEncodeMCM(Ptr<MCSpecification> specification);
 
 
   private:

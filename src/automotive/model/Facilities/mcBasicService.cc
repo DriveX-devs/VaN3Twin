@@ -302,7 +302,7 @@ namespace ns3
   }
 
   MCBasicService_error_t
-  MCBasicService::generateAndEncodeMCM(MCSpecification *specification)
+  MCBasicService::generateAndEncodeMCM(Ptr<MCSpecification> specification)
   {
     // Only one container must be activated for one message
     NS_ASSERT (specification->checkContainers());
