@@ -697,6 +697,8 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
               std::cout << "Vehicle " << *it << " is going at " << speed << " after coordination" << std::endl;
             }
           }
+          bool can_change = true;
+          std::string veh_blocking;
           double my_heading = m_vdp->getHeadingValue();
           double my_x = m_vdp->getPositionXY().x;
           double my_speed = m_vdp->getSpeedValue();
@@ -715,16 +717,17 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
             {
               // Check the position of HV w.r.t. the coordinator, to check which one is the leader and which is the follower
               bool behind = false;
-              if ((std::abs(my_heading - 90) < DOUBLE_TOLERANCE && item->vehData.x < my_x) || (std::abs(my_heading - 270) < DOUBLE_TOLERANCE && item->vehData.x > my_x)) behind = true;
+              libsumo::TraCIPosition pos = m_traci->simulation.convertLonLattoXY (item->vehData.lon, item->vehData.lat);
+              double item_x = pos.x;
+              if ((std::abs(my_heading - 90) < DOUBLE_TOLERANCE && item_x <= my_x) || (std::abs(my_heading - 270) < DOUBLE_TOLERANCE && item_x >= my_x)) behind = true;
               double a;
-              auto pos = m_traci->simulation.convertLonLattoXY (item->vehData.lon, item->vehData.lat);
-              double x = pos.x;
-              double gap = std::abs(my_x - x);
+              double gap = std::abs(my_x - item_x);
               if (behind)
               {
-                // Coordinator is behind of the HV
+                // Coordinator is the vehicle ahead, so the vehicle in analysis is the RV
                 double leader_length = m_vdp->getVehicleLength();
-                gap -= leader_length;
+                if (gap > leader_length) gap -= leader_length;
+                else gap = 0;
                 IDMParams params = getIDMParams(static_cast<StationType> (item->vehData.stationType));
                 a = idmAcceleration(item->vehData.speed_ms, my_speed, gap,
                                                     params.v0, params.T,
@@ -732,9 +735,10 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
               }
               else 
               {
-                // Coordinator is ahead of the HV
+                // Coordinator is the vehicle behind, so the vehicle in analysis is the RVAhead
                 double leader_length = (double) item->vehData.vehicleLength.getData() / DECI;
-                gap -= leader_length;
+                if (gap > leader_length) gap -= leader_length;
+                else gap = 0;
                 IDMParams params = getIDMParams(static_cast<StationType> (m_station_type));
                 
                 a = idmAcceleration(my_speed, item->vehData.speed_ms, gap,
@@ -745,15 +749,29 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
               if(a < MIN_DECELERATION)
               {
                 // Comfort criterion if not reached for this item, coordination failed
-                return;
+                can_change = false;
+                veh_blocking = behind ? "RV" : "RVAhead";
+                break;
               }
             }
           }
-          // For all the coordinators the comfort has been reached, we can coordinate
-          std::string edge_id = m_traci->vehicle.getRoadID(m_vehicle_id);
-          double pos = m_traci->vehicle.getLanePosition(m_vehicle_id);
-          std::string target_lane_id = edge_id + "_" + std::to_string(target_lane);
-          m_traci->vehicle.moveTo(m_vehicle_id, target_lane_id, pos);
+          if (can_change)
+          {
+            // For all the coordinators the comfort has been reached, we can coordinate
+            std::string edge_id = m_traci->vehicle.getRoadID(m_vehicle_id);
+            double pos = m_traci->vehicle.getLanePosition(m_vehicle_id);
+            std::string target_lane_id = edge_id + "_" + std::to_string(target_lane);
+            m_traci->vehicle.moveTo(m_vehicle_id, target_lane_id, pos);
+          }
+          else 
+          {
+            if (m_verbose)
+            {
+              std::cout << "\n[COORDINATION FAILED]" << std::endl;
+              std::cout << "Vehicle veh" << m_vehicle_id << " cannot complete the coordination due to comfort criteria not reached by " << veh_blocking << std::endl;
+            }
+          }
+          
           // Send termination to free all targets
           Ptr<MCSpecification> specification = Create<MCSpecification>();
           specification->setForesee();
