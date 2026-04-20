@@ -237,6 +237,7 @@ namespace ns3
       // [m/s] for speed, [m] for the travelled distance and [deg] for heading
       // That's why they return non-ASN1 types but normal 'double' values
       virtual double getSpeedValue() = 0;
+      virtual double getAccelerationValue() = 0;
       virtual double getTravelledDistance() = 0;
       virtual double getHeadingValue() = 0;
       virtual double getVehicleLength() = 0;

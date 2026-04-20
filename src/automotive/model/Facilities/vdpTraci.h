@@ -76,6 +76,8 @@ namespace ns3 {
 
     double getVehicleLength(){return m_traci_client->TraCIAPI::vehicle.getLength (m_id);}
 
+    double getAccelerationValue() {return m_traci_client->TraCIAPI::vehicle.getAcceleration(m_id);}
+
     /**
      * @brief This functio returns the vehicle's speed.
      * @return

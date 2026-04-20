@@ -61,6 +61,7 @@ namespace ns3 {
           double elevation;
           double heading; // Heading between 0 and 360 degrees
           double speed_ms;
+          double accel_msquares;
           long camTimestamp; // This is the CAM message GenerationDeltaTime
           long vamTimestamp; // This is the VAM message GenerationDeltaTime
           uint64_t timestamp_us;// Entry last update

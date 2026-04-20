@@ -14,9 +14,13 @@
 #include "ns3/signalInfoUtils.h"
 #include "ns3/simulator.h"
 #include "ns3/sumo-TraCIDefs.h"
+#include "ns3/traci-client.h"
 #include "ns3/vdp.h"
 #include <cassert>
 #include <cstddef>
+#include <cstdint>
+#include <fstream>
+#include <istream>
 #include <random>
 #include <string>
 #include <tuple>
@@ -24,13 +28,15 @@
 #define DOUBLE_TOLERANCE 0.5
 #define SEED 42
 
+#define NOT_PRESENT -2000
+
 std::uniform_real_distribution<double> dist(1, 5);
 std::mt19937 gen (SEED);
 
 /*
 TODO List:
 - Spread MCMs during the execution phase (?)
-- Collect data for the csv
+- Add some informative features about the target lane (mean speed, ecc...)
 */
 
 namespace ns3
@@ -41,7 +47,7 @@ void txMCM(Ptr<MCBasicService> mc, Ptr<MCSpecification> specs)
   mc->generateAndEncodeMCM(specs);
 }
 
-foresee::IDMParams foresee::getIDMParams(StationType type) {
+foresee::IDMParams foresee::getIDMParams(StationType_t type) {
   if (type == StationType::StationType_passengerCar)
   {
     return {m_desired_speed, 0.8, 2.0, 1.5, 2.0, 1.5};
@@ -229,6 +235,7 @@ foresee::WrapperFORESEEMobilityModel()
     {
       NS_FATAL_ERROR ("FORESEE Mobility Model needs the callback for MCM.");
     }
+  m_coordination_log.reserve(25);
   // Schedule the FORESEE Mobility Model to start at the specified time
   Simulator::Schedule (MilliSeconds(m_start_time), &foresee::FORESEEMobilityModel, this);
 }
@@ -244,22 +251,17 @@ foresee::setNumberOfLanes ()
 void
 foresee::FORESEEMobilityModel ()
 {
-  // Retrieve all connected vehicles (CVs) from the LDM
-  std::vector<LDM::returnedVehicleData_t> vehicles;
-  bool res = m_LDM->getAllCVs (vehicles);
-  if (res == false)
-    {
-      // The route is empty (no perceived vehicles in the LDM)
-      // FORESEE cannot be activated in this case, so we reschedule it
-      Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
-      return;
-    }
+  double traveled_distance = m_vdp->getTravelledDistance();
+  if (traveled_distance > MAX_DISTANCE_TRAVELED_TO_COORDINATE)
+  {
+    return;
+  }
   if (m_busy_with_maneuver)
-    {
-      // FORESEE cannot be activated in this case because we are involved in another maneuver
-      Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
-      return;
-    }
+  {
+    // FORESEE cannot be activated in this case because we are involved in another maneuver
+    Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+    return;
+  }
   // Cleanup the blocked datasett in case there are old coordinations registered (e.g., the coordinator is out of range now)
   long now_ms = Simulator::Now().GetMilliSeconds();
   for (auto it = m_blocked_by_other_coordinations.begin(); it != m_blocked_by_other_coordinations.end();)
@@ -275,6 +277,16 @@ foresee::FORESEEMobilityModel ()
   if (found_coordination)
   {
     // FORESEE cannot be activated in this case because the CA range is not free
+    Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+    return;
+  }
+  // Retrieve all connected vehicles (CVs) from the LDM
+  std::vector<LDM::returnedVehicleData_t> vehicles;
+  bool res = m_LDM->getAllCVs (vehicles);
+  if (res == false)
+  {
+    // The route is empty (no perceived vehicles in the LDM)
+    // FORESEE cannot be activated in this case, so we reschedule it
     Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
     return;
   }
@@ -407,11 +419,12 @@ foresee::FORESEEMobilityModel ()
       // Take the four roles, target, ahead ego, ahead target
       std::string RV, HVAhead, RVAhead;
       long RV_id = -1, RVAhead_id = -1;
-      StationType RV_type, RVAhead_type;
+      StationType_t RV_type, RVAhead_type;
       // Check the comfort criterion
       double x_RV, x_RVAhead;
       double y_RV, y_RVAhead;
       double speed_RV, speed_RVAhead;
+      double acc_RV, acc_RVAhead;
       double min_dist_rv_ahead = 10000;
       double min_dist_rv = 10000;
       // Target lane
@@ -441,7 +454,9 @@ foresee::FORESEEMobilityModel ()
                       RVAhead_id = it->vehData.stationID;
                       x_RVAhead = pos.x;
                       y_RVAhead = pos.y;
-                      speed_RVAhead = it->vehData.speed_ms;
+                      speed_RVAhead = it->vehData.accel_msquares;
+                      acc_RVAhead = it->vehData.longitudinalAcceleration.getData();
+                      RVAhead_type = static_cast<StationType_t> (it->vehData.stationType);
                     }
                 }
               else
@@ -463,7 +478,8 @@ foresee::FORESEEMobilityModel ()
                           x_RV = pos.x;
                           y_RV = pos.y;
                           speed_RV = it->vehData.speed_ms;
-                          RV_type = static_cast<StationType> (it->vehData.stationType);
+                          acc_RV = it->vehData.accel_msquares;
+                          RV_type = static_cast<StationType_t> (it->vehData.stationType);
                         }
                     }
                 }
@@ -544,8 +560,100 @@ foresee::FORESEEMobilityModel ()
             if (RV_id >= 0 && dec_rv == DEFAULT_ACC_VALUE) {dec_rv = 0; time_rv = 5;}
             if (RVAhead_id >= 0 && acc_rv_ahead == DEFAULT_ACC_VALUE) {acc_rv_ahead = 0; time_rv_ahead = 5;}
             // Need for a coordination
+            int original_target_lane = target_lane;
             target_lane = 3 - target_lane;
             startCoordination(RV_id, RVAhead_id, dec_rv, acc_rv_ahead, time_rv, time_rv_ahead, left_criterion, target_lane);
+            if (m_register_log)
+            {
+              m_coordination_structure.coordination_id = m_vehicle_id + "_" + std::to_string(m_coordination_counter);
+              m_coordination_structure.sim_time_ms = Simulator::Now().GetMilliSeconds();
+              m_coordination_structure.desired_speed_hv = m_desired_speed;
+              m_coordination_structure.lane_speed_hv = min_speed_mine;
+              m_coordination_structure.lane_speed_target = left_criterion ? min_speed_left : min_speed_right;
+              m_coordination_structure.type_hv = m_station_type;
+              m_coordination_structure.type_rv = RV_id == -1 ? NOT_PRESENT : RV_type;
+              m_coordination_structure.type_rvahead = RVAhead_id == -1 ? NOT_PRESENT : RVAhead_type;
+              m_coordination_structure.gap_hv_rv = RV_id == -1 ? -1 : min_dist_rv;
+              m_coordination_structure.gap_hv_rvahead = RVAhead_id == -1 ? NOT_PRESENT : min_dist_rv_ahead;
+              m_coordination_structure.speed_hv = my_speed;
+              m_coordination_structure.speed_rv = RV_id == -1 ? NOT_PRESENT : speed_RV;
+              m_coordination_structure.speed_rvahead = RVAhead_id == -1 ? NOT_PRESENT : speed_RVAhead;
+              m_coordination_structure.acc_hv = m_vdp->getAccelerationValue();
+              m_coordination_structure.acc_rv = RV_id == -1 ? NOT_PRESENT : acc_RV;
+              m_coordination_structure.acc_rvahead = RVAhead_id == -1 ? NOT_PRESENT : acc_RVAhead;
+              m_coordination_structure.rel_speed_hv_rv = RV_id == -1 ? NOT_PRESENT : my_speed - speed_RV;
+              m_coordination_structure.rel_speed_hv_rvahead = RVAhead_id == -1 ? NOT_PRESENT : my_speed - speed_RVAhead;
+              m_coordination_structure.dec_rv_requested = RV_id == -1 ? NOT_PRESENT : dec_rv;
+              m_coordination_structure.acc_rvahead_requested = RVAhead_id == -1 ? NOT_PRESENT : acc_rv_ahead;
+              m_coordination_structure.time_rv_requested = RV_id == -1 ? NOT_PRESENT : time_rv;
+              m_coordination_structure.time_rvahead_requested = RVAhead_id == -1 ? NOT_PRESENT : time_rv_ahead;
+              double max_gap_ahead = 0;
+              double max_gap_behind = 0;
+              double mean_speed_ahead = 0.0;
+              double std_speed_ahead = 0.0;
+              if (!speeds_per_lane[original_target_lane].empty())
+              {
+                double sum = std::accumulate(speeds_per_lane[original_target_lane].begin(), speeds_per_lane[original_target_lane].end(), 0.0);
+                mean_speed_ahead = sum / speeds_per_lane[original_target_lane].size();
+                double sq_sum = std::inner_product(speeds_per_lane[original_target_lane].begin(), speeds_per_lane[original_target_lane].end(), speeds_per_lane[original_target_lane].begin(), 0.0);
+                std_speed_ahead = std::sqrt(sq_sum / speeds_per_lane[original_target_lane].size() - mean_speed_ahead * mean_speed_ahead);
+              }
+              
+              std::vector<double> speeds_behind;
+              uint16_t counter_ahead = 0;
+              uint16_t counter_behind = 0;
+              for(auto it = vehicles.begin(); it != vehicles.end(); ++it)
+              {
+                if ((it->vehData.heading - my_heading) > DOUBLE_TOLERANCE) continue;
+                if (it->vehData.stationID == RV_id || it->vehData.stationID == RVAhead_id) continue;
+                auto l = it->vehData.lanePosition;
+                if (!l.isAvailable ()) continue;
+                if (l.getData () != original_target_lane) continue;
+                libsumo::TraCIPosition pos = m_traci->simulation.convertLonLattoXY (it->vehData.lon, it->vehData.lat);
+                double speed = it->vehData.speed_ms;
+                bool behind = false;
+                if (std::abs(my_heading - 90) < DOUBLE_TOLERANCE && pos.x < my_x) behind = true;
+                if (std::abs(my_heading - 270) < DOUBLE_TOLERANCE && pos.x > my_x) behind = true;
+                double gap = std::abs(my_x - pos.x);
+                if (behind)
+                {
+                  counter_behind ++;
+                  if (max_gap_behind < gap) max_gap_behind = gap;
+                  speeds_behind.push_back(speed);
+                }
+                else 
+                {
+                  counter_ahead ++;
+                  if (max_gap_ahead < gap) max_gap_ahead = gap;
+                }
+              }
+              double mean_speed_behind = 0.0;
+              double std_speed_behind = 0.0;
+              if (!speeds_behind.empty())
+              {
+                double sum_behind = std::accumulate(speeds_behind.begin(), speeds_behind.end(), 0.0);
+                mean_speed_behind = sum_behind / speeds_behind.size();
+                double sq_sum_behind = std::inner_product(speeds_behind.begin(), speeds_behind.end(), speeds_behind.begin(), 0.0);
+                std_speed_behind = std::sqrt(sq_sum_behind / speeds_behind.size() - mean_speed_behind * mean_speed_behind);
+              }
+              m_coordination_structure.mean_speed_ahead = mean_speed_ahead;
+              m_coordination_structure.mean_speed_behind = mean_speed_behind;
+              m_coordination_structure.std_speed_ahead = std_speed_ahead;
+              m_coordination_structure.std_speed_behind = std_speed_behind;
+              double density_ahead, density_behind;
+              if (counter_ahead <= 0) density_ahead = 0;
+              else density_ahead = (double) counter_ahead / max_gap_ahead;
+              if (counter_behind <= 0) density_behind = 0;
+              else density_behind = (double) counter_behind / max_gap_behind;
+              m_coordination_structure.num_vehicles_ahead = counter_ahead;
+              m_coordination_structure.num_vehicles_behind = counter_behind;
+              m_coordination_structure.density_target_lane_ahead = density_ahead;
+              m_coordination_structure.density_target_lane_behind = density_behind;
+
+              m_coordination_structure.execution_success = false;
+
+              m_coordination_counter ++;
+            }
           }
         }
     }
@@ -667,6 +775,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
           counter ++;
         }
       }
+      
       // Start the maneuver
       // First send the ACK to the others
       Ptr<MCSpecification> specification = Create<MCSpecification>();
@@ -762,6 +871,12 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
             double pos = m_traci->vehicle.getLanePosition(m_vehicle_id);
             std::string target_lane_id = edge_id + "_" + std::to_string(target_lane);
             m_traci->vehicle.moveTo(m_vehicle_id, target_lane_id, pos);
+            if (m_register_log)
+            {
+              m_coordination_structure.execution_success = true;
+              m_coordination_log.push_back(m_coordination_structure);
+            }
+            Simulator::Schedule(MilliSeconds(150), &foresee::checkLane, this, target_lane);
           }
           else 
           {
@@ -769,6 +884,11 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
             {
               std::cout << "\n[COORDINATION FAILED]" << std::endl;
               std::cout << "Vehicle veh" << m_vehicle_id << " cannot complete the coordination due to comfort criteria not reached by " << veh_blocking << std::endl;
+            }
+            if (m_register_log)
+            {
+              m_coordination_structure.execution_success = false;
+              m_coordination_log.push_back(m_coordination_structure);
             }
           }
           
@@ -788,7 +908,6 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
           m_busy_with_maneuver = false;
           m_acceptance_map.clear();
           m_traci->vehicle.setSpeedMode(m_vehicle_id, 31);
-          Simulator::Schedule(MilliSeconds(500), &foresee::checkLane, this);
       });
     }
   else
@@ -797,6 +916,11 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
       {
         std::cout << "\n[NEGOTIATION FAILED]" << std::endl;
         std::cout << "Vehicle " << m_vehicle_id << " will not change lane due to a refusal from " << veh_refused << std::endl;
+      }
+      if (m_register_log)
+      {
+        m_coordination_structure.execution_success = false;
+        m_coordination_log.push_back(m_coordination_structure);
       }
       // Cancel the maneuver
       Ptr<MCSpecification> specification = Create<MCSpecification>();
@@ -1202,10 +1326,22 @@ void foresee::continueWithConstantSpeed(StationId_t coordinator)
 
 }
 
-void foresee::checkLane()
+void foresee::checkLane(int target_lane_id)
 {
-  std::cout << "\n[CHANGE LANE CHECK]" << std::endl;
-  std::cout << "New lane for vehicle " << m_vehicle_id << " is " << m_traci->vehicle.getLaneIndex(m_vehicle_id) << std::endl;
+  if (m_verbose)
+  {
+    int new_lane = m_traci->vehicle.getLaneIndex(m_vehicle_id);
+    if (new_lane == target_lane_id)
+    {
+      std::cout << "\n[COORDINATION SUCCESS]" << std::endl;
+      std::cout << "Vehicle " << m_vehicle_id << " changed lane" << std::endl;
+    }
+    else 
+    {
+      std::cout << "\n[COORDINATION FAILED]" << std::endl;
+      std::cout << "Vehicle " << m_vehicle_id << " didn't change lane" << std::endl;
+    }
+  }
 }
 
 }

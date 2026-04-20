@@ -17,6 +17,7 @@ namespace ns3 {
     MCM_mandatory_data_t getMCMMandatoryData();
 
     double getSpeedValue() {return m_opencda_client->getSpeed (m_id);}
+    double getAccelerationValue() {return 0;}
     double getTravelledDistance() {return 0;}
     double getHeadingValue() {return m_opencda_client->getHeading (m_id);}
     double getVehicleLength() {return 0;}

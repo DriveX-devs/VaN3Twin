@@ -27,6 +27,7 @@
 #include "ns3/SetOf.hpp"
 #include "ns3/SequenceOf.hpp"
 #include "ns3/BitString.hpp"
+#include "ns3/ldm-utils.h"
 #include "ns3/vdp.h"
 #include "asn_utils.h"
 #include <cmath>
@@ -401,6 +402,7 @@ namespace ns3
       vehdata.elevation = asn1cpp::getField(decodedCAM->cam.camParameters.basicContainer.referencePosition.altitude.altitudeValue,double)/(double)CENTI;
       vehdata.heading = asn1cpp::getField(decodedCAM->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.heading.headingValue,double)/(double)DECI;
       vehdata.speed_ms = asn1cpp::getField(decodedCAM->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.speed.speedValue,double)/(double)CENTI;
+      vehdata.accel_msquares = asn1cpp::getField(decodedCAM->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.longitudinalAcceleration.value,double)/(double)DECI;
       vehdata.camTimestamp = asn1cpp::getField(decodedCAM->cam.generationDeltaTime,long);
       vehdata.timestamp_us = Simulator::Now ().GetMicroSeconds ();
 

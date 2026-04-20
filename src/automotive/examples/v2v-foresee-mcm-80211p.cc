@@ -11,7 +11,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public License for more details
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -83,8 +83,9 @@ int main (int argc, char *argv[])
   double m_baseline_prr = 150.0; // PRR baseline value (default: 150 m)
   int txPower = 33.0; // IEEE 802.11p transmission power in dBm (default: 23 dBm)
   xmlDocPtr rou_xml_file;
-  double simTime = 1000.0; // Total simulation time (default: 100 seconds)
-  bool sumo_gui = true;
+  double simTime = 2000.0; // Total simulation time (default: 100 seconds)
+  bool sumo_gui = false;
+  bool store_coordinations_in_csv = true;
 
   // Set here the path to the SUMO XML files
   std::string sumo_folder = "src/automotive/examples/sumo_files_v2v_foresee/";
@@ -260,7 +261,8 @@ int main (int argc, char *argv[])
       lc_model[nodeID].addMCMRxCallback ();
       lc_model[nodeID].setStartTime(START_TIME);
       lc_model[nodeID].setNegotiationTime(NEGOTIATION_TIME);
-      lc_model[nodeID].setVerobse();
+      lc_model[nodeID].setVerbose();
+      lc_model[nodeID].setRegisterLog();
       std::string my_type = sumoClient->vehicle.getTypeID (vehicleID);
 
       lc_model[nodeID].WrapperFORESEEMobilityModel();
@@ -306,7 +308,89 @@ int main (int argc, char *argv[])
   // When the simulation is terminated, gather the most relevant metrics from the PRRsupervisor
   std::cout << "Run terminated..." << std::endl;
 
-  std::cout << "Average PRR: " << metSup->getAveragePRR_overall () << std::endl;
+  if (store_coordinations_in_csv)
+  {
+    std::cout << "Writing CSV log after simulation..." << std::endl;
+    // Create the header
+    std::ofstream file;
+    file.open("coordinations.csv", std::ios::out | std::ios::trunc);
+    // Write CSV header
+    file << "coordination_id,"
+          << "sim_time_ms,"
+          << "desired_speed_hv,"
+          << "min_lane_speed_hv,"
+          << "min_lane_speed_target,"
+          << "type_hv,"
+          << "type_rv,"
+          << "type_rvahead,"
+          << "speed_hv,"
+          << "speed_rv,"
+          << "speed_rvahead,"
+          << "acc_hv,"
+          << "acc_rv,"
+          << "acc_rvahead,"
+          << "gap_hv_rv,"
+          << "gap_hv_rvahead,"
+          << "rel_speed_hv_rv,"
+          << "rel_speed_hv_rvahead,"
+          << "dec_rv_requested,"
+          << "acc_rvahead_requested,"
+          << "time_rv_requested,"
+          << "time_rvahead_requested,"
+          << "mean_speed_ahead,"
+          << "mean_speed_behind,"
+          << "std_speed_ahead,"
+          << "std_speed_behind,"
+          << "num_vehicles_ahead,"
+          << "num_vehicles_behind,"
+          << "density_target_lane_ahead,"
+          << "density_target_lane_behind,"
+          << "execution_success"
+          << "\n";
+
+    for (auto it = lc_model.begin(); it != lc_model.end(); ++it)
+    {
+        auto coordination_log = it->second.getCoordinationLog();
+        for (auto s = coordination_log.begin(); s != coordination_log.end(); ++s)
+        {
+          file << s->coordination_id               << ","
+            << s->sim_time_ms                   << ","
+            << s->desired_speed_hv              << ","
+            << s->lane_speed_hv                 << ","
+            << s->lane_speed_target             << ","
+            << s->type_hv                       << ","
+            << s->type_rv                       << ","
+            << s->type_rvahead                  << ","
+            << s->speed_hv                      << ","
+            << s->speed_rv                      << ","
+            << s->speed_rvahead                 << ","
+            << s->acc_hv                        << ","
+            << s->acc_rv                        << ","
+            << s->acc_rvahead                   << ","
+            << s->gap_hv_rv                     << ","
+            << s->gap_hv_rvahead                << ","
+            << s->rel_speed_hv_rv               << ","
+            << s->rel_speed_hv_rvahead          << ","
+            << s->dec_rv_requested              << ","
+            << s->acc_rvahead_requested         << ","
+            << s->time_rv_requested             << ","
+            << s->time_rvahead_requested        << ","
+            << s->mean_speed_ahead              << ","
+            << s->mean_speed_behind             << ","
+            << s->std_speed_ahead               << ","
+            << s->std_speed_behind              << ","
+            << s->num_vehicles_ahead            << ","
+            << s->num_vehicles_behind           << ","
+            << s->density_target_lane_ahead     << ","
+            << s->density_target_lane_behind    << ","
+            << (s->execution_success ? 1 : 0) << "\n";
+        }
+    }
+    file.close();
+    std::cout << "Write operation finished" << std::endl;
+  }
+
+  std::cout << "End" << std::endl;
 
   Simulator::Destroy ();
 

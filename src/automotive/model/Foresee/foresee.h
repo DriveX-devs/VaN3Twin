@@ -9,6 +9,7 @@
 // #include "ns3/LDM.h"
 #include "ns3/asn_utils.h"
 #include "ns3/event-id.h"
+#include "ns3/int64x64.h"
 #include "ns3/mcBasicService.h"
 #include "ns3/geonet.h"
 #include <cstdint>
@@ -22,6 +23,7 @@
 #define MIN_DECELERATION -2
 #define MAX_LOOPS 50
 #define NO_SOLUTION 200
+#define MAX_DISTANCE_TRAVELED_TO_COORDINATE 4500
 
 namespace ns3
 {
@@ -45,24 +47,43 @@ public:
   struct IDMParams { double v0, T, s0, a, d, b; };
 
   struct CoordinationLog {
-      // Feature al trigger
+      std::string coordination_id;
+      int64_t sim_time_ms;
+      double desired_speed_hv;
+      double lane_speed_hv;
+      double lane_speed_target;
+      StationType_t type_hv;
+      StationType_t type_rv;
+      StationType_t type_rvahead;
       double gap_hv_rv;
       double gap_hv_rvahead;
-      double speed_hv, speed_rv, speed_rvahead;
+      double speed_hv;
+      double speed_rv;
+      double speed_rvahead;
+      double acc_hv;
+      double acc_rv;
+      double acc_rvahead;
       double rel_speed_hv_rv;       // speed_hv - speed_rv
       double rel_speed_hv_rvahead;  // speed_hv - speed_rvahead
       double dec_rv_requested;
       double acc_rvahead_requested;
-      double time_rv, time_rv_ahead;
-      int density_approx;           // n. veicoli in range
+      double time_rv_requested;
+      double time_rvahead_requested;
+      double mean_speed_ahead;
+      double mean_speed_behind;
+      double std_speed_ahead;
+      double std_speed_behind;
+      int num_vehicles_ahead;
+      int num_vehicles_behind;
+      double density_target_lane_ahead;
+      double density_target_lane_behind;
       // Outcome
-      bool negotiation_success;
       bool execution_success;
   };
 
   foresee() = default;
   ~foresee() = default;
-  IDMParams getIDMParams(StationType type);
+  IDMParams getIDMParams(StationType_t type);
   double idmAcceleration(double v, double v_lead, double gap, double v0,
                           double T, double s0, double a, double b);
   std::tuple<double, double> computeRequiredDeceleration(double speed_leader, double speed_follower,
@@ -78,7 +99,9 @@ public:
   void setLDM (Ptr<LDM> ldm) {m_LDM = ldm;};
   void setTraciAPI (Ptr<TraciClient> traci) {m_traci = traci;};
   void setNumberOfLanes ();
-  void setVerobse() {m_verbose = true;};
+  void setVerbose() {m_verbose = true;};
+  void setRegisterLog() {m_register_log = true;};
+  void setLogFile(std::string log_file);
   void setVDP (VDP* vdp) {m_vdp = vdp;};
   void setManeuverHorizon(int horizon) {m_maneuver_horizon = horizon;};
   void setDesiredSpeed (double speed) {m_desired_speed = speed;};
@@ -95,7 +118,8 @@ public:
   void targetCheckACK();
   void executeManeuver();
   void continueWithConstantSpeed(StationId_t coordinator);
-  void checkLane();
+  void checkLane(int target_lane_id);
+  const std::vector<CoordinationLog>& getCoordinationLog() const { return m_coordination_log; }
 
 private:
   std::string m_vehicle_id;
@@ -141,6 +165,11 @@ private:
   bool m_verbose = false;
   bool m_left_criterion;
   int m_target_lane;
+
+  bool m_register_log = false;
+  std::vector<struct CoordinationLog> m_coordination_log;
+  uint64_t m_coordination_counter = 0;
+  struct CoordinationLog m_coordination_structure;
 };
 }
 
