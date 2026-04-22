@@ -34,7 +34,7 @@
 /*
 TODO List:
 - Spread MCMs during the execution phase (?)
-- Add some informative features about the target lane (mean speed, ecc...)
+- Sometimes vehicles out of the simulation are requested by traci (error with seed = 40 at time 153.51s for veh9)
 */
 
 namespace ns3

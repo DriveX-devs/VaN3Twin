@@ -134,7 +134,6 @@ enum ManeuverID
     DeclineReason_t getMCMResponseDeclineReason() {return m_decline_reason;};
     void setVehicleType(Iso3833VehicleType type) { m_vehicle_type = type; };
     Iso3833VehicleType getVehicleType() { return m_vehicle_type; };
-    double getDesiredSpeed(){return m_desired_speed;};
     void pushSubmaneuverDescription(SubmanoeuvreDescription* item)
     {
       m_submaneuver_description.push_back(item);
@@ -172,7 +171,6 @@ enum ManeuverID
     Iso3833VehicleType m_vehicle_type;
     long m_mcm_response;
     bool m_use_foresee = false;
-    double m_desired_speed;
   };
 
 
