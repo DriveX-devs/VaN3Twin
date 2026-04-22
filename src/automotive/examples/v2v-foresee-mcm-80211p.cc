@@ -86,6 +86,7 @@ int main (int argc, char *argv[])
   double simTime = 2000.0; // Total simulation time (default: 100 seconds)
   bool sumo_gui = false;
   bool store_coordinations_in_csv = true;
+  int seed = 42;
 
   // Set here the path to the SUMO XML files
   std::string sumo_folder = "src/automotive/examples/sumo_files_v2v_foresee/";
@@ -104,6 +105,7 @@ int main (int argc, char *argv[])
   cmd.AddValue ("tx-power", "OBUs transmission power [dBm]", txPower);
   cmd.AddValue ("sim-time", "Total duration of the simulation [s]", simTime);
   cmd.AddValue ("sumo-gui", "Activate SUMO GUI", sumo_gui);
+  cmd.AddValue("seed", "Random seed", seed);
   cmd.Parse (argc, argv);
 
   /* Load the .rou.xml file (SUMO map and scenario) */
@@ -177,7 +179,7 @@ int main (int argc, char *argv[])
   sumoClient->SetAttribute ("PenetrationRate", DoubleValue (1.0));
   sumoClient->SetAttribute ("SumoLogFile", BooleanValue (false));
   sumoClient->SetAttribute ("SumoStepLog", BooleanValue (false));
-  sumoClient->SetAttribute ("SumoSeed", IntegerValue (10));
+  sumoClient->SetAttribute ("SumoSeed", IntegerValue (seed));
   sumoClient->SetAttribute ("SumoWaitForSocket", TimeValue (Seconds (10)));
 
   // Set up a Metricsupervisor
@@ -208,10 +210,11 @@ int main (int argc, char *argv[])
   double max_speed_trucks = avg_speed_trucks * (1.0 + deviation);
 
   // Random number generator
-  const unsigned int SEED = 42;
-  std::mt19937 gen(SEED);
+  std::mt19937 gen(seed);
   std::uniform_real_distribution<double> dist1(min_speed_cars, max_speed_cars);
   std::uniform_real_distribution<double> dist2(min_speed_trucks, max_speed_trucks);
+
+  bool use_foresee = true;
 
   STARTUP_FCN setupNewWifiNode = [&] (std::string vehicleID,TraciClient::StationTypeTraCI_t stationType) -> Ptr<Node>
     {
@@ -262,10 +265,14 @@ int main (int argc, char *argv[])
       lc_model[nodeID].setStartTime(START_TIME);
       lc_model[nodeID].setNegotiationTime(NEGOTIATION_TIME);
       lc_model[nodeID].setVerbose();
+      lc_model[nodeID].setSeed(seed);
       lc_model[nodeID].setRegisterLog();
-      std::string my_type = sumoClient->vehicle.getTypeID (vehicleID);
-
-      lc_model[nodeID].WrapperFORESEEMobilityModel();
+      if (use_foresee)
+      {
+        lc_model[nodeID].WrapperFORESEEMobilityModel(use_foresee);
+        use_foresee = false;
+      }
+      else use_foresee = true;
 
       // Start transmitting CAMs
       // We randomize the instant in time in which the CAM dissemination is going to start
@@ -276,6 +283,12 @@ int main (int argc, char *argv[])
       double desync = ((double)std::rand()/RAND_MAX);
       bs_container->getCABasicService ()->startCamDissemination (desync);
       // bs_container->getMCBasicService()->startMCMDissemination(desync);
+
+      if (true)
+      {
+        std::cout << "\n[CURRENT TIME CHECK]" << std::endl;
+        std::cout << Simulator::Now().GetSeconds() << "s" << std::endl;
+      }
 
       return c.Get(nodeID);
     };
@@ -313,7 +326,7 @@ int main (int argc, char *argv[])
     std::cout << "Writing CSV log after simulation..." << std::endl;
     // Create the header
     std::ofstream file;
-    file.open("coordinations.csv", std::ios::out | std::ios::trunc);
+    file.open("coordinations_seed" + std::to_string(seed) + ".csv", std::ios::out | std::ios::trunc);
     // Write CSV header
     file << "coordination_id,"
           << "sim_time_ms,"
@@ -383,7 +396,7 @@ int main (int argc, char *argv[])
             << s->num_vehicles_behind           << ","
             << s->density_target_lane_ahead     << ","
             << s->density_target_lane_behind    << ","
-            << (s->execution_success ? 1 : 0) << "\n";
+            << s->execution_success             << "\n";
         }
     }
     file.close();

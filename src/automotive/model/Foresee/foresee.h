@@ -78,7 +78,18 @@ public:
       double density_target_lane_ahead;
       double density_target_lane_behind;
       // Outcome
-      bool execution_success;
+      /*
+        0 = failed after negotiation (execution failed)
+        1 = failed during negotiation (refused)
+        2 = success
+      */
+      int execution_success;
+  };
+
+  struct BlockedStruct {
+    bool ahead_maneuver;
+    long time;
+    std::set<StationId_t> participants;
   };
 
   foresee() = default;
@@ -92,7 +103,7 @@ public:
   std::tuple<double, double> computeRequiredAcceleration(double speed_leader, double speed_follower,
                                       double current_gap, IDMParams p,
                                       double dt = 0.1, double horizon = 5.0);
-  void WrapperFORESEEMobilityModel();
+  void WrapperFORESEEMobilityModel(bool start_foresee);
   void FORESEEMobilityModel();
   void setStationType(StationType_t type) {m_station_type = type;};
   void setNode(Ptr<Node> node) {m_node = node;};
@@ -102,6 +113,7 @@ public:
   void setVerbose() {m_verbose = true;};
   void setRegisterLog() {m_register_log = true;};
   void setLogFile(std::string log_file);
+  void setSeed(int seed) {m_seed = seed;};
   void setVDP (VDP* vdp) {m_vdp = vdp;};
   void setManeuverHorizon(int horizon) {m_maneuver_horizon = horizon;};
   void setDesiredSpeed (double speed) {m_desired_speed = speed;};
@@ -136,7 +148,7 @@ private:
   int m_num_lanes = 0;
   int m_time_to_lc = 0;
 
-  std::unordered_map<StationId_t, long> m_blocked_by_other_coordinations;
+  std::unordered_map<StationId_t, struct BlockedStruct> m_blocked_by_other_coordinations; 
   double m_ca_range;
   Ptr<MCBasicService> m_mcs_ptr;
   int m_start_time;
@@ -165,11 +177,15 @@ private:
   bool m_verbose = false;
   bool m_left_criterion;
   int m_target_lane;
+  int m_seed;
 
   bool m_register_log = false;
   std::vector<struct CoordinationLog> m_coordination_log;
   uint64_t m_coordination_counter = 0;
   struct CoordinationLog m_coordination_structure;
+
+  std::mt19937 m_gen;
+  std::uniform_real_distribution<double> m_dist{1.0, 5.0};
 };
 }
 
