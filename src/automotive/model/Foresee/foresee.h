@@ -42,6 +42,7 @@ public:
     bool accepted;
     double acceleration;
     double time;
+    DeclineReason_t decline_reason;
   } Strategy;
 
   struct IDMParams { double v0, T, s0, a, d, b; };

@@ -474,6 +474,7 @@ namespace ns3
        else
          {
            asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.manouevreResponse, ManouevreResponse_decline);
+           asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.declineReason, specification->getMCMResponseDeclineReason());
          }
        }
     else if (specification->getTerminatorContainer())

@@ -130,9 +130,10 @@ enum ManeuverID
     long getMCMResponse() { return m_mcm_response; };
     void setManeuverID(ManeuverID id) { m_maneuver_id = id; };
     ManeuverID getManeuverID() { return m_maneuver_id; };
+    void setMCMResponseDeclineReason(DeclineReason_t reason) {m_decline_reason = reason;};
+    DeclineReason_t getMCMResponseDeclineReason() {return m_decline_reason;};
     void setVehicleType(Iso3833VehicleType type) { m_vehicle_type = type; };
     Iso3833VehicleType getVehicleType() { return m_vehicle_type; };
-    void setDesiredSpeed(double speed) {m_desired_speed = speed;};
     double getDesiredSpeed(){return m_desired_speed;};
     void pushSubmaneuverDescription(SubmanoeuvreDescription* item)
     {
@@ -166,11 +167,12 @@ enum ManeuverID
     bool m_vehicle_terminator_container;
     std::vector<SubmanoeuvreDescription*> m_submaneuver_description; // For Vehicle Maneuver Container
     std::vector<ManoeuvreAdvice*> m_maneuver_advice; // For Vehicle Maneuver Container and Vehicle Advice Container
+    DeclineReason_t m_decline_reason;
 
     Iso3833VehicleType m_vehicle_type;
     long m_mcm_response;
-     bool m_use_foresee = false;
-     double m_desired_speed;
+    bool m_use_foresee = false;
+    double m_desired_speed;
   };
 
 

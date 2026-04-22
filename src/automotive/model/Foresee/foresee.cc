@@ -3,6 +3,7 @@
 //
 
 #include "foresee.h"
+#include "ns3/DeclineReason.h"
 #include "ns3/ForeseeIndication.h"
 #include "ns3/LongitudinalAcceleration.h"
 #include "ns3/asn_utils.h"
@@ -774,13 +775,14 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
   if (!m_coordinator || !m_busy_with_maneuver) return;
   bool its_ok = true;
   std::string veh_refused;
+  DeclineReason_t reason;
   std::vector<double> times;
   std::vector<std::string> coordinators;
   std::vector<double> accelerations;
   for (auto it : m_acceptance_map)
     {
       // Found an actor that doesn't want to coordinate
-      if(!it.second.accepted) {its_ok = false; veh_refused = "veh" + std::to_string(it.first); break;}
+      if(!it.second.accepted) {its_ok = false; veh_refused = "veh" + std::to_string(it.first); reason = it.second.decline_reason; break;}
       times.push_back(it.second.time);
       coordinators.push_back("veh" + std::to_string(it.first));
       accelerations.push_back(it.second.acceleration);
@@ -940,13 +942,23 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
     {
       if (m_verbose)
       {
-        std::cout << "\n[NEGOTIATION FAILED]" << std::endl;
-        std::cout << "Vehicle " << m_vehicle_id << " will not change lane due to a refusal from " << veh_refused << std::endl;
+        if (reason == DeclineReason_agreementSeekingUnwanted) {
+          std::cout << "\n[NEGOTIATION FAILED]" << std::endl;
+          std::cout << "Vehicle " << m_vehicle_id << " will not change lane due to a refusal from " << veh_refused << " (not convenient)" << std::endl;
+        }
+        else {
+          std::cout << "\n[NEGOTIATION FAILED]" << std::endl;
+          std::cout << "Vehicle " << m_vehicle_id << " will not change lane due to a refusal from " << veh_refused << " (busy with another maneuver)" << std::endl;
+        }
       }
       if (m_register_log)
       {
-        m_coordination_structure.execution_success = 1;
-        m_coordination_log.push_back(m_coordination_structure);
+        if (reason == DeclineReason_agreementSeekingUnwanted)
+        {
+          // Register only refusals due to acceleration/deceleration not convenient, not the other ones
+          m_coordination_structure.execution_success = 1;
+          m_coordination_log.push_back(m_coordination_structure);
+        }
       }
       // Cancel the maneuver
       Ptr<MCSpecification> specification = Create<MCSpecification>();
@@ -1077,6 +1089,7 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
       if (advice_container)
         {
           bool accept = false;
+          bool impossible = false;
           bool msg_for_me = false;
           int my_id = std::stol(m_vehicle_id.substr(3));
           int adv_size = asn1cpp::sequenceof::getSize(adc);
@@ -1117,6 +1130,7 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
                       double future_speed = current_speed + acc_value * time_s;
                       if ((future_speed - m_desired_speed) > DOUBLE_TOLERANCE)
                       {
+                        impossible = true;
                         if (m_verbose)
                         {
                           std::cout << "\n[MANEUVER REFUSED]" <<std::endl;
@@ -1169,6 +1183,8 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
               specification->setMCMCost(0);
               specification->setMCMGoal(ManoeuvreCooperationGoal_localTrafficManagement);
               specification->setMCMType(McmType::McmType_response);
+              if (impossible) specification->setMCMResponseDeclineReason(DeclineReason_agreementSeekingUnwanted); // Acceleration/Deceleration not convenient
+              else specification->setMCMResponseDeclineReason(DeclineReason_unableToComform); // Busy with another maneuver
               double value = m_dist(m_gen);
               m_tx_mcm_event = Simulator::Schedule(MilliSeconds(value), &txMCM, m_mcs_ptr, specification);
             }
@@ -1250,7 +1266,9 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
                 // In case the vehicle has already accepted, the rejection is not for us
                 if (m_acceptance_map[sender].accepted != true)
                 {
+                  DeclineReason_t reason = asn1cpp::getField(resp.declineReason, DeclineReason_t);
                   m_acceptance_map[sender].accepted = false;
+                  m_acceptance_map[sender].decline_reason = reason;
                   if (m_verbose)
                   {
                     std::cout << "\n[REFUSAL RECEIVED]" << std::endl;
