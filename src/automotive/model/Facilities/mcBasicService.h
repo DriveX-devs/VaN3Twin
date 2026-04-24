@@ -129,6 +129,8 @@ enum ManeuverID
     void setMCMResponse(long response) { m_mcm_response = response; };
     long getMCMResponse() { return m_mcm_response; };
     void setManeuverID(ManeuverID id) { m_maneuver_id = id; };
+    void setCoordinatorID(StationId_t coordinator) { m_coordinator_id = coordinator; };
+    StationId_t getCoordinatorID() { return m_coordinator_id; };
     ManeuverID getManeuverID() { return m_maneuver_id; };
     void setMCMResponseDeclineReason(DeclineReason_t reason) {m_decline_reason = reason;};
     DeclineReason_t getMCMResponseDeclineReason() {return m_decline_reason;};
@@ -167,6 +169,7 @@ enum ManeuverID
     std::vector<SubmanoeuvreDescription*> m_submaneuver_description; // For Vehicle Maneuver Container
     std::vector<ManoeuvreAdvice*> m_maneuver_advice; // For Vehicle Maneuver Container and Vehicle Advice Container
     DeclineReason_t m_decline_reason;
+    StationId_t m_coordinator_id;
 
     Iso3833VehicleType m_vehicle_type;
     long m_mcm_response;

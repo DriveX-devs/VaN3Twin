@@ -19,6 +19,7 @@
  */
 
 
+#include <string>
 #define HORIZON_TIME 8000
 #define NEGOTIATION_TIME 1000
 #define DECELERATION_TIME 1000
@@ -54,7 +55,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("V2VSimpleMCMExchange80211p");
+NS_LOG_COMPONENT_DEFINE ("V2VFORESEEMCM80211p");
 
 // ******* DEFINE HERE ANY LOCAL GLOBAL VARIABLE, ACCESSIBLE FROM ANY FUNCTION IN THIS FILE *******
 // Variables defined here should always be "static"
@@ -79,6 +80,8 @@ int main (int argc, char *argv[])
   int up=0;
   int interfering_up=0;
   bool verbose = false; // Set to true to get a lot of verbose output from the IEEE 802.11p PHY model (leave this to false)
+  bool verbose_foresee = false;
+  bool register_log = false;
   int numberOfNodes; // Total number of vehicles, automatically filled in by reading the XML file
   double m_baseline_prr = 150.0; // PRR baseline value (default: 150 m)
   int txPower = 33.0; // IEEE 802.11p transmission power in dBm (default: 23 dBm)
@@ -87,6 +90,7 @@ int main (int argc, char *argv[])
   bool sumo_gui = false;
   bool store_coordinations_in_csv = true;
   int seed = 42;
+  int threads = 20;
 
   // Set here the path to the SUMO XML files
   std::string sumo_folder = "src/automotive/examples/sumo_files_v2v_foresee/";
@@ -99,6 +103,8 @@ int main (int argc, char *argv[])
   // Syntax to add new options: cmd.addValue (<option>,<brief description>,<destination variable>)
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("verbose", "turn on all WifiNetDevice log components", verbose);
+  cmd.AddValue ("verbose-foresee", "turn on all FORESEE log components", verbose_foresee);
+  cmd.AddValue ("register-log-foresee", "turn on FORESEE dataset collection", register_log);
   cmd.AddValue ("userpriority","EDCA User Priority for the ETSI messages",up);
   cmd.AddValue ("interfering-userpriority","User Priority for interfering traffic (default: 0, i.e., AC_BE)",interfering_up);
   cmd.AddValue ("baseline", "Baseline for PRR calculation", m_baseline_prr);
@@ -181,7 +187,8 @@ int main (int argc, char *argv[])
   sumoClient->SetAttribute ("SumoStepLog", BooleanValue (false));
   sumoClient->SetAttribute ("SumoSeed", IntegerValue (seed));
   sumoClient->SetAttribute ("SumoWaitForSocket", TimeValue (Seconds (10)));
-
+  sumoClient->SetAttribute ("SumoAdditionalCmdOptions", StringValue("--threads " + std::to_string(threads)));
+  
   // Set up a Metricsupervisor
   // This module enables a trasparent and seamless collection of one-way latency (in ms) and PRR metrics
   Ptr<MetricSupervisor> metSup = NULL;
@@ -264,9 +271,9 @@ int main (int argc, char *argv[])
       lc_model[nodeID].addMCMRxCallback ();
       lc_model[nodeID].setStartTime(START_TIME);
       lc_model[nodeID].setNegotiationTime(NEGOTIATION_TIME);
-      lc_model[nodeID].setVerbose();
+      lc_model[nodeID].setVerbose(verbose_foresee);
       lc_model[nodeID].setSeed(seed);
-      lc_model[nodeID].setRegisterLog();
+      if (register_log) lc_model[nodeID].setRegisterLog();
       if (use_foresee)
       {
         lc_model[nodeID].WrapperFORESEEMobilityModel(use_foresee);
@@ -284,7 +291,7 @@ int main (int argc, char *argv[])
       bs_container->getCABasicService ()->startCamDissemination (desync);
       // bs_container->getMCBasicService()->startMCMDissemination(desync);
 
-      if (true)
+      if (verbose_foresee)
       {
         std::cout << "\n[CURRENT TIME CHECK]" << std::endl;
         std::cout << Simulator::Now().GetSeconds() << "s" << std::endl;
@@ -295,7 +302,7 @@ int main (int argc, char *argv[])
 
   // Important: what you write here is called every time a node exits the simulation in SUMO
   // You can safely keep this function as it is, and ignore it
-  SHUTDOWN_FCN shutdownWifiNode = [] (Ptr<Node> exNode, std::string vehicleID)
+  SHUTDOWN_FCN shutdownWifiNode = [&] (Ptr<Node> exNode, std::string vehicleID)
     {
       /* Set position outside communication range */
       Ptr<ConstantPositionMobilityModel> mob = exNode->GetObject<ConstantPositionMobilityModel>();
@@ -306,6 +313,14 @@ int main (int argc, char *argv[])
       // We need to get the right Ptr<BSContainer> based on the station ID (not the nodeID used
       // as index for the nodeContainer), so we don't use "-1" to compute "intVehicleID" here
       unsigned long intVehicleID = std::stol(vehicleID.substr (3));
+      long nodeID = intVehicleID - 1;
+      lc_model[nodeID].deleteEvents();
+
+      if (verbose_foresee)
+      {
+        std::cout << "\n[VEHICLE ARRIVED]" << std::endl;
+        std::cout << "Veh" << intVehicleID << " at " << Simulator::Now().GetSeconds() << "s" << std::endl;
+      }
 
       Ptr<BSContainer> bsc = basicServices.get(intVehicleID);
       bsc->cleanup();

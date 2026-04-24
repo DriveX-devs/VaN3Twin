@@ -23,7 +23,7 @@
 #define MIN_DECELERATION -2
 #define MAX_LOOPS 50
 #define NO_SOLUTION 200
-#define MAX_DISTANCE_TRAVELED_TO_COORDINATE 4500
+#define MAX_DISTANCE_TRAVELED_TO_COORDINATE 4850
 
 namespace ns3
 {
@@ -106,12 +106,13 @@ public:
                                       double dt = 0.1, double horizon = 5.0);
   void WrapperFORESEEMobilityModel(bool start_foresee);
   void FORESEEMobilityModel();
+  void deleteEvents();
   void setStationType(StationType_t type) {m_station_type = type;};
   void setNode(Ptr<Node> node) {m_node = node;};
   void setLDM (Ptr<LDM> ldm) {m_LDM = ldm;};
   void setTraciAPI (Ptr<TraciClient> traci) {m_traci = traci;};
   void setNumberOfLanes ();
-  void setVerbose() {m_verbose = true;};
+  void setVerbose(bool verbose) {m_verbose = verbose;};
   void setRegisterLog() {m_register_log = true;};
   void setLogFile(std::string log_file);
   void setSeed(int seed) {m_seed = seed;};

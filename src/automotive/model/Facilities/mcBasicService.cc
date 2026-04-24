@@ -467,6 +467,7 @@ namespace ns3
     else if (specification->getResponseContainer())
      {
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_responseContainer);
+       asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.coordinatorID, specification->getCoordinatorID());
        if (specification->getMCMResponse() == 0)
          {
           asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.manouevreResponse, ManouevreResponse_accept);
