@@ -90,7 +90,7 @@ int main (int argc, char *argv[])
   bool sumo_gui = false;
   bool store_coordinations_in_csv = true;
   int seed = 42;
-  int threads = 20;
+  int threads = 7;
 
   // Set here the path to the SUMO XML files
   std::string sumo_folder = "src/automotive/examples/sumo_files_v2v_foresee/";
