@@ -80,7 +80,7 @@ int main (int argc, char *argv[])
   int up=0;
   int interfering_up=0;
   bool verbose = false; // Set to true to get a lot of verbose output from the IEEE 802.11p PHY model (leave this to false)
-  bool verbose_foresee = false;
+  bool verbose_foresee = true;
   bool register_log = false;
   int numberOfNodes; // Total number of vehicles, automatically filled in by reading the XML file
   double m_baseline_prr = 150.0; // PRR baseline value (default: 150 m)

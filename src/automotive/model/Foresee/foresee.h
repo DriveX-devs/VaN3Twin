@@ -132,6 +132,8 @@ public:
   void targetCheckACK();
   void executeManeuver();
   void continueWithConstantSpeed(StationId_t coordinator);
+  void targetWatchdog(StationId_t coordinator);
+  void cleanupBlockedCoordinations();
   void checkLane(int target_lane_id);
   const std::vector<CoordinationLog>& getCoordinationLog() const { return m_coordination_log; }
 
@@ -141,7 +143,8 @@ private:
   Ptr<LDM> m_LDM;
   Ptr<TraciClient> m_traci;
   VDP* m_vdp;
-  int m_FORESEE_check_ms = 1000;
+  int m_FORESEE_check_ms = 5000;
+  int m_cleanup_ms = 1000;
   int m_max_reception_mcs = 1000;
   double m_desired_speed = 0;
   double m_delta_ls = 0.5;
