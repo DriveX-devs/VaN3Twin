@@ -1608,6 +1608,7 @@ set(header_files
         model/utilities/csv-utils.h
         model/Facilities/mcBasicService.h
         model/Foresee/foresee.h
+        model/Foresee/desired_speed_tag.h
 
         model/Facilities/signalInfoUtils.h
         model/Security/security.h

@@ -208,6 +208,8 @@ namespace ns3
 
     uint64_t getWannabeSent() {return m_wannabe_sent;}
 
+    void setDesiredSpeed(double desired_speed) {m_desired_speed = desired_speed;}
+
   private:
     const size_t m_MaxPHLength = 23;
 
@@ -232,7 +234,7 @@ namespace ns3
      * @brief Update the LDM with the received CAM message information
      * @param decodedCAM
      */
-    void vLDM_handler(asn1cpp::Seq<CAM> decodedCAM, GNAddress gn_addr);
+    void vLDM_handler(asn1cpp::Seq<CAM> decodedCAM, GNAddress gn_addr, double desired_speed);
 
     // std::function<void(CAM_t *, Address)> m_CAReceiveCallback;
     std::function<void(asn1cpp::Seq<CAM>, Address)> m_CAReceiveCallback;
@@ -318,6 +320,8 @@ namespace ns3
     long m_T_next_dcc = -1;
 
     uint64_t m_wannabe_sent = 0;
+
+    double m_desired_speed = 0.0;
   };
 }
 

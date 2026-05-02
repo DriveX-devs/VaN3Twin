@@ -94,6 +94,9 @@ namespace ns3 {
 
           OptionalDataItem<std::vector<long>> associatedCVs;
           OptionalDataItem<long> perceivedBy;
+
+          // Patch for FORESEE Mobility Model
+          OptionalDataItem<double> desired_speed;
   } vehicleData_t;
 
   /**

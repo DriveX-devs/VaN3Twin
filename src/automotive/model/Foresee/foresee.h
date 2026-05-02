@@ -45,7 +45,7 @@ public:
     DeclineReason_t decline_reason;
   } Strategy;
 
-  struct IDMParams { double v0, T, s0, a, d, b; };
+  struct IDMParams { double v0, T, s0, a, b, d; };
 
   struct CoordinationLog {
       std::string coordination_id;
@@ -88,16 +88,15 @@ public:
   };
 
   struct BlockedStruct {
-    bool ahead_maneuver;
     long time;
     std::set<StationId_t> participants;
   };
 
   foresee() = default;
   ~foresee() = default;
-  IDMParams getIDMParams(StationType_t type);
+  IDMParams getIDMParams(StationType_t type, double desired_speed);
   double idmAcceleration(double v, double v_lead, double gap, double v0,
-                          double T, double s0, double a, double b);
+                          double T, double s0, double a, double b, double d);
   std::tuple<double, double> computeRequiredDeceleration(double speed_leader, double speed_follower,
                                                double current_gap, IDMParams p,
                                                double dt = 0.1, double horizon = 5.0);

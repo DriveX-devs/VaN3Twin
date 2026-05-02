@@ -19,6 +19,7 @@
  */
 
 
+#include "ns3/asn_utils.h"
 #include <string>
 #define HORIZON_TIME 8000
 #define NEGOTIATION_TIME 1000
@@ -207,19 +208,59 @@ int main (int argc, char *argv[])
 
   std::cout << "Starting simulation... " << std::endl;
 
-  double avg_speed_cars = 33.3;  // m/s
-  double avg_speed_trucks = 22.2;  // m/s
-  double deviation = 0.2;   // 20%
+  // deviation per vehicle class (realism: trucks vary less than cars)
+  constexpr double car_dev       = 0.25;
+  constexpr double light_trk_dev = 0.20;
+  constexpr double heavy_trk_dev = 0.15;
+  constexpr double moto_dev      = 0.30;
+  constexpr double bus_dev       = 0.15;
 
-  double min_speed_cars = avg_speed_cars * (1.0 - deviation);
-  double min_speed_trucks = avg_speed_trucks * (1.0 - deviation);
-  double max_speed_cars = avg_speed_cars * (1.0 + deviation);
-  double max_speed_trucks = avg_speed_trucks * (1.0 + deviation);
+  // =====================
+  // AVERAGE SPEEDS (m/s)
+  // =====================
+
+  // Passenger car (~120 km/h)
+  constexpr double avg_speed_car0 = 33.3;
+  // Light truck (~100 km/h)
+  constexpr double avg_speed_light_truck = 27.7;
+  // Heavy truck (~80 km/h)
+  constexpr double avg_speed_heavy_truck = 22.2;
+  // Motorcycle (~130 km/h, more variable)
+  constexpr double avg_speed_motorcycle = 36.1;
+  // Bus (~90 km/h)
+  constexpr double avg_speed_bus = 25;
+
+  // =====================
+  // SPEED RANGES
+  // =====================
+
+  // Car0
+  constexpr double min_speed_car0 = avg_speed_car0 * (1.0 - car_dev);
+  constexpr double max_speed_car0 = avg_speed_car0 * (1.0 + car_dev);
+
+  // Light truck
+  constexpr double min_speed_light_truck = avg_speed_light_truck * (1.0 - light_trk_dev);
+  constexpr double max_speed_light_truck = avg_speed_light_truck * (1.0 + light_trk_dev);
+
+  // Heavy truck
+  constexpr double min_speed_heavy_truck = avg_speed_heavy_truck * (1.0 - heavy_trk_dev);
+  constexpr double max_speed_heavy_truck = avg_speed_heavy_truck * (1.0 + heavy_trk_dev);
+
+  // Motorcycle
+  constexpr double min_speed_motorcycle = avg_speed_motorcycle * (1.0 - moto_dev);
+  constexpr double max_speed_motorcycle = avg_speed_motorcycle * (1.0 + moto_dev);
+
+  // Bus
+  constexpr double min_speed_bus = avg_speed_bus * (1.0 - bus_dev);
+  constexpr double max_speed_bus = avg_speed_bus * (1.0 + bus_dev);
 
   // Random number generator
   std::mt19937 gen(seed);
-  std::uniform_real_distribution<double> dist1(min_speed_cars, max_speed_cars);
-  std::uniform_real_distribution<double> dist2(min_speed_trucks, max_speed_trucks);
+  std::uniform_real_distribution<double> dist_car0(min_speed_car0, max_speed_car0);
+  std::uniform_real_distribution<double> dist_light_truck(min_speed_light_truck, max_speed_light_truck);
+  std::uniform_real_distribution<double> dist_heavy_truck(min_speed_heavy_truck, max_speed_heavy_truck);
+  std::uniform_real_distribution<double> dist_motorcycle(min_speed_motorcycle, max_speed_motorcycle);
+  std::uniform_real_distribution<double> dist_bus(min_speed_bus, max_speed_bus);
 
   bool use_foresee = true;
 
@@ -229,7 +270,39 @@ int main (int argc, char *argv[])
 
       std::string type = sumoClient->vehicle.getTypeID (vehicleID);
 
-      double speed = type == "Car0" ? dist1(gen) : dist2(gen);
+      // Differentiate between vehicle types to compute speed and station type
+      double speed;
+      StationType_t st_type = StationType_passengerCar;
+      if (type == "Car0")
+      {
+        speed = dist_car0(gen);
+        st_type = StationType_passengerCar;
+      }
+      else if (type == "LightTruck" || type == "light_truck")
+      {
+        speed = dist_light_truck(gen);
+        st_type = StationType_lightTruck;
+      }
+      else if (type == "HeavyTruck" || type == "heavy_truck")
+      {
+        speed = dist_heavy_truck(gen);
+        st_type = StationType_heavyTruck;
+      }
+      else if (type == "Motorcycle" || type == "motorcycle")
+      {
+        speed = dist_motorcycle(gen);
+        st_type = StationType_motorcycle;
+      }
+      else if (type == "Bus" || type == "bus")
+      {
+        speed = dist_bus(gen);
+        st_type = StationType_bus;
+      }
+      else
+      {
+        speed = dist_car0(gen);
+        st_type = StationType_passengerCar;
+      }
 
       // Set the desired speed
       sumoClient->vehicle.setMaxSpeed(vehicleID, speed);
@@ -241,7 +314,6 @@ int main (int argc, char *argv[])
       sock=GeoNet::createGNPacketSocket(c.Get(nodeID));
       // Set the proper AC, through the specified UP
       sock->SetPriority (up);
-      StationType_t st_type = type == "Car0" ? StationType_passengerCar : StationType_lightTruck;
       Ptr<BSContainer> bs_container = CreateObject<BSContainer>(std::stol(vehicleID.substr(3)),st_type,sumoClient,false,sock);
       // Setup the PRRsupervisor inside the BSContainer, to make each vehicle collect latency and PRR metrics
       bs_container->linkMetricSupervisor(metSup);
@@ -253,6 +325,7 @@ int main (int argc, char *argv[])
       // bs_container->addMCMRxCallback (std::bind(&receiveMCM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
       bs_container->addCAMRxCallback (std::bind(&receiveCAM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
       bs_container->setupContainer(true,false,false,false,true,false);
+      bs_container->getCABasicService()->setDesiredSpeed(speed);
 
       // Store the container for this vehicle inside a local global BSMap, i.e., a structure (similar to a hash table) which allows you to easily
       // retrieve the right BSContainer given a vehicle ID
@@ -277,7 +350,7 @@ int main (int argc, char *argv[])
       if (use_foresee)
       {
         lc_model[nodeID].WrapperFORESEEMobilityModel(use_foresee);
-        use_foresee = false;
+        use_foresee = true;
       }
       else use_foresee = true;
 

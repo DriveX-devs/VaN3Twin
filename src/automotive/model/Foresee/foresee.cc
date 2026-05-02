@@ -46,27 +46,41 @@ void txMCM(Ptr<MCBasicService> mc, Ptr<MCSpecification> specs)
   mc->generateAndEncodeMCM(specs);
 }
 
-foresee::IDMParams foresee::getIDMParams(StationType_t type) {
-  if (type == StationType::StationType_passengerCar)
+foresee::IDMParams foresee::getIDMParams(StationType_t type, double desired_speed) {
+  switch (type)
   {
-    return {m_desired_speed, 0.8, 2.0, 1.5, 2.0, 1.5};
-  } 
-  else if (type == StationType::StationType_lightTruck)
-  {
-    return {m_desired_speed, 1.0, 2.0, 1.5, 2.0, 2.0};
-  }
-  else
-  {
-    return {m_desired_speed, 1.0, 2.0, 1.5, 2.0, 2.0};
+    case StationType::StationType_passengerCar:
+
+      return {desired_speed, 0.8, 2.0, 2.5, 3.0, 4.0};
+
+    case StationType::StationType_lightTruck:
+      return {desired_speed, 1.1, 2.0, 1.5, 2.5, 4.0};
+
+    // New types (consistent extensions)
+    case StationType::StationType_heavyTruck:
+      // Slower reaction, weaker accel, more cautious braking
+      return {desired_speed, 1.3, 2.0, 1.0, 2.5, 4.0};
+
+    case StationType::StationType_motorcycle:
+      // Fast reaction, high accel, small gaps
+      return {desired_speed, 0.6, 2.0, 3.0, 3.5, 4.0};
+
+    case StationType::StationType_bus:
+      // Heavy, smooth driving, large spacing
+      return {desired_speed, 1.3, 2.0, 1.5, 2.5, 4.0};
+
+    default:
+      // Fallback: behave like a normal passenger car
+      return {desired_speed, 0.8, 2.0, 2.5, 3.0, 4.0};
   }
 }
 
 double foresee::idmAcceleration(double v, double v_lead, double gap, double v0,
-                          double T, double s0, double a, double b) {
+                          double T, double s0, double a, double b, double d) {
   // Desired minimum gap
   double s_star = s0 + std::max(0.0, v * T + (v * (v - v_lead)) / (2.0 * std::sqrt(a * b)));
   // IDM acceleration
-  return a * (1.0 - std::pow(v / v0, 4) - std::pow(s_star / std::max(gap, 0.1), 2));
+  return a * (1.0 - std::pow(v / v0, d) - std::pow(s_star / std::max(gap, 0.1), 2));
 }
 
 std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_leader, double speed_follower,
@@ -90,7 +104,7 @@ std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_lea
         {
           // Follower IDM behind the leader
           double a_f = idmAcceleration(v_f, v_l, gap,
-                                        p.v0, p.T, p.s0, p.a, p.b);
+                                        p.v0, p.T, p.s0, p.a, p.b, p.d);
           if (a_f >= MIN_DECELERATION)
             {
               a_f_final = a_f;
@@ -105,14 +119,14 @@ std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_lea
       // Check if at end of horizon ego can merge comfortably
       if(a_f_final >= MIN_DECELERATION)
         {
-          hi = a_candidate; // enough, try less
+          hi = a_candidate; // enough, try less acceleration (less positive)
         }
       else
         {
-          lo = a_candidate; // not enough, need more
+          lo = a_candidate; // not enough, need more acceleration
         }
     }
-  if(std::abs(hi - p.a) < 0.01)
+  if(std::abs(hi - p.a) < 0.1)
     return {NO_SOLUTION, -1};
   if (hi < 0.1) hi = 0.0;
   return {hi, delta_t}; // minimum acceleration RVAhead needs to apply
@@ -123,7 +137,7 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
                                       double dt, double horizon)
 {
   // Binary search on deceleration of follower in [0, a_max]
-  double lo = -p.d;
+  double lo = -p.b;
   double hi = 0.0; // max deceleration
   double delta_t = -1;
   for(int iter = 0; iter < MAX_LOOPS; iter++)
@@ -139,7 +153,7 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
         {
           // Follower IDM behind the leader
           double a_f = idmAcceleration(v_f, v_l, gap,
-                                        p.v0, p.T, p.s0, p.a, p.b);
+                                        p.v0, p.T, p.s0, p.a, p.b, p.d);
           if (a_f >= MIN_DECELERATION)
             {
               a_f_final = a_f;
@@ -147,7 +161,7 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
               break;
             }
           // Follower decelerates with candidate deceleration
-          v_f = v_f + d_candidate * dt;
+          v_f = std::max(0.0, v_f + d_candidate * dt);
           // Update gap
           gap += (v_l - v_f) * dt;
         }
@@ -161,9 +175,9 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
           hi = d_candidate; // not enough, need more deceleration (more negative)
         }
     }
-  if(std::abs(lo) - p.d < 0.01)
+  if(lo <= -p.b + 0.01)
     return {NO_SOLUTION, -1};
-  if (lo < 0.1) lo = 0.0;
+  if (lo > -0.1) lo = 0.0;
   return {lo, delta_t}; // minimum deceleration
 }
 
@@ -225,10 +239,6 @@ foresee::WrapperFORESEEMobilityModel(bool start_foresee)
   if (m_node == nullptr)
     {
       NS_FATAL_ERROR ("FORESEE Mobility Model needs the pointer of the vehicle node.");
-    }
-  if (m_station_type != StationType_passengerCar && m_station_type != StationType_lightTruck)
-    {
-      NS_FATAL_ERROR ("FORESEE Mobility Model needs the station type ['StationType_passengerCar', 'StationType_lightTruck'].");
     }
   if (m_MCMReceiveCallbackExtended == nullptr)
     {
@@ -298,7 +308,7 @@ foresee::FORESEEMobilityModel ()
         }
         else
         {
-          if (it->second.ahead_maneuver) found_behind = true;
+          found_behind = true;
           found_participants.insert(it->second.participants.begin(), it->second.participants.end());
           ++it;
         }
@@ -449,9 +459,11 @@ foresee::FORESEEMobilityModel ()
         double x_RV, x_RVAhead;
         double y_RV, y_RVAhead;
         double speed_RV, speed_RVAhead;
+        double desired_speed_RV, desired_speed_RVAhead;
         double acc_RV, acc_RVAhead;
         double min_dist_rv_ahead = 10000;
         std::vector<vehicleData_t> ahead_vehicles;
+        std::vector<vehicleData_t> behind_vehicles;
         double min_dist_rv = 10000;
         // Target lane
         int target_lane = left_criterion ? my_lane.getData() - 1 : my_lane.getData() + 1;
@@ -482,10 +494,11 @@ foresee::FORESEEMobilityModel ()
                       x_RVAhead = pos.x;
                       y_RVAhead = pos.y;
                       speed_RVAhead = it->vehData.speed_ms;
+                      desired_speed_RVAhead = it->vehData.desired_speed.getData();
                       acc_RVAhead = it->vehData.accel_msquares;
                       RVAhead_type = static_cast<StationType_t> (it->vehData.stationType);
                     }
-                    if (dist <= m_ca_range)
+                    if (dist <= 2 * m_ca_range)
                     {
                       // Select the vehicle for the group of the ahead vehicles
                       ahead_vehicles.push_back(it->vehData);
@@ -510,8 +523,14 @@ foresee::FORESEEMobilityModel ()
                             x_RV = pos.x;
                             y_RV = pos.y;
                             speed_RV = it->vehData.speed_ms;
+                            desired_speed_RV = it->vehData.desired_speed.getData();
                             acc_RV = it->vehData.accel_msquares;
                             RV_type = static_cast<StationType_t> (it->vehData.stationType);
+                          }
+                        if (dist <= m_ca_range)
+                          {
+                            // Select the vehicle for the group of the ahead vehicles
+                            behind_vehicles.push_back(it->vehData);
                           }
                       }
                   }
@@ -554,11 +573,11 @@ foresee::FORESEEMobilityModel ()
 
             if(RVAhead_id >= 0)
               {
-                IDMParams ego_params = getIDMParams(static_cast<StationType> (m_station_type));
                 // Acceleration HV would experience with RVAhead as new leader
+                IDMParams ego_params = getIDMParams(static_cast<StationType> (m_station_type), m_desired_speed);
                 double a_ego_after = idmAcceleration(my_speed, speed_RVAhead, min_dist_rv_ahead,
                                                       ego_params.v0, ego_params.T,
-                                                      ego_params.s0, ego_params.a, ego_params.b);
+                                                      ego_params.s0, ego_params.a, ego_params.b, ego_params.d);
                 if(a_ego_after < MIN_DECELERATION) possible_hv = false;
                 if(!possible_hv)
                   {
@@ -579,16 +598,16 @@ foresee::FORESEEMobilityModel ()
 
             if(RV_id >= 0)
               {
-                IDMParams params = getIDMParams(RV_type);
-                // Acceleration HV would experience with RVAhead as new leader
+                // Acceleration RV would experience with HV as new leader
+                IDMParams params = getIDMParams(RV_type, desired_speed_RV);
                 double a_ego_after = idmAcceleration(speed_RV, my_speed, min_dist_rv,
                                                       params.v0, params.T,
-                                                      params.s0, params.a, params.b);
+                                                      params.s0, params.a, params.b, params.d);
                 if(a_ego_after < MIN_DECELERATION) possible_rv = false;
                 if(!possible_rv)
                   {
-                    // It is needed to open the gap between RVAhead and HV
-                    // RVAhead needs to accelerate
+                    // It is needed to open the gap between RV and HV
+                    // RV needs to decelerate
                     std::tuple<double, double> tuple = computeRequiredDeceleration (my_speed, speed_RV, min_dist_rv, params, 0.1, round(m_maneuver_horizon / 1e3));
                     double a = std::get<0>(tuple);
                     double time = std::get<1>(tuple);
@@ -614,6 +633,7 @@ foresee::FORESEEMobilityModel ()
               if (m_register_log)
               {
                 // Register all the information for the csv
+                m_coordination_structure.execution_success = 0;
                 m_coordination_structure.coordination_id = m_vehicle_id + "_" + std::to_string(m_coordination_counter);
                 m_coordination_structure.sim_time_ms = Simulator::Now().GetMilliSeconds();
                 m_coordination_structure.desired_speed_hv = m_desired_speed;
@@ -625,8 +645,6 @@ foresee::FORESEEMobilityModel ()
                 m_coordination_structure.gap_hv_rv = RV_id == -1 ? -1 : min_dist_rv;
                 m_coordination_structure.gap_hv_rvahead = RVAhead_id == -1 ? NOT_PRESENT : min_dist_rv_ahead;
                 m_coordination_structure.speed_hv = my_speed;
-                m_coordination_structure.speed_rv = RV_id == -1 ? NOT_PRESENT : speed_RV;
-                m_coordination_structure.speed_rvahead = RVAhead_id == -1 ? NOT_PRESENT : speed_RVAhead;
                 m_coordination_structure.acc_hv = m_vdp->getAccelerationValue();
                 m_coordination_structure.acc_rv = RV_id == -1 ? NOT_PRESENT : acc_RV;
                 m_coordination_structure.acc_rvahead = RVAhead_id == -1 ? NOT_PRESENT : acc_RVAhead;
@@ -636,72 +654,15 @@ foresee::FORESEEMobilityModel ()
                 m_coordination_structure.acc_rvahead_requested = RVAhead_id == -1 ? NOT_PRESENT : acc_rv_ahead;
                 m_coordination_structure.time_rv_requested = RV_id == -1 ? NOT_PRESENT : time_rv;
                 m_coordination_structure.time_rvahead_requested = RVAhead_id == -1 ? NOT_PRESENT : time_rv_ahead;
-                double max_gap_ahead = 0;
-                double max_gap_behind = 0;
-                double mean_speed_ahead = 0.0;
-                double std_speed_ahead = 0.0;
-                if (!speeds_per_lane[original_target_lane].empty())
+                // TODO here add stats
+                for(auto it = behind_vehicles.begin(); it != behind_vehicles.end(); ++it)
                 {
-                  double sum = std::accumulate(speeds_per_lane[original_target_lane].begin(), speeds_per_lane[original_target_lane].end(), 0.0);
-                  mean_speed_ahead = sum / speeds_per_lane[original_target_lane].size();
-                  double sq_sum = std::inner_product(speeds_per_lane[original_target_lane].begin(), speeds_per_lane[original_target_lane].end(), speeds_per_lane[original_target_lane].begin(), 0.0);
-                  std_speed_ahead = std::sqrt(sq_sum / speeds_per_lane[original_target_lane].size() - mean_speed_ahead * mean_speed_ahead);
-                }
-                
-                std::vector<double> speeds_behind;
-                uint16_t counter_ahead = 0;
-                uint16_t counter_behind = 0;
-                for(auto it = vehicles.begin(); it != vehicles.end(); ++it)
-                {
-                  if ((it->vehData.heading - my_heading) > DOUBLE_TOLERANCE) continue;
-                  if (std::find(active_vehicles.begin(), active_vehicles.end(), "veh" + std::to_string (it->vehData.stationID)) == active_vehicles.end()) continue;
-                  if (it->vehData.stationID == RV_id || it->vehData.stationID == RVAhead_id) continue;
-                  auto lanePos = it->vehData.lanePosition;
-                  if (!lanePos.isAvailable ()) continue;
-                  if (lanePos.getData () != original_target_lane) continue;
-                  libsumo::TraCIPosition pos = m_traci->simulation.convertLonLattoXY (it->vehData.lon, it->vehData.lat);
-                  double speed = it->vehData.speed_ms;
-                  bool behind = false;
-                  if (std::abs(my_heading - 90) < DOUBLE_TOLERANCE && pos.x < my_x) behind = true;
-                  if (std::abs(my_heading - 270) < DOUBLE_TOLERANCE && pos.x > my_x) behind = true;
-                  double gap = std::abs(my_x - pos.x);
-                  if (behind)
-                  {
-                    counter_behind ++;
-                    if (max_gap_behind < gap) max_gap_behind = gap;
-                    speeds_behind.push_back(speed);
-                  }
-                  else 
-                  {
-                    counter_ahead ++;
-                    if (max_gap_ahead < gap) max_gap_ahead = gap;
-                  }
-                }
-                double mean_speed_behind = 0.0;
-                double std_speed_behind = 0.0;
-                if (!speeds_behind.empty())
-                {
-                  double sum_behind = std::accumulate(speeds_behind.begin(), speeds_behind.end(), 0.0);
-                  mean_speed_behind = sum_behind / speeds_behind.size();
-                  double sq_sum_behind = std::inner_product(speeds_behind.begin(), speeds_behind.end(), speeds_behind.begin(), 0.0);
-                  std_speed_behind = std::sqrt(sq_sum_behind / speeds_behind.size() - mean_speed_behind * mean_speed_behind);
-                }
-                m_coordination_structure.mean_speed_ahead = mean_speed_ahead;
-                m_coordination_structure.mean_speed_behind = mean_speed_behind;
-                m_coordination_structure.std_speed_ahead = std_speed_ahead;
-                m_coordination_structure.std_speed_behind = std_speed_behind;
-                double density_ahead, density_behind;
-                if (counter_ahead <= 0) density_ahead = 0;
-                else density_ahead = (double) counter_ahead / max_gap_ahead;
-                if (counter_behind <= 0) density_behind = 0;
-                else density_behind = (double) counter_behind / max_gap_behind;
-                m_coordination_structure.num_vehicles_ahead = counter_ahead;
-                m_coordination_structure.num_vehicles_behind = counter_behind;
-                m_coordination_structure.density_target_lane_ahead = density_ahead;
-                m_coordination_structure.density_target_lane_behind = density_behind;
 
-                m_coordination_structure.execution_success = 0;
-
+                }
+                for(auto it = ahead_vehicles.begin(); it != ahead_vehicles.end(); ++it)
+                {
+                  
+                }
                 m_coordination_counter ++;
               }
             }
@@ -924,10 +885,10 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
                   double leader_length = m_vdp->getVehicleLength();
                   if (gap > leader_length) gap -= leader_length;
                   else gap = 0;
-                  IDMParams params = getIDMParams(static_cast<StationType> (item->vehData.stationType));
+                  IDMParams params = getIDMParams(static_cast<StationType> (item->vehData.stationType), item->vehData.desired_speed.getData());
                   a = idmAcceleration(item->vehData.speed_ms, my_speed, gap,
                                                       params.v0, params.T,
-                                                      params.s0, params.a, params.b);
+                                                      params.s0, params.a, params.b, params.d);
                 }
                 else 
                 {
@@ -935,11 +896,11 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
                   double leader_length = (double) item->vehData.vehicleLength.getData() / DECI;
                   if (gap > leader_length) gap -= leader_length;
                   else gap = 0;
-                  IDMParams params = getIDMParams(static_cast<StationType> (m_station_type));
+                  IDMParams params = getIDMParams(static_cast<StationType> (m_station_type), m_desired_speed);
                   
                   a = idmAcceleration(my_speed, item->vehData.speed_ms, gap,
                                                       params.v0, params.T,
-                                                      params.s0, params.a, params.b);
+                                                      params.s0, params.a, params.b, params.d);
                 }
                 
                 if(a < MIN_DECELERATION)
@@ -1309,8 +1270,7 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
                 if (gap <= m_ca_range)
                 {
                   // Coordinator is behind ego and within CA range — register and mark accordingly
-                  m_blocked_by_other_coordinations[sender] = {false, Simulator::Now().GetMilliSeconds(), {}};
-                  m_blocked_by_other_coordinations[sender].ahead_maneuver = false; // explicit, coordinator is behind
+                  m_blocked_by_other_coordinations[sender] = {Simulator::Now().GetMilliSeconds(), {}};
                   int adv_size = asn1cpp::sequenceof::getSize(adc);
                   for (int i = 0; i < adv_size; ++i)
                   {
