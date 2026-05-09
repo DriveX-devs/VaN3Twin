@@ -463,6 +463,7 @@ foresee::FORESEEMobilityModel ()
         double speed_RV, speed_RVAhead;
         double desired_speed_RV, desired_speed_RVAhead;
         double acc_RV, acc_RVAhead;
+        double length_RV, length_RVAhead;
         double min_dist_rv = 10000;
         double min_dist_rv_ahead = 10000;
         std::map<uint64_t, PHData_t> ph_RV, ph_RVAhead;
@@ -494,6 +495,7 @@ foresee::FORESEEMobilityModel ()
                       min_dist_rv_ahead = dist;
                       RVAhead = "veh" + std::to_string (it->vehData.stationID);
                       RVAhead_id = it->vehData.stationID;
+                      length_RVAhead = (double) it->vehData.vehicleLength.getData() / DECI;
                       x_RVAhead = pos.x;
                       y_RVAhead = pos.y;
                       speed_RVAhead = it->vehData.speed_ms;
@@ -524,6 +526,7 @@ foresee::FORESEEMobilityModel ()
                             min_dist_rv = dist;
                             RV = "veh" + std::to_string (it->vehData.stationID);
                             RV_id = it->vehData.stationID;
+                            length_RV = (double) it->vehData.vehicleLength.getData() / DECI;
                             x_RV = pos.x;
                             y_RV = pos.y;
                             speed_RV = it->vehData.speed_ms;
@@ -649,24 +652,138 @@ foresee::FORESEEMobilityModel ()
                 m_coordination_structure.type_hv = m_station_type;
                 m_coordination_structure.type_rv = RV_id == -1 ? NOT_PRESENT : type_RV;
                 m_coordination_structure.type_rvahead = RVAhead_id == -1 ? NOT_PRESENT : type_RVAhead;
-                m_coordination_structure.gap_hv_rv = RV_id == -1 ? -1 : min_dist_rv;
+                m_coordination_structure.gap_hv_rv = RV_id == -1 ? NOT_PRESENT : min_dist_rv;
                 m_coordination_structure.gap_hv_rvahead = RVAhead_id == -1 ? NOT_PRESENT : min_dist_rv_ahead;
+                if (RV_id >= 0 && RVAhead_id >= 0)
+                  {
+                    double leader_length = length_RVAhead;
+                    double dist = std::abs(x_RV - x_RVAhead);
+                    if (dist > leader_length) dist -= leader_length; else dist = 0;
+                    m_coordination_structure.gap_rv_rvahead = dist;
+                  }
+                else
+                    m_coordination_structure.gap_rv_rvahead = NOT_PRESENT;
+                m_coordination_structure.rel_desired_speed_hv_rv = RV_id == -1 ? NOT_PRESENT : m_desired_speed - desired_speed_RV;
+                m_coordination_structure.rel_desired_speed_hv_rvahead = RVAhead_id == -1 ? NOT_PRESENT : m_desired_speed - desired_speed_RVAhead;
+                m_coordination_structure.rel_desired_speed_rv_rvahead = (RV_id == -1 || RVAhead_id == -1) ? NOT_PRESENT : desired_speed_RV - desired_speed_RVAhead;
                 m_coordination_structure.rel_speed_hv_rv = RV_id == -1 ? NOT_PRESENT : my_speed - speed_RV;
                 m_coordination_structure.rel_speed_hv_rvahead = RVAhead_id == -1 ? NOT_PRESENT : my_speed - speed_RVAhead;
+                m_coordination_structure.rel_speed_rv_rvahead = (RV_id == -1 || RVAhead_id == -1) ? NOT_PRESENT : speed_RV - speed_RVAhead;
+                double my_acc = m_vdp->getAccelerationValue();
+                m_coordination_structure.rel_acc_hv_rv = RV_id == -1 ? NOT_PRESENT : my_acc - acc_RV;
+                m_coordination_structure.rel_acc_hv_rvahead = RVAhead_id == -1 ? NOT_PRESENT : my_acc - acc_RVAhead;
+                m_coordination_structure.rel_acc_rv_rvahead = (RV_id == -1 || RVAhead_id == -1) ? NOT_PRESENT : acc_RV - acc_RVAhead;
                 m_coordination_structure.dec_rv_requested = RV_id == -1 ? NOT_PRESENT : dec_rv;
                 m_coordination_structure.acc_rvahead_requested = RVAhead_id == -1 ? NOT_PRESENT : acc_rv_ahead;
                 m_coordination_structure.time_rv_requested = RV_id == -1 ? NOT_PRESENT : time_rv;
                 m_coordination_structure.time_rvahead_requested = RVAhead_id == -1 ? NOT_PRESENT : time_rv_ahead;
-                
-                for(auto it = behind_vehicles.begin(); it != behind_vehicles.end(); ++it)
-                {
 
-                }
-                for(auto it = ahead_vehicles.begin(); it != ahead_vehicles.end(); ++it)
+                // --- Vehicles behind RV (rv1 = closest behind, rv2 = next) ---
+                // Sort behind_vehicles by distance from RV, ascending
+                std::vector<vehicleData_t> sorted_behind = behind_vehicles;
+                if (RV_id >= 0)
                 {
-                  
+                  std::sort(sorted_behind.begin(), sorted_behind.end(), [&](const vehicleData_t& a, const vehicleData_t& b) {
+                    auto pa = m_traci->simulation.convertLonLattoXY(a.lon, a.lat);
+                    auto pb = m_traci->simulation.convertLonLattoXY(b.lon, b.lat);
+                    return std::abs(x_RV - pa.x) < std::abs(x_RV - pb.x);
+                  });
                 }
-                m_coordination_counter ++;
+
+                double speed_rv1 = NOT_PRESENT, acc_rv1 = NOT_PRESENT, x_rv1 = NOT_PRESENT;
+                if (RV_id >= 0 && sorted_behind.size() >= 1)
+                {
+                  auto pos_rv1 = m_traci->simulation.convertLonLattoXY(sorted_behind[0].lon, sorted_behind[0].lat);
+                  x_rv1 = pos_rv1.x;
+                  speed_rv1 = sorted_behind[0].speed_ms;
+                  acc_rv1 = sorted_behind[0].accel_msquares;
+                  double len = length_RV;
+                  double dist = std::abs(x_RV - x_rv1);
+                  if (dist > len) dist -= len; else dist = 0;
+                  m_coordination_structure.gap_rv_rv1 = dist;
+                  m_coordination_structure.rel_speed_rv_rv1 = speed_RV - speed_rv1;
+                  m_coordination_structure.rel_acc_rv_rv1 = acc_RV - acc_rv1;
+                }
+                else
+                {
+                  m_coordination_structure.gap_rv_rv1 = NOT_PRESENT;
+                  m_coordination_structure.rel_speed_rv_rv1 = NOT_PRESENT;
+                  m_coordination_structure.rel_acc_rv_rv1 = NOT_PRESENT;
+                }
+
+                if (RV_id >= 0 && sorted_behind.size() >= 2)
+                {
+                  auto pos_rv2 = m_traci->simulation.convertLonLattoXY(sorted_behind[1].lon, sorted_behind[1].lat);
+                  double x_rv2 = pos_rv2.x;
+                  double speed_rv2 = sorted_behind[1].speed_ms;
+                  double acc_rv2 = sorted_behind[1].accel_msquares;
+                  double len = (double) sorted_behind[1].vehicleLength.getData() / DECI;
+                  double dist = std::abs(x_rv1 - x_rv2);
+                  if (dist > len) dist -= len; else dist = 0;
+                  m_coordination_structure.gap_rv1_rv2 = dist;
+                  m_coordination_structure.rel_speed_rv1_rv2 = speed_rv1 - speed_rv2;
+                  m_coordination_structure.rel_acc_rv1_rv2 = acc_rv1 - acc_rv2;
+                }
+                else
+                {
+                  m_coordination_structure.gap_rv1_rv2 = NOT_PRESENT;
+                  m_coordination_structure.rel_speed_rv1_rv2 = NOT_PRESENT;
+                  m_coordination_structure.rel_acc_rv1_rv2 = NOT_PRESENT;
+                }
+
+                // --- Vehicles ahead of RVAhead (rvahead1 = closest ahead, rvahead2 = next) ---
+                std::vector<vehicleData_t> sorted_ahead = ahead_vehicles;
+                if (RVAhead_id >= 0)
+                {
+                  std::sort(sorted_ahead.begin(), sorted_ahead.end(), [&](const vehicleData_t& a, const vehicleData_t& b) {
+                    auto pa = m_traci->simulation.convertLonLattoXY(a.lon, a.lat);
+                    auto pb = m_traci->simulation.convertLonLattoXY(b.lon, b.lat);
+                    return std::abs(x_RVAhead - pa.x) < std::abs(x_RVAhead - pb.x);
+                  });
+                }
+
+                double speed_rvahead1 = NOT_PRESENT, acc_rvahead1 = NOT_PRESENT, x_rvahead1 = NOT_PRESENT;
+                if (RVAhead_id >= 0 && sorted_ahead.size() >= 1)
+                {
+                  auto pos_rvahead1 = m_traci->simulation.convertLonLattoXY(sorted_ahead[0].lon, sorted_ahead[0].lat);
+                  x_rvahead1 = pos_rvahead1.x;
+                  speed_rvahead1 = sorted_ahead[0].speed_ms;
+                  acc_rvahead1 = sorted_ahead[0].accel_msquares;
+                  double len = (double) sorted_ahead[0].vehicleLength.getData() / DECI;
+                  double dist = std::abs(x_RVAhead - x_rvahead1);
+                  if (dist > len) dist -= len; else dist = 0;
+                  m_coordination_structure.gap_rvahead_rvahead1 = dist;
+                  m_coordination_structure.rel_speed_rvahead_rvahead1 = speed_RVAhead - speed_rvahead1;
+                  m_coordination_structure.rel_acc_rvahead_rvahead1 = acc_RVAhead - acc_rvahead1;
+                }
+                else
+                {
+                  m_coordination_structure.gap_rvahead_rvahead1 = NOT_PRESENT;
+                  m_coordination_structure.rel_speed_rvahead_rvahead1 = NOT_PRESENT;
+                  m_coordination_structure.rel_acc_rvahead_rvahead1 = NOT_PRESENT;
+                }
+
+                if (RVAhead_id >= 0 && sorted_ahead.size() >= 2)
+                {
+                  auto pos_rvahead2 = m_traci->simulation.convertLonLattoXY(sorted_ahead[1].lon, sorted_ahead[1].lat);
+                  double x_rvahead2 = pos_rvahead2.x;
+                  double speed_rvahead2 = sorted_ahead[1].speed_ms;
+                  double acc_rvahead2 = sorted_ahead[1].accel_msquares;
+                  double len = (double) sorted_ahead[1].vehicleLength.getData() / DECI;
+                  double dist = std::abs(x_rvahead1 - x_rvahead2);
+                  if (dist > len) dist -= len; else dist = 0;
+                  m_coordination_structure.gap_rvahead1_rvahead2 = dist;
+                  m_coordination_structure.rel_speed_rvahead1_rvahead2 = speed_rvahead1 - speed_rvahead2;
+                  m_coordination_structure.rel_acc_rvahead1_rvahead2 = acc_rvahead1 - acc_rvahead2;
+                }
+                else
+                {
+                  m_coordination_structure.gap_rvahead1_rvahead2 = NOT_PRESENT;
+                  m_coordination_structure.rel_speed_rvahead1_rvahead2 = NOT_PRESENT;
+                  m_coordination_structure.rel_acc_rvahead1_rvahead2 = NOT_PRESENT;
+                }
+
+                m_coordination_counter++;
               }
             }
             else
