@@ -10,6 +10,7 @@
 #include "ns3/asn_utils.h"
 #include "ns3/event-id.h"
 #include "ns3/int64x64.h"
+#include "ns3/ldm-utils.h"
 #include "ns3/mcBasicService.h"
 #include "ns3/geonet.h"
 #include <cstdint>
@@ -50,34 +51,42 @@ public:
   struct CoordinationLog {
       std::string coordination_id;
       int64_t sim_time_ms;
-      double desired_speed_hv;
       double lane_speed_hv;
       double lane_speed_target;
       StationType_t type_hv;
       StationType_t type_rv;
       StationType_t type_rvahead;
-      double gap_hv_rv;
-      double gap_hv_rvahead;
-      double speed_hv;
-      double speed_rv;
-      double speed_rvahead;
-      double acc_hv;
-      double acc_rv;
-      double acc_rvahead;
-      double rel_speed_hv_rv;       // speed_hv - speed_rv
-      double rel_speed_hv_rvahead;  // speed_hv - speed_rvahead
+      double gap_hv_rv;                       // pos_hv - pos_rv
+      double gap_hv_rvahead;                  // pos_hv - pos_rvahead
+      double gap_rv_rvahead;                  // pos_rv - pos_rvahead
+      double gap_rvahead_rvahead1;            // pos_rvahead - pos_rvahead1
+      double gap_rvahead1_rvahead2;           // pos_rvahead1 - pos_rvahead2
+      double gap_rv_rv1;                      // pos_rv - pos_rv1
+      double gap_rv1_rv2;                     // pos_rv1 - pos_rv2
+      double desired_speed_hv;
+      double desired_speed_rv;
+      double desired_speed_rvahead;
+      double rel_desired_speed_hv_rv;         // desired_speed_hv - desired_speed_rv
+      double rel_desired_speed_hv_rvahead;    // desired_speed_hv - desired_speed_rvahead
+      double rel_desired_speed_rv_rvahead;    // desired_speed_rv - desired_speed_rvahead
+      double rel_speed_hv_rv;                 // speed_hv - speed_rv
+      double rel_speed_hv_rvahead;            // speed_hv - speed_rvahead
+      double rel_speed_rv_rvahead;            // speed_rv - speed_rvahead
+      double rel_speed_rvahead_rvahead1;      // speed_rvahead - speed_rvahead1
+      double rel_speed_rvahead1_rvahead2;     // speed_rvahead1 - speed_rvahead2
+      double rel_speed_rv_rv1;                // speed_rv - speed_rv1
+      double rel_speed_rv1_rv2;               // speed_rv1 - speed_rv2
+      double rel_acc_hv_rv;                   // acc_hv - acc_rv
+      double rel_acc_hv_rvahead;              // acc_hv - acc_rvahead
+      double rel_acc_rv_rvahead;              // acc_rv - acc_rvahead
+      double rel_acc_rvahead_rvahead1;        // acc_rvahead - acc_rvahead1
+      double rel_acc_rvahead1_rvahead2;       // acc_rvahead1 - acc_rvahead2
+      double rel_acc_rv_rv1;                  // acc_rv - acc_rv1
+      double rel_acc_rv1_rv2;                 // acc_rv1 - acc_rv2
       double dec_rv_requested;
       double acc_rvahead_requested;
       double time_rv_requested;
       double time_rvahead_requested;
-      double mean_speed_ahead;
-      double mean_speed_behind;
-      double std_speed_ahead;
-      double std_speed_behind;
-      int num_vehicles_ahead;
-      int num_vehicles_behind;
-      double density_target_lane_ahead;
-      double density_target_lane_behind;
       // Outcome
       /*
         0 = failed after negotiation (execution failed)

@@ -22,10 +22,7 @@
 #include "ns3/asn_utils.h"
 #include <string>
 #define HORIZON_TIME 8000
-#define NEGOTIATION_TIME 1000
-#define DECELERATION_TIME 1000
-#define STEP_TIME 100
-#define LC_TIME_MSEC 1500
+#define NEGOTIATION_TIME 1100
 #define START_TIME 5000
 
 #include "ns3/carla-module.h"
@@ -87,7 +84,7 @@ int main (int argc, char *argv[])
   double m_baseline_prr = 150.0; // PRR baseline value (default: 150 m)
   int txPower = 33.0; // IEEE 802.11p transmission power in dBm (default: 23 dBm)
   xmlDocPtr rou_xml_file;
-  double simTime = 2000.0; // Total simulation time (default: 100 seconds)
+  double simTime = 2500.0; // Total simulation time (default: 100 seconds)
   bool sumo_gui = false;
   bool store_coordinations_in_csv = true;
   int seed = 42;
@@ -347,12 +344,7 @@ int main (int argc, char *argv[])
       lc_model[nodeID].setVerbose(verbose_foresee);
       lc_model[nodeID].setSeed(seed);
       if (register_log) lc_model[nodeID].setRegisterLog();
-      if (use_foresee)
-      {
-        lc_model[nodeID].WrapperFORESEEMobilityModel(use_foresee);
-        use_foresee = true;
-      }
-      else use_foresee = true;
+      lc_model[nodeID].WrapperFORESEEMobilityModel(use_foresee);
 
       // Start transmitting CAMs
       // We randomize the instant in time in which the CAM dissemination is going to start
@@ -462,12 +454,6 @@ int main (int argc, char *argv[])
             << s->type_hv                       << ","
             << s->type_rv                       << ","
             << s->type_rvahead                  << ","
-            << s->speed_hv                      << ","
-            << s->speed_rv                      << ","
-            << s->speed_rvahead                 << ","
-            << s->acc_hv                        << ","
-            << s->acc_rv                        << ","
-            << s->acc_rvahead                   << ","
             << s->gap_hv_rv                     << ","
             << s->gap_hv_rvahead                << ","
             << s->rel_speed_hv_rv               << ","
@@ -476,14 +462,6 @@ int main (int argc, char *argv[])
             << s->acc_rvahead_requested         << ","
             << s->time_rv_requested             << ","
             << s->time_rvahead_requested        << ","
-            << s->mean_speed_ahead              << ","
-            << s->mean_speed_behind             << ","
-            << s->std_speed_ahead               << ","
-            << s->std_speed_behind              << ","
-            << s->num_vehicles_ahead            << ","
-            << s->num_vehicles_behind           << ","
-            << s->density_target_lane_ahead     << ","
-            << s->density_target_lane_behind    << ","
             << s->execution_success             << "\n";
         }
     }

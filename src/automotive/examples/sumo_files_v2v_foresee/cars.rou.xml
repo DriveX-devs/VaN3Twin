@@ -7,10 +7,10 @@
   <vType id="Car0" vClass="passenger" carFollowModel="IDM" tau="0.8" accel="2.5" decel="3.0" emergencyDecel="7" minGap="2.0" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1" />
 
   
-  <vType id="LightTruck" vClass="Truck" carFollowModel="IDM" tau="1.1" accel="1.5" decel="2.5" emergencyDecel="7" minGap="2.0" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1" />
+  <vType id="LightTruck" vClass="truck" carFollowModel="IDM" tau="1.1" accel="1.5" decel="2.5" emergencyDecel="7" minGap="2.0" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1" />
 
   
-  <vType id="HeavyTruck" vClass="Truck" carFollowModel="IDM" tau="1.3" accel="1.0" decel="2.0" emergencyDecel="7" minGap="2.0" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1" />
+  <vType id="HeavyTruck" vClass="truck" carFollowModel="IDM" tau="1.3" accel="1.0" decel="2.0" emergencyDecel="7" minGap="2.0" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1" />
 
   
   <vType id="Motorcycle" vClass="motorcycle" carFollowModel="IDM" tau="0.6" accel="3.0" decel="3.5" emergencyDecel="7" minGap="2.0" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1" />

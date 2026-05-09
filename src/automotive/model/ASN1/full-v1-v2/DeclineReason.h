@@ -26,7 +26,7 @@ typedef enum DeclineReason {
 	DeclineReason_allErroneousBehaviourDetected	= 4,
 	DeclineReason_allMissbehaviourDetected	= 5,
 	DeclineReason_agreementSeekingManoeuvreCancellationRequestIssued	= 6,
-	DeclineReason_unableToComform = 7
+	DeclineReason_unableToConform = 7
 } e_DeclineReason;
 
 /* DeclineReason */
