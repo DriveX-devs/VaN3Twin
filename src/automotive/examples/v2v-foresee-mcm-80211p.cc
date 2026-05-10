@@ -88,7 +88,7 @@ int main (int argc, char *argv[])
   bool sumo_gui = false;
   bool store_coordinations_in_csv = true;
   int seed = 42;
-  int threads = 7;
+  int threads = 4;
 
   // Set here the path to the SUMO XML files
   std::string sumo_folder = "src/automotive/examples/sumo_files_v2v_foresee/";
@@ -261,6 +261,53 @@ int main (int argc, char *argv[])
 
   bool use_foresee = true;
 
+  if (store_coordinations_in_csv)
+  {
+    std::ofstream file;
+    file.open("coordinations_seed" + std::to_string(seed) + "_new.csv", std::ios::out | std::ios::trunc);
+    file << "coordination_id,"
+        << "sim_time_ms,"
+        << "desired_speed_hv,"
+        << "desired_speed_rv,"
+        << "desired_speed_rvahead,"
+        << "min_lane_speed_hv,"
+        << "min_lane_speed_target,"
+        << "type_hv,"
+        << "type_rv,"
+        << "type_rvahead,"
+        << "gap_hv_rv,"
+        << "gap_hv_rvahead,"
+        << "gap_rv_rvahead,"
+        << "gap_rvahead_rvahead1,"
+        << "gap_rvahead1_rvahead2,"
+        << "gap_rv_rv1,"
+        << "gap_rv1_rv2,"
+        << "rel_desired_speed_hv_rv,"
+        << "rel_desired_speed_hv_rvahead,"
+        << "rel_desired_speed_rv_rvahead,"
+        << "rel_speed_hv_rv,"
+        << "rel_speed_hv_rvahead,"
+        << "rel_speed_rv_rvahead,"
+        << "rel_speed_rvahead_rvahead1,"
+        << "rel_speed_rvahead1_rvahead2,"
+        << "rel_speed_rv_rv1,"
+        << "rel_speed_rv1_rv2,"
+        << "rel_acc_hv_rv,"
+        << "rel_acc_hv_rvahead,"
+        << "rel_acc_rv_rvahead,"
+        << "rel_acc_rvahead_rvahead1,"
+        << "rel_acc_rvahead1_rvahead2,"
+        << "rel_acc_rv_rv1,"
+        << "rel_acc_rv1_rv2,"
+        << "dec_rv_requested,"
+        << "acc_rvahead_requested,"
+        << "time_rv_requested,"
+        << "time_rvahead_requested,"
+        << "execution_success"
+        << "\n";
+    file.close();
+  }
+
   STARTUP_FCN setupNewWifiNode = [&] (std::string vehicleID,TraciClient::StationTypeTraCI_t stationType) -> Ptr<Node>
     {
       unsigned long nodeID = std::stol(vehicleID.substr (3))-1;
@@ -356,12 +403,6 @@ int main (int argc, char *argv[])
       bs_container->getCABasicService ()->startCamDissemination (desync);
       // bs_container->getMCBasicService()->startMCMDissemination(desync);
 
-      if (verbose_foresee)
-      {
-        std::cout << "\n[CURRENT TIME CHECK]" << std::endl;
-        std::cout << Simulator::Now().GetSeconds() << "s" << std::endl;
-      }
-
       return c.Get(nodeID);
     };
 
@@ -379,7 +420,58 @@ int main (int argc, char *argv[])
       // as index for the nodeContainer), so we don't use "-1" to compute "intVehicleID" here
       unsigned long intVehicleID = std::stol(vehicleID.substr (3));
       long nodeID = intVehicleID - 1;
+      if (store_coordinations_in_csv)
+      {
+        std::ofstream file;
+        file.open("coordinations_seed" + std::to_string(seed) + "_new.csv", std::ios::out | std::ios::app);
+        auto coordination_log = lc_model[nodeID].getCoordinationLog();
+        for (auto s = coordination_log.begin(); s != coordination_log.end(); ++s)
+        {
+          file << s->coordination_id                  << ","
+              << s->sim_time_ms                      << ","
+              << s->desired_speed_hv                 << ","
+              << s->desired_speed_rv                 << ","
+              << s->desired_speed_rvahead            << ","
+              << s->lane_speed_hv                    << ","
+              << s->lane_speed_target                << ","
+              << s->type_hv                          << ","
+              << s->type_rv                          << ","
+              << s->type_rvahead                     << ","
+              << s->gap_hv_rv                        << ","
+              << s->gap_hv_rvahead                   << ","
+              << s->gap_rv_rvahead                   << ","
+              << s->gap_rvahead_rvahead1             << ","
+              << s->gap_rvahead1_rvahead2            << ","
+              << s->gap_rv_rv1                       << ","
+              << s->gap_rv1_rv2                      << ","
+              << s->rel_desired_speed_hv_rv          << ","
+              << s->rel_desired_speed_hv_rvahead     << ","
+              << s->rel_desired_speed_rv_rvahead     << ","
+              << s->rel_speed_hv_rv                  << ","
+              << s->rel_speed_hv_rvahead             << ","
+              << s->rel_speed_rv_rvahead             << ","
+              << s->rel_speed_rvahead_rvahead1       << ","
+              << s->rel_speed_rvahead1_rvahead2      << ","
+              << s->rel_speed_rv_rv1                 << ","
+              << s->rel_speed_rv1_rv2                << ","
+              << s->rel_acc_hv_rv                    << ","
+              << s->rel_acc_hv_rvahead               << ","
+              << s->rel_acc_rv_rvahead               << ","
+              << s->rel_acc_rvahead_rvahead1         << ","
+              << s->rel_acc_rvahead1_rvahead2        << ","
+              << s->rel_acc_rv_rv1                   << ","
+              << s->rel_acc_rv1_rv2                  << ","
+              << s->dec_rv_requested                 << ","
+              << s->acc_rvahead_requested            << ","
+              << s->time_rv_requested                << ","
+              << s->time_rvahead_requested           << ","
+              << s->execution_success                << "\n";
+        }
+        file.close();
+      }
+      
       lc_model[nodeID].deleteEvents();
+      lc_model.erase(nodeID);
 
       if (verbose_foresee)
       {
@@ -400,101 +492,6 @@ int main (int argc, char *argv[])
 
   // When the simulation is terminated, gather the most relevant metrics from the PRRsupervisor
   std::cout << "Run terminated..." << std::endl;
-
-  if (store_coordinations_in_csv)
-  {
-    std::cout << "Writing CSV log after simulation..." << std::endl;
-    std::ofstream file;
-    file.open("coordinations_seed" + std::to_string(seed) + "_new.csv", std::ios::out | std::ios::trunc);
-    file << "coordination_id,"
-        << "sim_time_ms,"
-        << "desired_speed_hv,"
-        << "desired_speed_rv,"
-        << "desired_speed_rvahead,"
-        << "min_lane_speed_hv,"
-        << "min_lane_speed_target,"
-        << "type_hv,"
-        << "type_rv,"
-        << "type_rvahead,"
-        << "gap_hv_rv,"
-        << "gap_hv_rvahead,"
-        << "gap_rv_rvahead,"
-        << "gap_rvahead_rvahead1,"
-        << "gap_rvahead1_rvahead2,"
-        << "gap_rv_rv1,"
-        << "gap_rv1_rv2,"
-        << "rel_desired_speed_hv_rv,"
-        << "rel_desired_speed_hv_rvahead,"
-        << "rel_desired_speed_rv_rvahead,"
-        << "rel_speed_hv_rv,"
-        << "rel_speed_hv_rvahead,"
-        << "rel_speed_rv_rvahead,"
-        << "rel_speed_rvahead_rvahead1,"
-        << "rel_speed_rvahead1_rvahead2,"
-        << "rel_speed_rv_rv1,"
-        << "rel_speed_rv1_rv2,"
-        << "rel_acc_hv_rv,"
-        << "rel_acc_hv_rvahead,"
-        << "rel_acc_rv_rvahead,"
-        << "rel_acc_rvahead_rvahead1,"
-        << "rel_acc_rvahead1_rvahead2,"
-        << "rel_acc_rv_rv1,"
-        << "rel_acc_rv1_rv2,"
-        << "dec_rv_requested,"
-        << "acc_rvahead_requested,"
-        << "time_rv_requested,"
-        << "time_rvahead_requested,"
-        << "execution_success"
-        << "\n";
-    for (auto it = lc_model.begin(); it != lc_model.end(); ++it)
-    {
-      auto coordination_log = it->second.getCoordinationLog();
-      for (auto s = coordination_log.begin(); s != coordination_log.end(); ++s)
-      {
-        file << s->coordination_id                  << ","
-            << s->sim_time_ms                      << ","
-            << s->desired_speed_hv                 << ","
-            << s->desired_speed_rv                 << ","
-            << s->desired_speed_rvahead            << ","
-            << s->lane_speed_hv                    << ","
-            << s->lane_speed_target                << ","
-            << s->type_hv                          << ","
-            << s->type_rv                          << ","
-            << s->type_rvahead                     << ","
-            << s->gap_hv_rv                        << ","
-            << s->gap_hv_rvahead                   << ","
-            << s->gap_rv_rvahead                   << ","
-            << s->gap_rvahead_rvahead1             << ","
-            << s->gap_rvahead1_rvahead2            << ","
-            << s->gap_rv_rv1                       << ","
-            << s->gap_rv1_rv2                      << ","
-            << s->rel_desired_speed_hv_rv          << ","
-            << s->rel_desired_speed_hv_rvahead     << ","
-            << s->rel_desired_speed_rv_rvahead     << ","
-            << s->rel_speed_hv_rv                  << ","
-            << s->rel_speed_hv_rvahead             << ","
-            << s->rel_speed_rv_rvahead             << ","
-            << s->rel_speed_rvahead_rvahead1       << ","
-            << s->rel_speed_rvahead1_rvahead2      << ","
-            << s->rel_speed_rv_rv1                 << ","
-            << s->rel_speed_rv1_rv2                << ","
-            << s->rel_acc_hv_rv                    << ","
-            << s->rel_acc_hv_rvahead               << ","
-            << s->rel_acc_rv_rvahead               << ","
-            << s->rel_acc_rvahead_rvahead1         << ","
-            << s->rel_acc_rvahead1_rvahead2        << ","
-            << s->rel_acc_rv_rv1                   << ","
-            << s->rel_acc_rv1_rv2                  << ","
-            << s->dec_rv_requested                 << ","
-            << s->acc_rvahead_requested            << ","
-            << s->time_rv_requested                << ","
-            << s->time_rvahead_requested           << ","
-            << s->execution_success                << "\n";
-      }
-    }
-    file.close();
-    std::cout << "Write operation finished" << std::endl;
-  }
 
   std::cout << "\n=== Final Metrics ===" << std::endl;
   std::cout << "Average CBR (overall):       " << metSup->getAverageCBROverall() << std::endl;

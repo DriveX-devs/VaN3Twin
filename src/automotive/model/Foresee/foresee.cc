@@ -9,11 +9,13 @@
 #include "ns3/asn_utils.h"
 #include "ns3/assert.h"
 #include "ns3/caBasicService_v1.h"
+#include "ns3/event-id.h"
 #include "ns3/foresee.h"
 #include "ns3/ldm-utils.h"
 #include "ns3/mcBasicService.h"
 #include "ns3/nstime.h"
 #include "ns3/phPoints.h"
+#include "ns3/phy-entity.h"
 #include "ns3/signalInfoUtils.h"
 #include "ns3/simulator.h"
 #include "ns3/sumo-TraCIDefs.h"
@@ -252,7 +254,7 @@ foresee::WrapperFORESEEMobilityModel(bool start_foresee)
   if (start_foresee)
   {
     m_coordination_log.reserve(25);
-    Simulator::Schedule (MilliSeconds(m_start_time), &foresee::FORESEEMobilityModel, this);
+    m_foresee_event = Simulator::Schedule (MilliSeconds(m_start_time), &foresee::FORESEEMobilityModel, this);
     Simulator::Schedule(MilliSeconds(m_cleanup_ms), &foresee::cleanupBlockedCoordinations, this);
   }
 }
@@ -279,7 +281,7 @@ foresee::FORESEEMobilityModel ()
     if (std::abs(current_speed - m_desired_speed) <= DOUBLE_TOLERANCE)
     {
       // We are around the desired speed, schedule FORESEE in 10s to check again
-      Simulator::Schedule (MilliSeconds(2 * m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+      m_foresee_event = Simulator::Schedule (MilliSeconds(2 * m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
       return;
     }
     if (m_busy_with_maneuver)
@@ -295,7 +297,7 @@ foresee::FORESEEMobilityModel ()
     {
       // The route is empty (no perceived vehicles in the LDM)
       // FORESEE cannot be activated in this case, so we reschedule it in 5s
-      Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+      m_foresee_event = Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
       return;
     }
     // Cleanup the blocked datasett in case there are old coordinations registered (e.g., the coordinator is out of range now)
@@ -322,7 +324,7 @@ foresee::FORESEEMobilityModel ()
     {
       // FORESEE cannot be activated in this case because the CA range is not free
       // Reschedule FORESEE in 5s
-      Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+      m_foresee_event = Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
       return;
     }
 
@@ -569,7 +571,7 @@ foresee::FORESEEMobilityModel ()
             std::string target_lane_id = edge_id + "_" + std::to_string(target_lane);
             m_traci->vehicle.moveTo(m_vehicle_id, target_lane_id, pos);
             // Since we have just changed the lane, we can schedule the future check after 10s
-            Simulator::Schedule (MilliSeconds(2 * m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+            m_foresee_event = Simulator::Schedule (MilliSeconds(2 * m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
           }
           else
           {
@@ -782,27 +784,25 @@ foresee::FORESEEMobilityModel ()
                   m_coordination_structure.rel_speed_rvahead1_rvahead2 = NOT_PRESENT;
                   m_coordination_structure.rel_acc_rvahead1_rvahead2 = NOT_PRESENT;
                 }
-
-                m_coordination_counter++;
               }
             }
             else
             {
               // For one of the cooperand the maneuver requested is not possible, try again later
-              Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+              m_foresee_event = Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
             }
           }
         }
         else 
         {
           // One or more cooperands are currently busy, we need to reschedule
-          Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+          m_foresee_event = Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
         }
       }
     else 
     {
       // No incentive found, try again later
-      Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+      m_foresee_event = Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
     }
   }
   catch (...) {
@@ -890,7 +890,8 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
   m_traci->vehicle.setSpeedMode(m_vehicle_id, 1);
   m_traci->vehicle.setAcceleration(m_vehicle_id, 0, 1);
   double value = m_dist(m_gen);
-  m_tx_mcm_event = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+  EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+  m_tx_mcm_event = e;
   m_left_criterion = left_criterion;
   m_target_lane = target_lane;
   m_negotiation_event = Simulator::Schedule(MilliSeconds(m_negotiation_time), &foresee::negotiationPhase, this, left_criterion, target_lane);
@@ -905,7 +906,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
       // startCoordination and this firing). FORESEE must be rescheduled here
       // only if no other handler already did it (i.e. we are still not busy).
       if (!m_busy_with_maneuver)
-        Simulator::Schedule(MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+        m_foresee_event = Simulator::Schedule(MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
       return;
     }
     bool its_ok = true;
@@ -953,7 +954,8 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
         specification->setManeuverID(left_criterion ? ManeuverID::GoToLeftLane : ManeuverID::GoToRightLane);
         specification->setVehicleType (m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon);
         double value = m_dist(m_gen);
-        m_tx_mcm_event = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+        EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+        m_tx_mcm_event = e;
         double time_to_wait = *std::max_element(times.begin(), times.end());
         // HV should keep constant speed until the time to change lane
         m_traci->vehicle.setSpeedMode(m_vehicle_id, 1);
@@ -962,7 +964,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
             if (!m_busy_with_maneuver)
             {
               // Coordination was cancelled mid-wait, schedule again FORESEE
-              Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+              m_foresee_event = Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
               return;
             }
             if (m_verbose)
@@ -1045,9 +1047,10 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
               {
                 m_coordination_structure.execution_success = 2;
                 m_coordination_log.push_back(m_coordination_structure);
+                m_coordination_counter ++;
               }
               Simulator::Schedule(MilliSeconds(150), &foresee::checkLane, this, target_lane);
-              Simulator::Schedule(MilliSeconds(2 * m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+              m_foresee_event = Simulator::Schedule(MilliSeconds(2 * m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
             }
             else 
             {
@@ -1061,9 +1064,10 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
               {
                 m_coordination_structure.execution_success = 0;
                 m_coordination_log.push_back(m_coordination_structure);
+                m_coordination_counter ++;
               }
               // Failed: retry sooner
-              Simulator::Schedule(MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+              m_foresee_event = Simulator::Schedule(MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
             }
             
             // Send termination to free all targets
@@ -1076,7 +1080,8 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
             specification->setMCMCost(0);
             specification->setMCMGoal(ManoeuvreCooperationGoal_localTrafficManagement);
             double value = m_dist(m_gen);
-            m_tx_mcm_event = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+            EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+            m_tx_mcm_event = e;
 
             m_coordinator = false;
             m_busy_with_maneuver = false;
@@ -1126,13 +1131,14 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
         specification->setManeuverID(left_criterion ? ManeuverID::GoToLeftLane : ManeuverID::GoToRightLane);
         specification->setVehicleType (m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon);
         double value = m_dist(m_gen);
-        m_tx_mcm_event = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+        EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+        m_tx_mcm_event = e;
         m_traci->vehicle.setSpeedMode(m_vehicle_id, 31);
         m_busy_with_maneuver = false;
         m_coordinator = false;
         m_acceptance_map.clear();
         // Schedule again FORESEE in 10s
-        Simulator::Schedule (MilliSeconds(2 * m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+        m_foresee_event = Simulator::Schedule (MilliSeconds(2 * m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
       }
   } catch (...) {
     std::cout << "Error 404 FORESEE not usable for vehicle " << m_vehicle_id << " anymore!" << std::endl;
@@ -1155,7 +1161,7 @@ void foresee::targetCheckACK()
       // Free the vehicle and reschedule to avoid a silent stall.
       m_busy_with_maneuver = false;
       m_traci->vehicle.setSpeedMode(m_vehicle_id, 31);
-      Simulator::Schedule(MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+      m_foresee_event = Simulator::Schedule(MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
     }
     // else: termination handler already rescheduled, nothing to do.
     return;
@@ -1175,7 +1181,8 @@ void foresee::targetCheckACK()
   specification->setMCMCost (0); // Default, it is not used for this use case
   specification->setMCMGoal(ManoeuvreCooperationGoal_localTrafficManagement);
   double value = m_dist(m_gen);
-  m_tx_mcm_event = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+  EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+  m_tx_mcm_event = e;
   m_my_coordinator = -1;
   m_traci->vehicle.setSpeedMode(m_vehicle_id, 31);
   m_my_coordinator_responded = false;
@@ -1186,7 +1193,7 @@ void foresee::targetCheckACK()
     std::cout << "\n[MANEUVER REFUSED " << now_s << "]" << std::endl;
     std::cout << "Vehicle " << m_vehicle_id << " is refusing the maneuver due to ACK not received " << std::endl;
   }
-  Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+  m_foresee_event = Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
 }
 
 void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info)
@@ -1360,8 +1367,8 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
               m_my_coordinator = sender;
               m_my_coordinator_responded = false;
               double value = m_dist(m_gen);
-              m_tx_mcm_event = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
-              std::cout << Simulator::Now().GetMilliSeconds() + value << std::endl;
+              EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+              m_tx_mcm_event = e;
               m_ack_event = Simulator::Schedule(MilliSeconds(m_negotiation_time + 200), &foresee::targetCheckACK, this);
             }
           else if (!accept && msg_for_me)
@@ -1380,7 +1387,8 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
               else specification->setMCMResponseDeclineReason(DeclineReason_unableToConform); // Busy with another maneuver
               specification->setCoordinatorID(sender);
               double value = m_dist(m_gen);
-              m_tx_mcm_event = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+              EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+              m_tx_mcm_event = e;
             }
           else if (!msg_for_me)
           {
@@ -1471,8 +1479,8 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
                   std::cout << "Vehicle " << m_vehicle_id << " has received the refusal from veh" << sender << std::endl;
                 }
                 // One of the vehicles refused, the maneuver should be suppressed, we can directly call the negotiation phase (which will fail) 
-                Simulator::Cancel(m_negotiation_event);
-                negotiationPhase(m_left_criterion, m_target_lane);
+                // Simulator::Cancel(m_negotiation_event);
+                // negotiationPhase(m_left_criterion, m_target_lane);
               }
               // Else: the sender is replying to another coordinator
             }
@@ -1492,14 +1500,14 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
         // If it is my maneuver, now I am free for others
         // We can cancel the check for the ACK
         Simulator::Cancel(m_ack_event);
-        Simulator::Cancel(m_tx_mcm_event);
         Simulator::Cancel(m_continue_constant_speed_event);
+        Simulator::Cancel(m_tx_mcm_event);
         m_traci->vehicle.setSpeedMode(m_vehicle_id, 31);
         m_busy_with_maneuver = false;
         m_my_coordinator_responded = false;
         m_my_coordinator = -1;
         // Schedule again FORESEE
-        Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+        m_foresee_event = Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
       }
       break;
 
@@ -1532,13 +1540,14 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
         specification->setMCMCost (0); // Default, it is not used for this use case
         specification->setMCMGoal(ManoeuvreCooperationGoal_localTrafficManagement);
         double value = m_dist(m_gen);
-        m_tx_mcm_event = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+        EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+        m_tx_mcm_event = e;
         m_traci->vehicle.setSpeedMode(m_vehicle_id, 31);
         m_coordinator = false;
         m_busy_with_maneuver = false;
         m_acceptance_map.clear();
         // Schedule again FORESEE
-        Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+        m_foresee_event = Simulator::Schedule (MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
       }
       break;
     default:
@@ -1593,7 +1602,7 @@ void foresee::targetWatchdog(StationId_t coordinator)
     m_busy_with_maneuver = false;
     m_my_coordinator = -1;
     m_my_coordinator_responded = false;
-    Simulator::Schedule(MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
+    m_foresee_event = Simulator::Schedule(MilliSeconds(m_FORESEE_check_ms), &foresee::FORESEEMobilityModel, this);
   }
   // else: termination already arrived cleanly, nothing to do
 }
@@ -1634,10 +1643,11 @@ void foresee::cleanupBlockedCoordinations()
 
  void foresee::deleteEvents()
  {
+  Simulator::Cancel(m_foresee_event);
   Simulator::Cancel(m_negotiation_event);
   Simulator::Cancel(m_change_lane_event);
-  Simulator::Cancel(m_tx_mcm_event);
   Simulator::Cancel(m_continue_constant_speed_event);
+  Simulator::Cancel(m_tx_mcm_event);
  }
 
 }

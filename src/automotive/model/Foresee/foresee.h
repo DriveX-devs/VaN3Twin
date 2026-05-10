@@ -170,6 +170,7 @@ private:
   int m_FORESEE_max_time = 10000;
   int m_maneuver_horizon = 5000;
 
+  EventId m_foresee_event;
   EventId m_negotiation_event;
   EventId m_change_lane_event;
   EventId m_tx_mcm_event;
