@@ -144,6 +144,7 @@ public:
   void cleanupBlockedCoordinations();
   void checkLane(int target_lane_id);
   const std::vector<CoordinationLog>& getCoordinationLog() const { return m_coordination_log; }
+  void ScheduleNextCheck(Time delay);
 
 private:
   std::string m_vehicle_id;
@@ -171,6 +172,8 @@ private:
   int m_maneuver_horizon = 5000;
 
   EventId m_foresee_event;
+  EventId m_cleanup_event;
+  EventId m_watchdog_event;
   EventId m_negotiation_event;
   EventId m_change_lane_event;
   EventId m_tx_mcm_event;
