@@ -84,7 +84,7 @@ int main (int argc, char *argv[])
   double m_baseline_prr = 150.0; // PRR baseline value (default: 150 m)
   int txPower = 33.0; // IEEE 802.11p transmission power in dBm (default: 23 dBm)
   xmlDocPtr rou_xml_file;
-  double simTime = 1000.0; // Total simulation time (default: 100 seconds)
+  double simTime = 10.0; // Total simulation time (default: 100 seconds)
   bool sumo_gui = false;
   bool store_coordinations_in_csv = true;
   int seed = 42;

@@ -331,8 +331,7 @@ namespace ns3
           asn1cpp::setField(rational->present, ManoeuvreCoordinationRational_PR_manoeuvreCooperationCost);
           asn1cpp::setField(rational->choice.manoeuvreCooperationCost, specification->getMCMCost());
         }
-        MCM_message->payload.basicContainer.rational = rational;
-        specification->markOwned(rational); // Rational now is owned by MCM_message
+        specification->setOptional(&MCM_message->payload.basicContainer.rational, rational);
         if (specification->getMCMType() == 4 || specification->getMCMType() == 7)
           {
             asn1cpp::setField (MCM_message->payload.basicContainer.executionStatus, specification->getMCMStatus());
@@ -346,53 +345,42 @@ namespace ns3
      }
 
     if (specification->getManeuverContainer())
-     {
-       // Select this choice
-       asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_vehicleManoeuvreContainer);
+      {
+        // Select this choice
+        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_vehicleManoeuvreContainer);
 
-       // Allocate + fill VehicleManoeuvreContainer
-       auto &man = MCM_message->payload.mcmContainer.choice.vehicleManoeuvreContainer;
-       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleHeading.value, MCM_mandatory_data.heading.getValue());
-       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleHeading.confidence, MCM_mandatory_data.heading.getConfidence());
-       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSpeed.speedValue, MCM_mandatory_data.speed.getValue());
-       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSpeed.speedConfidence, MCM_mandatory_data.speed.getConfidence());
-       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleWidth, MCM_mandatory_data.VehicleWidth);
-       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleLenth.vehicleLengthValue, MCM_mandatory_data.VehicleLength.getValue());
-       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleLenth.vehicleLengthConfidenceIndication, MCM_mandatory_data.VehicleLength.getConfidence());
-       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleHeight, VehicleHeight_unavailable);
-       asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleType, specification->getVehicleType());
+        // Allocate + fill VehicleManoeuvreContainer
+        auto &man = MCM_message->payload.mcmContainer.choice.vehicleManoeuvreContainer;
+        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleHeading.value, MCM_mandatory_data.heading.getValue());
+        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleHeading.confidence, MCM_mandatory_data.heading.getConfidence());
+        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSpeed.speedValue, MCM_mandatory_data.speed.getValue());
+        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSpeed.speedConfidence, MCM_mandatory_data.speed.getConfidence());
+        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleWidth, MCM_mandatory_data.VehicleWidth);
+        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleLenth.vehicleLengthValue, MCM_mandatory_data.VehicleLength.getValue());
+        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleLenth.vehicleLengthConfidenceIndication, MCM_mandatory_data.VehicleLength.getConfidence());
+        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleHeight, VehicleHeight_unavailable);
+        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleType, specification->getVehicleType());
 
-       // 1. Loop Submanoeuvres
-      for (auto* subm : specification->getSubmanoeuvreDescriptionList()) {
-            if (ASN_SEQUENCE_ADD(&man.submaneuvres, subm) == 0) {
-                specification->markOwned(subm);
-            } else {
-                specification->free(subm);
-            }
+        // Loop Submanoeuvres
+        for (auto* subm : specification->getSubmanoeuvreDescriptionList()) {
+          specification->add(asn_DEF_Submanoeuvre, &man.submaneuvres, subm);
         }
 
-        // 2. Loop ManoeuvreAdvice
+        // Loop ManoeuvreAdvice nel VehicleManoeuvreContainer
+        auto* mac = specification->create<ManoeuvreAdviceContainer_t>(asn_DEF_ManoeuvreAdviceContainer);
         for (auto* advice : specification->getManeuverAdviceList()) {
-            if (ASN_SEQUENCE_ADD(&man.manoeuvreAdvice, advice) == 0) {
-                specification->markOwned(advice);
-            } else {
-                specification->free(advice);
-            }
+          specification->add(asn_DEF_ManoeuvreAdvice, mac, advice);
         }
-     }
-   
+        specification->setOptional(&man.manoeuvreAdvice, mac);
+      } 
     else if (specification->getAdviseContainer())
-     {
-       asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_advisedManoeuvreContainer);
-       auto &adv = MCM_message->payload.mcmContainer.choice.advisedManoeuvreContainer;
-       for (auto* advice_ptr : specification->getManeuverAdviceList()) {
-            if (ASN_SEQUENCE_ADD(&adv.list, advice_ptr) == 0) {
-                specification->markOwned(advice_ptr); 
-            } else {
-                specification->free(advice_ptr);
-            }
+      {
+        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_advisedManoeuvreContainer);
+        auto &adv = MCM_message->payload.mcmContainer.choice.advisedManoeuvreContainer;
+        for (auto* advice_ptr : specification->getManeuverAdviceList()) {
+          specification->add(asn_DEF_ManoeuvreAdvice, &adv, advice_ptr);
         }
-     }
+      }
     else if (specification->getAcknowledgmentContainer())
      {
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_acknowledgmentContainer);

@@ -22,7 +22,7 @@ extern "C" {
 #endif
 
 // UNCOMMENT THIS TO ENABLE DEBUG ASN
-// #define ASN_EMIT_DEBUG 1
+//#define ASN_EMIT_DEBUG 1
 //#define ASN_THREAD_SAFE 0
 
 #if !defined(ASN_DISABLE_UPER_SUPPORT)

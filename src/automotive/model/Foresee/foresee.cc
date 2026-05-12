@@ -838,7 +838,7 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
       }
       specification->set(&csac->present, CurrentStateAdvisedChange_PR_stayInLane);
       specification->set(&csac->choice.stayInLane, 1);
-      specification->add(asn_DEF_CurrentStateAdvisedChange, &adv->currentStateAdvisedChange, csac);
+      specification->setOptional(&adv->currentStateAdvisedChange, csac);
 
       Submanoeuvre_t* subm = specification->create<Submanoeuvre_t>(asn_DEF_Submanoeuvre);
       if (!subm) {
@@ -848,20 +848,22 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
       if (dec_rv < 0) specification->set(&subm->submanoeuvreId, ManeuverID::Slowdown);
       else specification->set(&subm->submanoeuvreId, ManeuverID::StayInLane);
 
-      subm->foreseeIndication = specification->create<ForeseeIndication_t>(asn_DEF_ForeseeIndication);
-      if (!subm->foreseeIndication) {
+      ForeseeIndication* foresee_indication = specification->create<ForeseeIndication_t>(asn_DEF_ForeseeIndication);
+      if (!foresee_indication) {
         specification->free(subm);
         specification->free(adv);
         return;
       }
-      specification->set(&subm->foreseeIndication->acceleration.longitudinalAccelerationValue, dec_rv * CENTI);
-      specification->set(&subm->foreseeIndication->acceleration.longitudinalAccelerationConfidence, AccelerationConfidence::AccelerationConfidence_unavailable);
+      specification->set(&foresee_indication->acceleration.longitudinalAccelerationValue, dec_rv * CENTI);
+      specification->set(&foresee_indication->acceleration.longitudinalAccelerationConfidence, AccelerationConfidence::AccelerationConfidence_unavailable);
       // Transform into Milliseconds
       time_rv = time_rv * 1e3;
-      specification->set(&subm->foreseeIndication->duration, time_rv);
+      specification->set(&foresee_indication->duration, time_rv);
+      specification->setOptional(&subm->foreseeIndication, foresee_indication);
+
       subm->advisedTrajectory = nullptr;
       subm->advisedTargetRoadResource = nullptr;
-      specification->add(asn_DEF_Submanoeuvre, &adv->submaneuvres, subm);
+
       if(!specification->add(asn_DEF_Submanoeuvre, &adv->submaneuvres, subm)) {
         specification->free(adv);
         return;
@@ -882,7 +884,7 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
       }
       specification->set(&csac->present, CurrentStateAdvisedChange_PR_stayInLane);
       specification->set(&csac->choice.stayInLane, 1);
-      specification->add(asn_DEF_CurrentStateAdvisedChange, &adv->currentStateAdvisedChange, csac);
+      specification->setOptional(&adv->currentStateAdvisedChange, csac);
 
       Submanoeuvre_t* subm = specification->create<Submanoeuvre_t>(asn_DEF_Submanoeuvre);
       if (!subm) {
@@ -892,19 +894,22 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
       if (acc_rv_ahead > 0) specification->set(&subm->submanoeuvreId, ManeuverID::Accelerate);
       else specification->set(&subm->submanoeuvreId, ManeuverID::StayInLane);
 
-      subm->foreseeIndication = specification->create<ForeseeIndication_t>(asn_DEF_ForeseeIndication);
-      if (!subm->foreseeIndication) {
+      ForeseeIndication* foresee_indication = specification->create<ForeseeIndication_t>(asn_DEF_ForeseeIndication);
+      if (!foresee_indication) {
         specification->free(subm);
         specification->free(adv);
         return;
       }
-      specification->set(&subm->foreseeIndication->acceleration.longitudinalAccelerationValue, acc_rv_ahead * CENTI);
-      specification->set(&subm->foreseeIndication->acceleration.longitudinalAccelerationConfidence, AccelerationConfidence::AccelerationConfidence_unavailable);
+      specification->set(&foresee_indication->acceleration.longitudinalAccelerationValue, acc_rv_ahead * CENTI);
+      specification->set(&foresee_indication->acceleration.longitudinalAccelerationConfidence, AccelerationConfidence::AccelerationConfidence_unavailable);
       // Transform into Milliseconds
       time_rv_ahead = time_rv_ahead * 1e3;
-      specification->set(&subm->foreseeIndication->duration, time_rv_ahead);
+      specification->set(&foresee_indication->duration, time_rv_ahead);
+      specification->setOptional(&subm->foreseeIndication, foresee_indication);
+
       subm->advisedTrajectory = nullptr;
       subm->advisedTargetRoadResource = nullptr;
+
       if(!specification->add(asn_DEF_Submanoeuvre, &adv->submaneuvres, subm)) {
         specification->free(adv);
         return;

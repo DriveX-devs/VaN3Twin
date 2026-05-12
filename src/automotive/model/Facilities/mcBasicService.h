@@ -102,7 +102,6 @@ enum ManeuverID
           info.ptr = new_item;
           info.type = &typeDescriptor;
           info.ownedByParent = false;
-
           m_allocations[new_item] = info;
 
           // Top level types
@@ -159,6 +158,12 @@ enum ManeuverID
     template<typename T, typename Q>
     void set(T* container, Q item) {
       asn1cpp::setField(container, item);
+    }
+
+    template <typename T>
+    void setOptional(T** field, T* value) {
+        *field = value;
+        markOwned(value);
     }
 
     void cleanup() {
