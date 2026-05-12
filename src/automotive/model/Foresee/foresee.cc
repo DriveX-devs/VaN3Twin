@@ -1035,10 +1035,10 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane)
               for (auto it = coordinators.begin(); it != coordinators.end(); ++it)
               {
                 auto item = std::find_if(vehicles.begin(), vehicles.end(), 
-                [&](const LDM::returnedVehicleData_t& veh)
-                    {
+                [&](const LDM::returnedVehicleData_t& veh){
                         return veh.vehData.stationID == std::stol((*it).substr(3));
-                    });
+                  }
+                );
 
                 if (item != vehicles.end())
                 {
