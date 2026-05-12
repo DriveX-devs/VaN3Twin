@@ -43,74 +43,6 @@ namespace ns3
 {
   NS_LOG_COMPONENT_DEFINE("MCBasicService");
 
-  MCSpecification::~MCSpecification()
-  {
-    for (auto &adv : m_maneuver_advice)
-      {
-          if (adv != nullptr)
-          {
-              ASN_STRUCT_FREE(asn_DEF_ManoeuvreAdvice, adv);
-          }
-      }
-
-      for (auto &subm : m_submaneuver_description)
-      {
-          if (subm != nullptr)
-          {
-              ASN_STRUCT_FREE(asn_DEF_SubmanoeuvreDescription, subm);
-          }
-      }
-    /*
-    for (auto &adv : m_maneuver_advice)
-      {
-        if (adv != nullptr)
-        {
-          if (adv->currentStateAdvisedChange != nullptr)
-          {
-            ASN_STRUCT_FREE(asn_DEF_CurrentStateAdvisedChange, adv->currentStateAdvisedChange);
-          }
-          //ASN_STRUCT_FREE(asn_DEF_Submanoeuvres, &adv.submaneuvres);
-          ASN_STRUCT_FREE_CONTENTS_ONLY(asn_DEF_Submanoeuvres, &adv->submaneuvres);
-          ASN_STRUCT_FREE(asn_DEF_ManoeuvreAdvice, adv);
-        }
-      }
-
-    for (auto &subm : m_submaneuver_description)
-      {
-        if (subm != nullptr)
-        {
-          if (subm->kinematicsCharacteristics != nullptr)
-            {
-              ASN_STRUCT_FREE(asn_DEF_KinematicsCharacteristics, subm->kinematicsCharacteristics);
-            }
-          if (subm->targetRoadResourceIContainer != nullptr)
-            {
-              ASN_STRUCT_FREE(asn_DEF_TrrDescription, subm->targetRoadResourceIContainer);
-            }
-          if (subm->referenceTrajectory != nullptr)
-            {
-              ASN_STRUCT_FREE(asn_DEF_Trajectory, subm->referenceTrajectory);
-            }
-          if (subm->submanoeuvreStrategy != nullptr)
-            {
-              ASN_STRUCT_FREE(asn_DEF_SubmanoeuvreStrategy, subm->submanoeuvreStrategy);
-            }
-          ASN_STRUCT_FREE(asn_DEF_SubmanoeuvreDescription, subm);
-        }
-      }
-    */
-  }
-
-  bool MCSpecification::checkContainers()
-  {
-    int count = m_vehicle_advise_container
-                + m_vehicle_maneuver_container
-                + m_vehicle_acknowledgement_container
-                + m_vehicle_response_container
-                + m_vehicle_terminator_container;
-    return count == 1;
-  }
-
 
   MCBasicService::~MCBasicService() {
     NS_LOG_INFO("MCBasicService object destroyed.");
@@ -391,15 +323,16 @@ namespace ns3
           asn1cpp::setField(MCM_message->payload.basicContainer.direction, -1);
         }
         
-        auto *rational = (ManoeuvreCoordinationRational_t*)CALLOC(1, sizeof(ManoeuvreCoordinationRational_t));
+        ManoeuvreCoordinationRational_t* rational = specification->create<ManoeuvreCoordinationRational_t>(asn_DEF_ManoeuvreCoordinationRational);
         if (specification->getMCMConcept() == 0) {
-            asn1cpp::setField(rational->present, ManoeuvreCoordinationRational_PR_manoeuvreCooperationGoal);
-            asn1cpp::setField(rational->choice.manoeuvreCooperationGoal, specification->getMCMGoal());
-          } else {
-            asn1cpp::setField(rational->present, ManoeuvreCoordinationRational_PR_manoeuvreCooperationCost);
-            asn1cpp::setField(rational->choice.manoeuvreCooperationCost, specification->getMCMCost());
-          }
+          asn1cpp::setField(rational->present, ManoeuvreCoordinationRational_PR_manoeuvreCooperationGoal);
+          asn1cpp::setField(rational->choice.manoeuvreCooperationGoal, specification->getMCMGoal());
+        } else {
+          asn1cpp::setField(rational->present, ManoeuvreCoordinationRational_PR_manoeuvreCooperationCost);
+          asn1cpp::setField(rational->choice.manoeuvreCooperationCost, specification->getMCMCost());
+        }
         MCM_message->payload.basicContainer.rational = rational;
+        specification->markOwned(rational); // Rational now is owned by MCM_message
         if (specification->getMCMType() == 4 || specification->getMCMType() == 7)
           {
             asn1cpp::setField (MCM_message->payload.basicContainer.executionStatus, specification->getMCMStatus());
@@ -429,58 +362,36 @@ namespace ns3
        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleHeight, VehicleHeight_unavailable);
        asn1cpp::setField(man.vehicleCurrentStateContainer.vehicleSize.vehicleType, specification->getVehicleType());
 
-       for (auto it = specification->getSubmaneuverDescription().begin(); it != specification->getSubmaneuverDescription().end(); ++it)
-         {
-           auto *subd = (SubmanoeuvreDescription *)CALLOC(1, sizeof(SubmanoeuvreDescription));
-           if (asn_copy(&asn_DEF_SubmanoeuvreDescription, (void**)&subd, &(*it)) == 0)
-             {
-               if (ASN_SEQUENCE_ADD (&man.submaneuvres, subd) != 0)
-                 {
-                   ASN_STRUCT_FREE (asn_DEF_SubmanoeuvreDescription, subd);
-                 }
-             }
-           else
-             {
-               ASN_STRUCT_FREE(asn_DEF_SubmanoeuvreDescription, subd);
-             }
-         }
+       // 1. Loop Submanoeuvres
+      for (auto* subm : specification->getSubmanoeuvreDescriptionList()) {
+            if (ASN_SEQUENCE_ADD(&man.submaneuvres, subm) == 0) {
+                specification->markOwned(subm);
+            } else {
+                specification->free(subm);
+            }
+        }
 
-       for (auto it = specification->getManeuverAdvice().begin(); it != specification->getManeuverAdvice().end(); ++it)
-         {
-           auto *advice = (ManoeuvreAdvice *)CALLOC(1, sizeof(ManoeuvreAdvice));
-           if (asn_copy(&asn_DEF_ManoeuvreAdvice, (void**)&advice, &(*it)) == 0)
-             {
-               if (ASN_SEQUENCE_ADD (&man.manoeuvreAdvice, advice) != 0)
-                 {
-                   ASN_STRUCT_FREE (asn_DEF_ManoeuvreAdvice, advice);
-                 }
-             }
-           else
-             {
-               ASN_STRUCT_FREE(asn_DEF_ManoeuvreAdvice, advice);
-             }
-         }
+        // 2. Loop ManoeuvreAdvice
+        for (auto* advice : specification->getManeuverAdviceList()) {
+            if (ASN_SEQUENCE_ADD(&man.manoeuvreAdvice, advice) == 0) {
+                specification->markOwned(advice);
+            } else {
+                specification->free(advice);
+            }
+        }
      }
    
     else if (specification->getAdviseContainer())
      {
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_advisedManoeuvreContainer);
        auto &adv = MCM_message->payload.mcmContainer.choice.advisedManoeuvreContainer;
-       for (auto it = specification->getManeuverAdvice().begin(); it != specification->getManeuverAdvice().end(); ++it)
-         {
-           auto *advice = (ManoeuvreAdvice *)CALLOC(1, sizeof(ManoeuvreAdvice));
-           if (asn_copy(&asn_DEF_ManoeuvreAdvice, (void**)&advice, *it) == 0)
-             {
-               if (ASN_SEQUENCE_ADD (&adv, advice) != 0)
-                 {
-                   ASN_STRUCT_FREE (asn_DEF_ManoeuvreAdvice, advice);
-                 }
-             }
-           else
-             {
-               ASN_STRUCT_FREE(asn_DEF_ManoeuvreAdvice, advice);
-             }
-         }
+       for (auto* advice_ptr : specification->getManeuverAdviceList()) {
+            if (ASN_SEQUENCE_ADD(&adv.list, advice_ptr) == 0) {
+                specification->markOwned(advice_ptr); 
+            } else {
+                specification->free(advice_ptr);
+            }
+        }
      }
     else if (specification->getAcknowledgmentContainer())
      {

@@ -203,6 +203,9 @@ private:
 
   std::mt19937 m_gen;
   std::uniform_real_distribution<double> m_dist{1.0, 5.0};
+  
+  // Shared pointer for edge cases
+  std::shared_ptr<bool> m_alive;
 };
 }
 
