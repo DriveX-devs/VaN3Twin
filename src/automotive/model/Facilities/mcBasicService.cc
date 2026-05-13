@@ -39,8 +39,7 @@
 
 #include "ns3/asn_SEQUENCE_OF.h"
 
-namespace ns3
-{
+namespace ns3 {
   NS_LOG_COMPONENT_DEFINE("MCBasicService");
 
 
@@ -73,8 +72,7 @@ namespace ns3
     m_refPositions.clear ();
   }
 
-  MCBasicService::MCBasicService(unsigned long fixed_stationid,long fixed_stationtype,VDP* vdp, bool real_time, bool is_vehicle)
-  {
+  MCBasicService::MCBasicService(unsigned long fixed_stationid,long fixed_stationtype,VDP* vdp, bool real_time, bool is_vehicle) {
     m_socket_tx=NULL;
     m_btp = NULL;
 
@@ -102,24 +100,21 @@ namespace ns3
   }
 
 
-  MCBasicService::MCBasicService(unsigned long fixed_stationid,long fixed_stationtype,VDP* vdp, bool real_time, bool is_vehicle, Ptr<Socket> socket_tx)
-  {
+  MCBasicService::MCBasicService(unsigned long fixed_stationid,long fixed_stationtype,VDP* vdp, bool real_time, bool is_vehicle, Ptr<Socket> socket_tx) {
     MCBasicService(fixed_stationid,fixed_stationtype,vdp,real_time,is_vehicle);
 
     m_socket_tx=socket_tx;
   }
 
   void
-  MCBasicService::setStationProperties(unsigned long fixed_stationid,long fixed_stationtype)
-  {
+  MCBasicService::setStationProperties(unsigned long fixed_stationid,long fixed_stationtype) {
     m_station_id=fixed_stationid;
     m_stationtype=fixed_stationtype;
     m_btp->setStationProperties(fixed_stationid,fixed_stationtype);
   }
 
   void
-  MCBasicService::setFixedPositionRSU(double latitude_deg, double longitude_deg)
-  {
+  MCBasicService::setFixedPositionRSU(double latitude_deg, double longitude_deg) {
     m_vehicle = false;
     m_RSUlon = longitude_deg;
     m_RSUlat = latitude_deg;
@@ -134,35 +129,30 @@ namespace ns3
   }
 
   void
-  MCBasicService::setStationID(unsigned long fixed_stationid)
-  {
+  MCBasicService::setStationID(unsigned long fixed_stationid) {
     m_station_id=fixed_stationid;
     m_btp->setStationID(fixed_stationid);
   }
 
   void
-  MCBasicService::setStationType(long fixed_stationtype)
-  {
+  MCBasicService::setStationType(long fixed_stationtype) {
     m_stationtype=fixed_stationtype;
     m_btp->setStationType(fixed_stationtype);
   }
 
   void
-  MCBasicService::setSocketRx (Ptr<Socket> socket_rx)
-  {
+  MCBasicService::setSocketRx (Ptr<Socket> socket_rx) {
     m_btp->setSocketRx(socket_rx);
     m_btp->addMCMRxCallback (std::bind(&MCBasicService::receiveMCM,this,std::placeholders::_1,std::placeholders::_2));
   }
 
   void
-  MCBasicService::vLDM_handler (asn1cpp::Seq<MCM> decodedMCM)
-  {
+  MCBasicService::vLDM_handler (asn1cpp::Seq<MCM> decodedMCM) {
     return;
   }
 
   void
-  MCBasicService::receiveMCM (BTPDataIndication_t dataIndication, Address from)
-  {
+  MCBasicService::receiveMCM (BTPDataIndication_t dataIndication, Address from) {
     Ptr<Packet> packet;
     asn1cpp::Seq<MCM> decoded_MCM;
 
@@ -189,32 +179,26 @@ namespace ns3
     TimestampTag timestamp;
     dataIndication.data->PeekPacketTag(timestamp);
 
-    if(!snr_result)
-      {
+    if(!snr_result) {
         snr.Set(SENTINEL_VALUE);
       }
-    if (!rssi_result)
-      {
+    if (!rssi_result) {
         rssi.Set(SENTINEL_VALUE);
       }
-    if (!rsrp_result)
-      {
+    if (!rsrp_result) {
         rsrp.Set(SENTINEL_VALUE);
       }
-    if (!sinr_result)
-      {
+    if (!sinr_result) {
         sinr.Set(SENTINEL_VALUE);
       }
-    if (!size_result)
-      {
+    if (!size_result) {
         size.Set(SENTINEL_VALUE);
       }
 
     SetSignalInfo(timestamp.Get(), size.Get(), rssi.Get(), snr.Get(), sinr.Get(), rsrp.Get());
 
     /* Try to check if the received packet is really a MCM */
-    if (buffer[1]!=FIX_MCMID)
-      {
+    if (buffer[1]!=FIX_MCMID) {
         NS_LOG_ERROR("Warning: received a message which has messageID '"<<buffer[1]<<"' but '2' was expected.");
         free(buffer);
         return;
@@ -245,8 +229,7 @@ namespace ns3
 
 
   void
-  MCBasicService::checkMCMConditions()
-  {
+  MCBasicService::checkMCMConditions() {
     int64_t now=computeTimestampUInt64 ()/NANO_TO_MILLI;
     MCBasicService_error_t MCM_error;
     bool condition_verified=false;
@@ -258,8 +241,7 @@ namespace ns3
   }
 
   MCBasicService_error_t
-  MCBasicService::generateAndEncodeMCM(Ptr<MCSpecification> specification)
-  {
+  MCBasicService::generateAndEncodeMCM(Ptr<MCSpecification> specification) {
     // Only one container must be activated for one message
     NS_ASSERT (specification->checkContainers());
     VDP::MCM_mandatory_data_t MCM_mandatory_data;
@@ -274,8 +256,7 @@ namespace ns3
     /* Collect data for mandatory containers */
     auto MCM_message = asn1cpp::makeSeq(MCM);
 
-    if(bool(MCM_message)==false)
-      {
+    if(bool(MCM_message)==false) {
         return MCM_ALLOC_ERROR;
       }
 
@@ -297,8 +278,7 @@ namespace ns3
 
     asn1cpp::setField(MCM_message->payload.basicContainer.stationID, m_station_id);
     asn1cpp::setField(MCM_message->payload.basicContainer.itssRole, specification->getMCMItsRole());
-    if(m_vehicle==true)
-      {
+    if(m_vehicle==true) {
         asn1cpp::setField(MCM_message->payload.basicContainer.stationType, McmStationType_vehicle);
         MCM_mandatory_data = m_vdp->getMCMMandatoryData();
         asn1cpp::setField(MCM_message->payload.basicContainer.position.latitude, MCM_mandatory_data.latitude);
@@ -311,15 +291,13 @@ namespace ns3
         asn1cpp::setField(MCM_message->payload.basicContainer.mcmType, specification->getMCMType());
         asn1cpp::setField(MCM_message->payload.basicContainer.manoeuvreId, specification->getManeuverID());
         asn1cpp::setField(MCM_message->payload.basicContainer.concept, specification->getMCMConcept());
-        if (specification->useForesee())
-        {
+        if (specification->useForesee()) {
           int direction;
           if (MCM_mandatory_data.heading.getValue() == 90) direction = 0;
           else if (MCM_mandatory_data.heading.getValue() == 270) direction = 1;
           asn1cpp::setField(MCM_message->payload.basicContainer.direction, direction);
         }
-        else 
-        {
+        else {
           asn1cpp::setField(MCM_message->payload.basicContainer.direction, -1);
         }
         
@@ -332,20 +310,17 @@ namespace ns3
           asn1cpp::setField(rational->choice.manoeuvreCooperationCost, specification->getMCMCost());
         }
         specification->setOptional(&MCM_message->payload.basicContainer.rational, rational);
-        if (specification->getMCMType() == 4 || specification->getMCMType() == 7)
-          {
+        if (specification->getMCMType() == 4 || specification->getMCMType() == 7) {
             asn1cpp::setField (MCM_message->payload.basicContainer.executionStatus, specification->getMCMStatus());
           }
       }
-    else
-     {
+    else {
        /* Fill the basicContainer for RSU*/
        asn1cpp::setField(MCM_message->payload.basicContainer.stationType, McmStationType_roadsideUnit);
        // TODO
      }
 
-    if (specification->getManeuverContainer())
-      {
+    if (specification->getManeuverContainer()) {
         // Select this choice
         asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_vehicleManoeuvreContainer);
 
@@ -372,41 +347,39 @@ namespace ns3
           specification->add(asn_DEF_ManoeuvreAdvice, mac, advice);
         }
         specification->setOptional(&man.manoeuvreAdvice, mac);
-      } 
-    else if (specification->getAdviseContainer())
-      {
+    } 
+    else if (specification->getAdviseContainer()) {
         asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_advisedManoeuvreContainer);
         auto &adv = MCM_message->payload.mcmContainer.choice.advisedManoeuvreContainer;
         for (auto* advice_ptr : specification->getManeuverAdviceList()) {
           specification->add(asn_DEF_ManoeuvreAdvice, &adv, advice_ptr);
         }
-      }
-    else if (specification->getAcknowledgmentContainer())
-     {
+    }
+    else if (specification->getAcknowledgmentContainer()) {
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_acknowledgmentContainer);
        asn1cpp::setField(MCM_message->payload.mcmContainer.choice.acknowledgmentContainer.acknowledgedType, McmType_acknowledgment);
        asn1cpp::setField(MCM_message->payload.mcmContainer.choice.acknowledgmentContainer.generationDeltaTime, compute_timestampIts (m_real_time) % 65536);
-     }
-    else if (specification->getResponseContainer())
-     {
-       asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_responseContainer);
-       asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.coordinatorID, specification->getCoordinatorID());
-       if (specification->getMCMResponse() == 0)
-         {
-          asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.manouevreResponse, ManouevreResponse_accept);
-         }
-       else
-         {
-           asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.manouevreResponse, ManouevreResponse_decline);
-           asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.declineReason, specification->getMCMResponseDeclineReason());
-         }
-       }
-    else if (specification->getTerminatorContainer())
-     {
+    }
+    else if (specification->getResponseContainer()) {
+      asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_responseContainer);
+      asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.coordinatorID, specification->getCoordinatorID());
+      if (specification->getMCMResponse() == 0) {
+        asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.manouevreResponse, ManouevreResponse_accept);
+        }
+      else {
+          asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.manouevreResponse, ManouevreResponse_decline);
+          asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.declineReason, specification->getMCMResponseDeclineReason());
+        }
+
+      // Loop Submanoeuvres
+      for (auto* subm : specification->getSubmanoeuvreDescriptionList()) {
+        specification->add(asn_DEF_Submanoeuvre, &MCM_message->payload.mcmContainer.choice.responseContainer.submaneuvres, subm);
+      }
+    }
+    else if (specification->getTerminatorContainer()) {
        asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_terminationContainer);
      }
-    else
-     {
+    else {
        NS_FATAL_ERROR ("No container specified.");
      }
 
@@ -424,8 +397,7 @@ namespace ns3
      }
      */
 
-    if(encode_result.size()<1)
-    {
+    if(encode_result.size()<1) {
       return MCM_ASN1_UPER_ENC_ERROR;
     }
 
@@ -465,8 +437,7 @@ namespace ns3
   }
 
   uint64_t
-  MCBasicService::terminateDissemination()
-  {
+  MCBasicService::terminateDissemination() {
     Simulator::Remove(m_event_MCMCheckConditions);
     Simulator::Remove(m_event_MCMDisseminationStart);
     Simulator::Remove(m_event_MCMRsuDissemination);
@@ -474,16 +445,13 @@ namespace ns3
   }
 
   int64_t
-  MCBasicService::computeTimestampUInt64()
-  {
+  MCBasicService::computeTimestampUInt64() {
     int64_t int_tstamp=0;
 
-    if (!m_real_time)
-      {
+    if (!m_real_time) {
         int_tstamp=Simulator::Now ().GetNanoSeconds ();
       }
-    else
-      {
+    else {
         struct timespec tv;
 
         clock_gettime (CLOCK_MONOTONIC, &tv);
