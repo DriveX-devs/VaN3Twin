@@ -18,6 +18,7 @@
 #include "asn_SEQUENCE_OF.h"
 #include "constr_SEQUENCE_OF.h"
 #include "constr_SEQUENCE.h"
+#include "ns3/asn_utils.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,7 +35,7 @@ typedef struct TrrDescription {
 	LaneCount_t	*startingLaneNumber;	/* OPTIONAL */
 	LaneCount_t	*endingLaneNumber;	/* OPTIONAL */
 	struct waypoints {
-		A_SEQUENCE_OF(struct WayPoint) list;
+		A_SEQUENCE_OF(struct PathPoint) list;
 		
 		/* Context for parsing across buffer boundaries */
 		asn_struct_ctx_t _asn_ctx;

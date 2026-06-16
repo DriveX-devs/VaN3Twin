@@ -91,7 +91,7 @@ std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_lea
   // Binary search on acceleration of leader in [0, a_max]
   double lo = 0.0;
   double hi = p.a; // max acceleration
-  double delta_t = -1;
+  double best_delta_t = -1;
   for(int iter = 0; iter < MAX_LOOPS; iter++) {
       double a_candidate = (lo + hi) / 2.0;
       // Simulate gap evolution over horizon
@@ -100,6 +100,7 @@ std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_lea
       double v_l = speed_leader;
       double a_f_final = -200;
       double t = 0;
+      double delta_t = -1;
       for(; t <= horizon; t += dt) {
           // Follower IDM behind the leader
           double a_f = idmAcceleration(v_f, v_l, gap,
@@ -118,6 +119,8 @@ std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_lea
       // Check if at end of horizon ego can merge comfortably
       if(a_f_final >= MIN_DECELERATION) {
           hi = a_candidate; // enough, try less acceleration (less positive)
+          best_delta_t = delta_t;
+          break;
         }
       else {
           lo = a_candidate; // not enough, need more acceleration
@@ -126,7 +129,7 @@ std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_lea
   if(std::abs(hi - p.a) < 0.1)
     return {NO_SOLUTION, -1};
   if (hi < 0.1) hi = 0.0;
-  return {hi, delta_t}; // minimum acceleration RVAhead needs to apply
+  return {hi, best_delta_t}; // minimum acceleration RVAhead needs to apply
 }
 
 std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_leader, double speed_follower,
@@ -135,7 +138,7 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
   // Binary search on deceleration of follower in [0, a_max]
   double lo = -p.b;
   double hi = 0.0; // max deceleration
-  double delta_t = -1;
+  double best_delta_t = -1;
   for(int iter = 0; iter < MAX_LOOPS; iter++) {
       double d_candidate = (lo + hi) / 2.0;
       // Simulate gap evolution over horizon
@@ -144,6 +147,7 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
       double v_l = speed_leader;
       double a_f_final = -200;
       double t = 0;
+      double delta_t = -1;
       for(; t <= horizon; t += dt) {
           // Follower IDM behind the leader
           double a_f = idmAcceleration(v_f, v_l, gap,
@@ -162,6 +166,8 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
       // Check if at end of horizon ego can merge comfortably
       if(a_f_final >= MIN_DECELERATION) {
           lo = d_candidate; // enough, try less deceleration (less negative)
+          best_delta_t = delta_t;
+          break;
         }
       else {
           hi = d_candidate; // not enough, need more deceleration (more negative)
@@ -170,7 +176,7 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
   if(lo <= -p.b + 0.01)
     return {NO_SOLUTION, -1};
   if (lo > -0.1) lo = 0.0;
-  return {lo, delta_t}; // minimum deceleration
+  return {lo, best_delta_t}; // minimum deceleration
 }
 
 void
@@ -582,8 +588,8 @@ foresee::FORESEEMobilityModel () {
                 m_coordination_structure.coordination_id = m_vehicle_id + "_" + std::to_string(m_coordination_counter);
                 m_coordination_structure.sim_time_ms = Simulator::Now().GetMilliSeconds();
                 m_coordination_structure.desired_speed_hv = m_desired_speed;
-                m_coordination_structure.desired_speed_rv = desired_speed_RV;
-                m_coordination_structure.desired_speed_rvahead = desired_speed_RVAhead;
+                m_coordination_structure.desired_speed_rv = RV_id == -1 ? NOT_PRESENT : desired_speed_RV;
+                m_coordination_structure.desired_speed_rvahead = RVAhead_id == -1 ? NOT_PRESENT : desired_speed_RVAhead;
                 m_coordination_structure.lane_speed_hv = min_speed_mine;
                 m_coordination_structure.lane_speed_target = left_criterion ? min_speed_left : min_speed_right;
                 m_coordination_structure.type_hv = m_station_type;
@@ -634,11 +640,13 @@ foresee::FORESEEMobilityModel () {
                   double len = length_RV;
                   double dist = std::abs(x_RV - x_rv1);
                   if (dist > len) dist -= len; else dist = 0;
+                  m_coordination_structure.type_rv1 = sorted_behind[0].stationType;
                   m_coordination_structure.gap_rv_rv1 = dist;
                   m_coordination_structure.rel_speed_rv_rv1 = speed_RV - speed_rv1;
                   m_coordination_structure.rel_acc_rv_rv1 = acc_RV - acc_rv1;
                 }
                 else{
+                  m_coordination_structure.type_rv1 = NOT_PRESENT;
                   m_coordination_structure.gap_rv_rv1 = NOT_PRESENT;
                   m_coordination_structure.rel_speed_rv_rv1 = NOT_PRESENT;
                   m_coordination_structure.rel_acc_rv_rv1 = NOT_PRESENT;
@@ -652,11 +660,13 @@ foresee::FORESEEMobilityModel () {
                   double len = (double) sorted_behind[1].vehicleLength.getData() / DECI;
                   double dist = std::abs(x_rv1 - x_rv2);
                   if (dist > len) dist -= len; else dist = 0;
+                  m_coordination_structure.type_rv2 = sorted_behind[1].stationType;
                   m_coordination_structure.gap_rv1_rv2 = dist;
                   m_coordination_structure.rel_speed_rv1_rv2 = speed_rv1 - speed_rv2;
                   m_coordination_structure.rel_acc_rv1_rv2 = acc_rv1 - acc_rv2;
                 }
                 else{
+                  m_coordination_structure.type_rv2 = NOT_PRESENT;
                   m_coordination_structure.gap_rv1_rv2 = NOT_PRESENT;
                   m_coordination_structure.rel_speed_rv1_rv2 = NOT_PRESENT;
                   m_coordination_structure.rel_acc_rv1_rv2 = NOT_PRESENT;
@@ -681,11 +691,13 @@ foresee::FORESEEMobilityModel () {
                   double len = (double) sorted_ahead[0].vehicleLength.getData() / DECI;
                   double dist = std::abs(x_RVAhead - x_rvahead1);
                   if (dist > len) dist -= len; else dist = 0;
+                  m_coordination_structure.type_rvahead1 = sorted_ahead[0].stationType;
                   m_coordination_structure.gap_rvahead_rvahead1 = dist;
                   m_coordination_structure.rel_speed_rvahead_rvahead1 = speed_RVAhead - speed_rvahead1;
                   m_coordination_structure.rel_acc_rvahead_rvahead1 = acc_RVAhead - acc_rvahead1;
                 }
                 else {
+                  m_coordination_structure.type_rvahead1 = NOT_PRESENT;
                   m_coordination_structure.gap_rvahead_rvahead1 = NOT_PRESENT;
                   m_coordination_structure.rel_speed_rvahead_rvahead1 = NOT_PRESENT;
                   m_coordination_structure.rel_acc_rvahead_rvahead1 = NOT_PRESENT;
@@ -699,11 +711,13 @@ foresee::FORESEEMobilityModel () {
                   double len = (double) sorted_ahead[1].vehicleLength.getData() / DECI;
                   double dist = std::abs(x_rvahead1 - x_rvahead2);
                   if (dist > len) dist -= len; else dist = 0;
+                  m_coordination_structure.type_rvahead2 = sorted_ahead[1].stationType;
                   m_coordination_structure.gap_rvahead1_rvahead2 = dist;
                   m_coordination_structure.rel_speed_rvahead1_rvahead2 = speed_rvahead1 - speed_rvahead2;
                   m_coordination_structure.rel_acc_rvahead1_rvahead2 = acc_rvahead1 - acc_rvahead2;
                 }
                 else {
+                  m_coordination_structure.type_rvahead2 = NOT_PRESENT;
                   m_coordination_structure.gap_rvahead1_rvahead2 = NOT_PRESENT;
                   m_coordination_structure.rel_speed_rvahead1_rvahead2 = NOT_PRESENT;
                   m_coordination_structure.rel_acc_rvahead1_rvahead2 = NOT_PRESENT;

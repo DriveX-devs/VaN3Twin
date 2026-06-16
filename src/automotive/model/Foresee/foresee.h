@@ -56,6 +56,10 @@ public:
       StationType_t type_hv;
       StationType_t type_rv;
       StationType_t type_rvahead;
+      StationType_t type_rv1;
+      StationType_t type_rv2;
+      StationType_t type_rvahead1;
+      StationType_t type_rvahead2;
       double gap_hv_rv;                       // pos_hv - pos_rv
       double gap_hv_rvahead;                  // pos_hv - pos_rvahead
       double gap_rv_rvahead;                  // pos_rv - pos_rvahead

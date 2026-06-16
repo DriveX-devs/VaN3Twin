@@ -32,7 +32,7 @@ struct Speed;
 typedef struct Trajectory {
 	WayPointType_t	 wayPointType;
 	struct wayPoints {
-		A_SEQUENCE_OF(struct WayPoint) list;
+		A_SEQUENCE_OF(struct PathPoint) list;
 		
 		/* Context for parsing across buffer boundaries */
 		asn_struct_ctx_t _asn_ctx;
