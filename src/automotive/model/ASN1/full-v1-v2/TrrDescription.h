@@ -18,7 +18,6 @@
 #include "asn_SEQUENCE_OF.h"
 #include "constr_SEQUENCE_OF.h"
 #include "constr_SEQUENCE.h"
-#include "ns3/asn_utils.h"
 
 #ifdef __cplusplus
 extern "C" {

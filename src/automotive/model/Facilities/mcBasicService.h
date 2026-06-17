@@ -17,7 +17,6 @@
 #include "ns3/mcData.h"
 
 extern "C" {
-  #include "ns3/MCM.h"
   #include "ns3/constr_TYPE.h"
 }
 
