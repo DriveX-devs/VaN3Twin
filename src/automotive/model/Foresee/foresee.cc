@@ -31,6 +31,7 @@
 #include <random>
 #include <string>
 #include <tuple>
+#include "ns3/mcData.h"
 
 #define DOUBLE_TOLERANCE 0.5
 
@@ -45,8 +46,8 @@ TODO List:
 
 namespace ns3 {
 
-void txMCM(Ptr<MCBasicService> mc, Ptr<MCSpecification> specs) {
-  mc->generateAndEncodeMCM(specs);
+void txMCM(Ptr<MCBasicService> mc, mcData mcmData) {
+  mc->generateAndEncodeMCM(mcmData);
 }
 
 foresee::IDMParams foresee::getIDMParams(StationType_t type, double desired_speed) {
@@ -751,108 +752,57 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
   // Cancel any ghost from a previous cycle
   Simulator::Cancel(m_negotiation_event);
   Simulator::Cancel(m_tx_mcm_event);
-  Ptr<MCSpecification> specification = Create<MCSpecification>();
-  specification->setForesee();
   // Choose the container
-  specification->setAdviseContainer();
-  specification->setMCMItsRole (McmItssRole_coordinatingItss); // HV is the coordinator
+  mcData mcmData;
+	mcData::mcBasicContainer mcBasicContainer{};
+  mcBasicContainer.itsRole = McmItssRole_coordinatingItss; // HV is the coordinator
+  mcBasicContainer.concept = 0; // MCM Goal will be set
+  mcBasicContainer.cost = 0;
+  mcBasicContainer.goal = ManoeuvreCooperationGoal_localTrafficManagement; // FORESEE manages local traffic interactions
+  mcBasicContainer.mcmType = McmType::McmType_request; // HV asks the others for a cooperation
+  mcBasicContainer.maneuverID = left_criterion ? ManeuverID::GoToLeftLane : ManeuverID::GoToRightLane;
+  // FORESEE is designed for passenger cars and trucks
+  mcBasicContainer.stationType = m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon;
+  mcmData.setBasicContainer(mcBasicContainer);
+  mcData::mcAdviceContainer advice_container{};
+  mcmData.setAdviceContainer(advice_container);
+  std::vector<mcData::mcDataManeuverAdvice> parsed_advices;
   if (RV_id >= 0) {
-      ManoeuvreAdvice* adv = specification->create<ManoeuvreAdvice>(asn_DEF_ManoeuvreAdvice);
-      if (!adv) return;
-      adv->executantID = static_cast<StationId_t>(RV_id);
+    mcData::mcDataManeuverAdvice adv;
+    adv.executantID = static_cast<StationId_t>(RV_id);
+    adv.currentStateAdvisedChange.setData(CurrentStateAdvisedChange_PR_stayInLane);
 
-      // Allocate the CurrentStateAdvisedChange before filling it
-      CurrentStateAdvisedChange* csac = specification->create<CurrentStateAdvisedChange> (asn_DEF_CurrentStateAdvisedChange);
-      if (!csac) {
-        specification->free(adv);
-        return;
-      }
-      specification->set(&csac->present, CurrentStateAdvisedChange_PR_stayInLane);
-      specification->set(&csac->choice.stayInLane, 1);
-      specification->setOptional(&adv->currentStateAdvisedChange, csac);
+    mcData::mcDataAdvisedSubmaneuver subm;
+    if (dec_rv < 0) subm.submaneuverID = ManeuverID::Slowdown;
+    else subm.submaneuverID = ManeuverID::StayInLane;
 
-      Submanoeuvre_t* subm = specification->create<Submanoeuvre_t>(asn_DEF_Submanoeuvre);
-      if (!subm) {
-        specification->free(adv);
-        return;
-      }
-      if (dec_rv < 0) specification->set(&subm->submanoeuvreId, ManeuverID::Slowdown);
-      else specification->set(&subm->submanoeuvreId, ManeuverID::StayInLane);
-
-      ForeseeIndication* foresee_indication = specification->create<ForeseeIndication_t>(asn_DEF_ForeseeIndication);
-      if (!foresee_indication) {
-        specification->free(subm);
-        specification->free(adv);
-        return;
-      }
-      specification->set(&foresee_indication->acceleration.longitudinalAccelerationValue, dec_rv * CENTI);
-      specification->set(&foresee_indication->acceleration.longitudinalAccelerationConfidence, AccelerationConfidence::AccelerationConfidence_unavailable);
-      // Transform into Milliseconds
-      time_rv = time_rv * 1e3;
-      specification->set(&foresee_indication->duration, time_rv);
-      specification->setOptional(&subm->foreseeIndication, foresee_indication);
-
-      subm->advisedTrajectory = nullptr;
-      subm->advisedTargetRoadResource = nullptr;
-
-      if(!specification->add(asn_DEF_Submanoeuvre, &adv->submaneuvres, subm)) {
-        specification->free(adv);
-        return;
-      }
-    }
+    mcData::mcDataForeseeIndication foresee;
+    foresee.longitudinalAccelerationValue = dec_rv * CENTI;
+    foresee.longitudinalAccelerationConfidence.setData(AccelerationConfidence::AccelerationConfidence_unavailable);
+    // Transform into Milliseconds
+    time_rv = time_rv * 1e3;
+    foresee.duration = time_rv;
+    parsed_advices.push_back(adv);
+  }
 
   if (RVAhead_id >= 0) {
-      ManoeuvreAdvice* adv = specification->create<ManoeuvreAdvice>(asn_DEF_ManoeuvreAdvice);
-      if (!adv) return;
-      adv->executantID = static_cast<StationId_t>(RVAhead_id);
+    mcData::mcDataManeuverAdvice adv;
+    adv.executantID = static_cast<StationId_t>(RVAhead_id);
+    adv.currentStateAdvisedChange.setData(CurrentStateAdvisedChange_PR_stayInLane);
 
-      // Allocate the CurrentStateAdvisedChange before filling it
-      CurrentStateAdvisedChange* csac = specification->create<CurrentStateAdvisedChange> (asn_DEF_CurrentStateAdvisedChange);
-      if (!csac) {
-        specification->free(adv);
-        return;
-      }
-      specification->set(&csac->present, CurrentStateAdvisedChange_PR_stayInLane);
-      specification->set(&csac->choice.stayInLane, 1);
-      specification->setOptional(&adv->currentStateAdvisedChange, csac);
+    mcData::mcDataAdvisedSubmaneuver subm;
+    if (acc_rv_ahead > 0) subm.submaneuverID = ManeuverID::Accelerate;
+    else subm.submaneuverID = ManeuverID::StayInLane;
 
-      Submanoeuvre_t* subm = specification->create<Submanoeuvre_t>(asn_DEF_Submanoeuvre);
-      if (!subm) {
-        specification->free(adv);
-        return;
-      }
-      if (acc_rv_ahead > 0) specification->set(&subm->submanoeuvreId, ManeuverID::Accelerate);
-      else specification->set(&subm->submanoeuvreId, ManeuverID::StayInLane);
+    mcData::mcDataForeseeIndication foresee;
+    foresee.longitudinalAccelerationValue = acc_rv_ahead * CENTI;
+    foresee.longitudinalAccelerationConfidence.setData(AccelerationConfidence::AccelerationConfidence_unavailable);
+    // Transform into Milliseconds
+    time_rv_ahead = time_rv_ahead * 1e3;
+    foresee.duration = time_rv_ahead;
+    parsed_advices.push_back(adv);
+  }
 
-      ForeseeIndication* foresee_indication = specification->create<ForeseeIndication_t>(asn_DEF_ForeseeIndication);
-      if (!foresee_indication) {
-        specification->free(subm);
-        specification->free(adv);
-        return;
-      }
-      specification->set(&foresee_indication->acceleration.longitudinalAccelerationValue, acc_rv_ahead * CENTI);
-      specification->set(&foresee_indication->acceleration.longitudinalAccelerationConfidence, AccelerationConfidence::AccelerationConfidence_unavailable);
-      // Transform into Milliseconds
-      time_rv_ahead = time_rv_ahead * 1e3;
-      specification->set(&foresee_indication->duration, time_rv_ahead);
-      specification->setOptional(&subm->foreseeIndication, foresee_indication);
-
-      subm->advisedTrajectory = nullptr;
-      subm->advisedTargetRoadResource = nullptr;
-
-      if(!specification->add(asn_DEF_Submanoeuvre, &adv->submaneuvres, subm)) {
-        specification->free(adv);
-        return;
-      }
-    }
-
-  specification->setMCMConcept (0); // MCM Goal will be set
-  specification->setMCMCost (0);
-  specification->setMCMGoal (ManoeuvreCooperationGoal_localTrafficManagement); // FORESEE manages local traffic interactions
-  specification->setMCMType (McmType::McmType_request); // HV asks the others for a cooperation
-  specification->setManeuverID (left_criterion ? ManeuverID::GoToLeftLane : ManeuverID::GoToRightLane);
-  // FORESEE is designed for passenger cars and trucks
-  specification->setVehicleType (m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon);
   if(RV_id >= 0) m_acceptance_map[RV_id] = {false, dec_rv, time_rv};
   if(RVAhead_id >= 0) m_acceptance_map[RVAhead_id] = {false, acc_rv_ahead, time_rv_ahead};
   m_coordinator = true;
@@ -861,7 +811,7 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
   m_traci->vehicle.setSpeedMode(m_vehicle_id, 1);
   m_traci->vehicle.setAcceleration(m_vehicle_id, 0, 1);
   double value = m_dist(m_gen);
-  EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+  EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, mcmData);
   m_tx_mcm_event = e;
   m_left_criterion = left_criterion;
   m_target_lane = target_lane;
@@ -907,18 +857,20 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane) {
         
         // Start the maneuver
         // First send the ACK to the others
-        Ptr<MCSpecification> specification = Create<MCSpecification>();
-        specification->setForesee();
-        specification->setAcknowledgmentContainer();
-        specification->setMCMItsRole (McmItssRole_coordinatingItss);
-        specification->setMCMType (McmType::McmType_acknowledgment);
-        specification->setMCMConcept (0); // MCM Goal will be set
-        specification->setMCMCost (0); // Default, it is not used for this use case
-        specification->setMCMGoal (ManoeuvreCooperationGoal_localTrafficManagement); // FORESEE manages local traffic interactions
-        specification->setManeuverID(left_criterion ? ManeuverID::GoToLeftLane : ManeuverID::GoToRightLane);
-        specification->setVehicleType (m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon);
+        mcData mcmData;
+        mcData::mcBasicContainer mcBasicContainer{};
+        mcBasicContainer.itsRole = McmItssRole_coordinatingItss; // HV is the coordinator
+        mcBasicContainer.concept = 0; // MCM Goal will be set
+        mcBasicContainer.cost = 0;
+        mcBasicContainer.goal = ManoeuvreCooperationGoal_localTrafficManagement; // FORESEE manages local traffic interactions
+        mcBasicContainer.mcmType = McmType::McmType_acknowledgment; // HV asks the others for a cooperation
+        mcBasicContainer.maneuverID = left_criterion ? ManeuverID::GoToLeftLane : ManeuverID::GoToRightLane;
+        mcBasicContainer.stationType = m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon;
+        mcmData.setBasicContainer(mcBasicContainer);
+        mcData::mcAcknowledgeContainer ack{};
+        mcmData.setAcknowledgmentContainer(ack);
         double value = m_dist(m_gen);
-        EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+        EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, mcmData);
         m_tx_mcm_event = e;
         double time_to_wait = *std::max_element(times.begin(), times.end());
         // HV should keep constant speed until the time to change lane
@@ -1029,16 +981,20 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane) {
               }
               
               // Send termination to free all targets
-              Ptr<MCSpecification> specification = Create<MCSpecification>();
-              specification->setForesee();
-              specification->setTerminatorContainer();
-              specification->setMCMItsRole(McmItssRole_coordinatingItss);
-              specification->setMCMType(McmType::McmType_termination);
-              specification->setMCMConcept(0);
-              specification->setMCMCost(0);
-              specification->setMCMGoal(ManoeuvreCooperationGoal_localTrafficManagement);
+              mcData mcmData;
+              mcData::mcBasicContainer mcBasicContainer{};
+              mcBasicContainer.itsRole = McmItssRole_coordinatingItss; // HV is the coordinator
+              mcBasicContainer.concept = 0; // MCM Goal will be set
+              mcBasicContainer.cost = 0;
+              mcBasicContainer.goal = ManoeuvreCooperationGoal_localTrafficManagement; // FORESEE manages local traffic interactions
+              mcBasicContainer.mcmType = McmType::McmType_termination; // HV asks the others for a cooperation
+              mcBasicContainer.maneuverID = ManeuverID::Undefined;
+              mcBasicContainer.stationType = m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon;
+              mcmData.setBasicContainer(mcBasicContainer);
+              mcData::mcTerminationContainer term{};
+              mcmData.setTerminationContainer(term);
               double value = m_dist(m_gen);
-              EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+              EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, mcmData);
               m_tx_mcm_event = e;
 
               m_coordinator = false;
@@ -1047,8 +1003,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane) {
               m_traci->vehicle.setSpeedMode(m_vehicle_id, 31);
           }
         );
-      }
-    else {
+      } else {
         if (m_verbose) {
           double now_s = Simulator::Now().GetSeconds();
           if (reason == DeclineReason_agreementSeekingUnwanted) {
@@ -1072,18 +1027,20 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane) {
           }
         }
         // Cancel the maneuver
-        Ptr<MCSpecification> specification = Create<MCSpecification>();
-        specification->setForesee();
-        specification->setTerminatorContainer();
-        specification->setMCMItsRole (McmItssRole_coordinatingItss);
-        specification->setMCMType (McmType::McmType_termination);
-        specification->setMCMConcept (0); // MCM Goal will be set
-        specification->setMCMCost (0); // Default, it is not used for this use case
-        specification->setMCMGoal (ManoeuvreCooperationGoal_localTrafficManagement); // FORESEE manages local traffic interactions
-        specification->setManeuverID(left_criterion ? ManeuverID::GoToLeftLane : ManeuverID::GoToRightLane);
-        specification->setVehicleType (m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon);
+        mcData mcmData;
+        mcData::mcBasicContainer mcBasicContainer{};
+        mcBasicContainer.itsRole = McmItssRole_coordinatingItss; // HV is the coordinator
+        mcBasicContainer.concept = 0; // MCM Goal will be set
+        mcBasicContainer.cost = 0;
+        mcBasicContainer.goal = ManoeuvreCooperationGoal_localTrafficManagement; // FORESEE manages local traffic interactions
+        mcBasicContainer.mcmType = McmType::McmType_termination; // HV asks the others for a cooperation
+        mcBasicContainer.maneuverID = left_criterion ? ManeuverID::GoToLeftLane : ManeuverID::GoToRightLane;
+        mcBasicContainer.stationType = m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon;
+        mcmData.setBasicContainer(mcBasicContainer);
+        mcData::mcTerminationContainer term{};
+        mcmData.setTerminationContainer(term);
         double value = m_dist(m_gen);
-        EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+        EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, mcmData);
         m_tx_mcm_event = e;
         m_traci->vehicle.setSpeedMode(m_vehicle_id, 31);
         m_busy_with_maneuver = false;
@@ -1121,16 +1078,20 @@ void foresee::targetCheckACK() {
     // FORESEE already rescheduled by termination handler.
     return;
   }
-  Ptr<MCSpecification> specification = Create<MCSpecification>();
-  specification->setForesee();
-  specification->setTerminatorContainer();
-  specification->setMCMItsRole (McmItssRole_targetVehicle);
-  specification->setMCMType (McmType::McmType_cancellationRequest);
-  specification->setMCMConcept (0); // MCM Goal will be set
-  specification->setMCMCost (0); // Default, it is not used for this use case
-  specification->setMCMGoal(ManoeuvreCooperationGoal_localTrafficManagement);
+  mcData mcmData;
+  mcData::mcBasicContainer mcBasicContainer{};
+  mcBasicContainer.itsRole = McmItssRole_targetVehicle;
+  mcBasicContainer.concept = 0; // MCM Goal will be set
+  mcBasicContainer.cost = 0;
+  mcBasicContainer.goal = ManoeuvreCooperationGoal_localTrafficManagement; // FORESEE manages local traffic interactions
+  mcBasicContainer.mcmType = McmType::McmType_termination; // HV asks the others for a cooperation
+  mcBasicContainer.maneuverID = ManeuverID::Undefined;
+  mcBasicContainer.stationType = m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon;
+  mcmData.setBasicContainer(mcBasicContainer);
+  mcData::mcTerminationContainer term{};
+  mcmData.setTerminationContainer(term);
   double value = m_dist(m_gen);
-  EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+  EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, mcmData);
   m_tx_mcm_event = e;
   m_my_coordinator = -1;
   m_traci->vehicle.setSpeedMode(m_vehicle_id, 31);
@@ -1204,64 +1165,66 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
     case McmType::McmType_request:
       // Accept the coordination if the request is for us
       if (advice_container) {
-          bool accept = false;
-          bool speed_exceeds_desired = false;
-          bool msg_for_me = false;
-          int my_id = std::stol(m_vehicle_id.substr(3));
-          int adv_size = asn1cpp::sequenceof::getSize(adc);
-          for(int i = 0; i < adv_size; ++i) {
-              auto adv = adc.list.array[i];
-              StationId_t id = adv->executantID;
-              if (id == my_id) {
-                  msg_for_me = true;
-                  if (m_busy_with_maneuver) {
+        long sub_id_for_response;
+        bool accept = false;
+        bool speed_exceeds_desired = false;
+        bool msg_for_me = false;
+        int my_id = std::stol(m_vehicle_id.substr(3));
+        int adv_size = asn1cpp::sequenceof::getSize(adc);
+        for(int i = 0; i < adv_size; ++i) {
+            auto adv = adc.list.array[i];
+            StationId_t id = adv->executantID;
+            if (id == my_id) {
+                msg_for_me = true;
+                if (m_busy_with_maneuver) {
+                    if (m_verbose) {
+                        double now_s = Simulator::Now().GetSeconds();
+                        std::cout << "\n[MANEUVER REFUSED " << now_s << "]" << std::endl;
+                        std::cout << "Vehicle " << m_vehicle_id << " cannot accept maneuver from veh" << sender << " because it is busy with another" << std::endl;
+                      }
+                    break;
+                  }
+                else {
+                    // In FORESEE we have just one submaneuver per each executant
+                    auto subm = adv->submaneuvres.list.array[0];
+                    auto sub_id = asn1cpp::getField(subm->submanoeuvreId, Identifier1B_t);
+                    sub_id_for_response = sub_id;
+                    auto acc_value = (double) asn1cpp::getField(subm->foreseeIndication->acceleration.longitudinalAccelerationValue, LongitudinalAccelerationValue) / CENTI;
+                    auto time_s = (double) asn1cpp::getField(subm->foreseeIndication->duration, DeltaTimeMilliSecondPositive_t) / MILLI;
+                    if ((sub_id == ManeuverID::Accelerate && acc_value < 0) || (sub_id == ManeuverID::Slowdown && acc_value > 0) || (sub_id == ManeuverID::StayInLane && acc_value != 0)) {
+                      // Error in message generation: acceleration/deceleration required but acceleration sign is not consistent
                       if (m_verbose) {
-                          double now_s = Simulator::Now().GetSeconds();
-                          std::cout << "\n[MANEUVER REFUSED " << now_s << "]" << std::endl;
-                          std::cout << "Vehicle " << m_vehicle_id << " cannot accept maneuver from veh" << sender << " because it is busy with another" << std::endl;
-                        }
+                        std::cout << "\n[ERROR IN MESSAGE]" << std::endl;
+                        std::cout << "Acceleration or deceleration not right" << std::endl;
+                      }
                       break;
                     }
-                  else {
-                      // In FORESEE we have just one submaneuver per each executant
-                      auto subm = adv->submaneuvres.list.array[0];
-                      auto sub_id = asn1cpp::getField(subm->submanoeuvreId, Identifier1B_t);
-                      auto acc_value = (double) asn1cpp::getField(subm->foreseeIndication->acceleration.longitudinalAccelerationValue, LongitudinalAccelerationValue) / CENTI;
-                      auto time_s = (double) asn1cpp::getField(subm->foreseeIndication->duration, DeltaTimeMilliSecondPositive_t) / MILLI;
-                      if ((sub_id == ManeuverID::Accelerate && acc_value < 0) || (sub_id == ManeuverID::Slowdown && acc_value > 0) || (sub_id == ManeuverID::StayInLane && acc_value != 0)) {
-                        // Error in message generation: acceleration/deceleration required but acceleration sign is not consistent
-                        if (m_verbose) {
-                          std::cout << "\n[ERROR IN MESSAGE]" << std::endl;
-                          std::cout << "Acceleration or deceleration not right" << std::endl;
-                        }
-                        break;
+                    double current_speed = m_vdp->getSpeedValue();
+                    double future_speed = current_speed + acc_value * time_s;
+                    if ((future_speed - m_desired_speed) > DOUBLE_TOLERANCE) {
+                      speed_exceeds_desired = true;
+                      if (m_verbose) {
+                        double now_s = Simulator::Now().GetSeconds();
+                        std::cout << "\n[MANEUVER REFUSED " << now_s << "]" <<std::endl;
+                        std::cout << "For vehicle " << m_vehicle_id << " the final speed would exceed the desired one: " << m_desired_speed << " < " << future_speed << std::endl;
                       }
-                      double current_speed = m_vdp->getSpeedValue();
-                      double future_speed = current_speed + acc_value * time_s;
-                      if ((future_speed - m_desired_speed) > DOUBLE_TOLERANCE) {
-                        speed_exceeds_desired = true;
-                        if (m_verbose) {
-                          double now_s = Simulator::Now().GetSeconds();
-                          std::cout << "\n[MANEUVER REFUSED " << now_s << "]" <<std::endl;
-                          std::cout << "For vehicle " << m_vehicle_id << " the final speed would exceed the desired one: " << m_desired_speed << " < " << future_speed << std::endl;
-                        }
-                        break;
-                      }
-                      else if (m_vdp->getTravelledDistance() > MAX_DISTANCE_TRAVELED_TO_COORDINATE) {
-                        // The vehicle that is requested to coordinate is too close to the end of the road segment
-                        // It is not safe to coordinate, we refuse the coordination
-                        if (m_verbose) {
-                          double now_s = Simulator::Now().GetSeconds();
-                          std::cout << "\n[MANEUVER REFUSED " << now_s << "]" <<std::endl;
-                          std::cout << "Vehicle " << m_vehicle_id << " is too close to the end of the road segment" << std::endl;
-                        }
-                        break;
-                      }
-                      m_required_acceleration_time = std::make_tuple(acc_value, time_s);
-                      accept = true;
                       break;
                     }
-                }
+                    else if (m_vdp->getTravelledDistance() > MAX_DISTANCE_TRAVELED_TO_COORDINATE) {
+                      // The vehicle that is requested to coordinate is too close to the end of the road segment
+                      // It is not safe to coordinate, we refuse the coordination
+                      if (m_verbose) {
+                        double now_s = Simulator::Now().GetSeconds();
+                        std::cout << "\n[MANEUVER REFUSED " << now_s << "]" <<std::endl;
+                        std::cout << "Vehicle " << m_vehicle_id << " is too close to the end of the road segment" << std::endl;
+                      }
+                      break;
+                    }
+                    m_required_acceleration_time = std::make_tuple(acc_value, time_s);
+                    accept = true;
+                    break;
+                  }
+              }
             }
           if (accept && msg_for_me) {
               if (m_verbose) {
@@ -1273,40 +1236,46 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
               m_traci->vehicle.setSpeedMode(m_vehicle_id, 1);
               m_traci->vehicle.setAcceleration(m_vehicle_id, 0, 1.5);
               // Accept the coordination
-              Ptr<MCSpecification> specification = Create<MCSpecification>();
-              specification->setForesee();
-              specification->setResponseContainer();
-              specification->setMCMItsRole (McmItssRole_targetVehicle);
-              specification->setMCMType(McmType::McmType_response);
-              specification->setMCMResponse (0);
-              specification->setMCMConcept(0);
-              specification->setMCMCost(0);
-              specification->setMCMGoal(ManoeuvreCooperationGoal_localTrafficManagement);
-              specification->setCoordinatorID(sender);
+              mcData mcmData;
+              mcData::mcBasicContainer mcBasicContainer{};
+              mcBasicContainer.itsRole = McmItssRole_targetVehicle; // HV is the coordinator
+              mcBasicContainer.concept = 0; // MCM Goal will be set
+              mcBasicContainer.cost = 0;
+              mcBasicContainer.goal = ManoeuvreCooperationGoal_localTrafficManagement; // FORESEE manages local traffic interactions
+              mcBasicContainer.mcmType = McmType::McmType_response; // HV asks the others for a cooperation
+              mcBasicContainer.maneuverID = sub_id_for_response;
+              mcBasicContainer.stationType = m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon;
+              mcmData.setBasicContainer(mcBasicContainer);
+              mcData::mcResponseContainer resp{};
+              resp.response = 0;
+              mcmData.setResponseContainer(resp);
               m_busy_with_maneuver = true;
               m_my_coordinator = sender;
               m_my_coordinator_responded = false;
               double value = m_dist(m_gen);
-              EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+              EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, mcmData);
               m_tx_mcm_event = e;
               m_ack_event = Simulator::Schedule(MilliSeconds(m_negotiation_time + 200), &foresee::targetCheckACK, this);
             }
           else if (!accept && msg_for_me) {
               // Refuse the coordination
-              Ptr<MCSpecification> specification = Create<MCSpecification>();
-              specification->setForesee();
-              specification->setResponseContainer();
-              specification->setMCMItsRole (McmItssRole_targetVehicle);
-              specification->setMCMResponse (1);
-              specification->setMCMConcept(0);
-              specification->setMCMCost(0);
-              specification->setMCMGoal(ManoeuvreCooperationGoal_localTrafficManagement);
-              specification->setMCMType(McmType::McmType_response);
-              if (speed_exceeds_desired) specification->setMCMResponseDeclineReason(DeclineReason_agreementSeekingUnwanted); // Acceleration/Deceleration not convenient
-              else specification->setMCMResponseDeclineReason(DeclineReason_unableToConform); // Busy with another maneuver
-              specification->setCoordinatorID(sender);
+              mcData mcmData;
+              mcData::mcBasicContainer mcBasicContainer{};
+              mcBasicContainer.itsRole = McmItssRole_targetVehicle; // HV is the coordinator
+              mcBasicContainer.concept = 0; // MCM Goal will be set
+              mcBasicContainer.cost = 0;
+              mcBasicContainer.goal = ManoeuvreCooperationGoal_localTrafficManagement; // FORESEE manages local traffic interactions
+              mcBasicContainer.mcmType = McmType::McmType_response; // HV asks the others for a cooperation
+              mcBasicContainer.maneuverID = sub_id_for_response;
+              mcBasicContainer.stationType = m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon;
+              mcmData.setBasicContainer(mcBasicContainer);
+              mcData::mcResponseContainer resp{};
+              resp.response = 1;
+              if (speed_exceeds_desired) resp.declineReason.setData(DeclineReason_agreementSeekingUnwanted);
+              else resp.declineReason.setData(DeclineReason_unableToConform);
+              mcmData.setResponseContainer(resp);
               double value = m_dist(m_gen);
-              EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+              EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, mcmData);
               m_tx_mcm_event = e;
             }
           else if (!msg_for_me) {
@@ -1433,16 +1402,20 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
         Simulator::Cancel(m_negotiation_event);
         Simulator::Cancel(m_change_lane_event);
         Simulator::Cancel(m_tx_mcm_event);
-        Ptr<MCSpecification> specification = Create<MCSpecification>();
-        specification->setForesee();
-        specification->setTerminatorContainer();
-        specification->setMCMItsRole (McmItssRole_coordinatingItss);
-        specification->setMCMType (McmType::McmType_termination);
-        specification->setMCMConcept (0); // MCM Goal will be set
-        specification->setMCMCost (0); // Default, it is not used for this use case
-        specification->setMCMGoal(ManoeuvreCooperationGoal_localTrafficManagement);
+        mcData mcmData;
+        mcData::mcBasicContainer mcBasicContainer{};
+        mcBasicContainer.itsRole = McmItssRole_coordinatingItss;
+        mcBasicContainer.concept = 0; // MCM Goal will be set
+        mcBasicContainer.cost = 0;
+        mcBasicContainer.goal = ManoeuvreCooperationGoal_localTrafficManagement; // FORESEE manages local traffic interactions
+        mcBasicContainer.mcmType = McmType::McmType_termination; // HV asks the others for a cooperation
+        mcBasicContainer.maneuverID = ManeuverID::Undefined;
+        mcBasicContainer.stationType = m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon;
+        mcmData.setBasicContainer(mcBasicContainer);
+        mcData::mcTerminationContainer term{};
+        mcmData.setTerminationContainer(term);
         double value = m_dist(m_gen);
-        EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, specification);
+        EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, mcmData);
         m_tx_mcm_event = e;
         m_traci->vehicle.setSpeedMode(m_vehicle_id, 31);
         m_coordinator = false;

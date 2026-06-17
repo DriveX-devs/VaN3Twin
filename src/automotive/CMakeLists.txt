@@ -1607,6 +1607,7 @@ set(header_files
         model/Applications/v2xEmulator.h
         model/utilities/csv-utils.h
         model/Facilities/mcBasicService.h
+        model/Facilities/mcData.h
         model/Foresee/foresee.h
         model/Foresee/desired_speed_tag.h
 
