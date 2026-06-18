@@ -34,10 +34,10 @@ asn_TYPE_member_t asn_MBR_Submanoeuvre_1[] = {
      "submanoeuvreId"
     },
     /* foreseeIndication */
-    { ATF_POINTER, 1, offsetof(struct Submanoeuvre, foreseeIndication),
+    /*{ ATF_POINTER, 1, offsetof(struct Submanoeuvre, foreseeIndication),
      (ASN_TAG_CLASS_CONTEXT | (1 << 2)),
      -1,	/* IMPLICIT tag at current level */
-     &asn_DEF_ForeseeIndication,
+     /*&asn_DEF_ForeseeIndication,
      0,
      {
 #if !defined(ASN_DISABLE_OER_SUPPORT)
@@ -53,10 +53,10 @@ asn_TYPE_member_t asn_MBR_Submanoeuvre_1[] = {
     },
     0, 0,
     "foreseeIndication"
-    },
+    }*/
     /* advisedTrajectory: OPTIONAL, index 3, tag 3 — 1 optional member follows */
     { ATF_POINTER, 1, offsetof(struct Submanoeuvre, advisedTrajectory),
-     (ASN_TAG_CLASS_CONTEXT | (2 << 2)),
+     (ASN_TAG_CLASS_CONTEXT | (1 << 2)),
      -1,	/* IMPLICIT tag at current level */
      &asn_DEF_Trajectory,
      0,
@@ -75,9 +75,9 @@ asn_TYPE_member_t asn_MBR_Submanoeuvre_1[] = {
      0, 0,
      "advisedTrajectory"
     },
-    /* advisedTargetRoadResource: OPTIONAL, index 4, tag 4 — 0 optional members follow */
+    /* advisedTargetRoadResource: OPTIONAL, index 2, tag 2 — 0 optional members follow */
     { ATF_POINTER, 1, offsetof(struct Submanoeuvre, advisedTargetRoadResource),
-     (ASN_TAG_CLASS_CONTEXT | (3 << 2)),
+     (ASN_TAG_CLASS_CONTEXT | (2 << 2)),
      -1,	/* IMPLICIT tag at current level */
      &asn_DEF_AdvisedTrrContainer,
      0,
@@ -98,28 +98,28 @@ asn_TYPE_member_t asn_MBR_Submanoeuvre_1[] = {
     },
 };
 
-/* Optional members: foreseeIndication(1), advisedTrajectory(2), advisedTargetRoadResource(3) */
-static const int asn_MAP_Submanoeuvre_oms_1[] = { 1, 2, 3 };
+/* Optional members: advisedTrajectory(1), advisedTargetRoadResource(2) */
+static const int asn_MAP_Submanoeuvre_oms_1[] = { 1, 2 };
 
 static const ber_tlv_tag_t asn_DEF_Submanoeuvre_tags_1[] = {
     (ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
 
-/* tag2el: 5 entries, tags 0-4 */
+/* tag2el: 3 entries, tags 0-2 */
 static const asn_TYPE_tag2member_t asn_MAP_Submanoeuvre_tag2el_1[] = {
     { (ASN_TAG_CLASS_CONTEXT | (0 << 2)), 0, 0, 0 }, /* submanoeuvreId */
-    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* foreseeIndication */
-    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }, /* advisedTrajectory */
-    { (ASN_TAG_CLASS_CONTEXT | (3 << 2)), 3, 0, 0 }  /* advisedTargetRoadResource */
+    // { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* foreseeIndication */
+    { (ASN_TAG_CLASS_CONTEXT | (1 << 2)), 1, 0, 0 }, /* advisedTrajectory */
+    { (ASN_TAG_CLASS_CONTEXT | (2 << 2)), 2, 0, 0 }  /* advisedTargetRoadResource */
 };
 
 asn_SEQUENCE_specifics_t asn_SPC_Submanoeuvre_specs_1 = {
     sizeof(struct Submanoeuvre),
     offsetof(struct Submanoeuvre, _asn_ctx),
     asn_MAP_Submanoeuvre_tag2el_1,
-    5,	/* Count of tags in the map */
+    3,	/* Count of tags in the map */
     asn_MAP_Submanoeuvre_oms_1,	/* Optional members */
-    3, 0,	/* 4 optional members, 0 extension additions */
+    2, 0,	/* 2 optional members, 0 extension additions */
     -1,	/* First extension addition */
 };
 
@@ -146,6 +146,6 @@ asn_TYPE_descriptor_t asn_DEF_Submanoeuvre = {
         SEQUENCE_constraint
     },
     asn_MBR_Submanoeuvre_1,
-    4,	/* Elements count */
+    3,	/* Elements count */
     &asn_SPC_Submanoeuvre_specs_1
 };

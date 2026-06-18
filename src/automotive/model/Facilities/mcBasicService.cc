@@ -513,24 +513,11 @@ namespace ns3 {
               asn1cpp::setField(asn_adv->currentStateAdvisedChange, csac);
           }
 
-          // --- submaneuvers (da mcDataAdvisedSubmaneuver) ---
+          // --- submaneuvers (mcDataAdvisedSubmaneuver) ---
           for (const auto& native_subm : native_adv.submaneuvers) {
               auto asn_subm = asn1cpp::makeSeq(Submanoeuvre);
 
               asn1cpp::setField(asn_subm->submanoeuvreId, native_subm.submaneuverID);
-
-              // --- ForeseeIndication (optional) ---
-              if (native_subm.foreseeIndication.isAvailable()) {
-                const auto& native_foresee = native_subm.foreseeIndication.getData();
-                auto foresee = asn1cpp::makeSeq(ForeseeIndication);
-                asn1cpp::setField(foresee->duration, native_foresee.duration);
-                asn1cpp::setField(foresee->acceleration.longitudinalAccelerationValue, native_foresee.longitudinalAccelerationValue);
-                if (native_foresee.longitudinalAccelerationConfidence.isAvailable()) {
-                  asn1cpp::setField(foresee->acceleration.longitudinalAccelerationConfidence, native_foresee.longitudinalAccelerationConfidence.getData());
-                } else {
-                  asn1cpp::setField(foresee->acceleration.longitudinalAccelerationConfidence, AccelerationConfidence::AccelerationConfidence_unavailable);
-                }
-              }
 
               // --- advisedTrajectory (optional) ---
               if (native_subm.advisedTrajectory.isAvailable()) {
@@ -634,10 +621,8 @@ namespace ns3 {
 
                   asn1cpp::setField(asn_subm->advisedTargetRoadResource, atrr);
               }
-
               asn1cpp::sequenceof::pushList(asn_adv->submaneuvres, asn_subm);
           }
-
           asn1cpp::sequenceof::pushList(*asn_list, asn_adv);
       }
 
@@ -1067,6 +1052,11 @@ namespace ns3 {
     }
 
     Ptr<Packet> packet = Create<Packet> ((uint8_t*) encode_result.c_str(), encode_result.size());
+
+    // TODO Add Foresee indication as tags of packet
+    DesiredSpeedTag tag;
+    tag.SetDesiredSpeed(m_desired_speed);
+    packet->AddPacketTag(tag);
 
     // dataRequest.socket = specification->socket;
     dataRequest.BTPType = BTP_B; //!< BTP-B

@@ -530,50 +530,48 @@ foresee::FORESEEMobilityModel () {
             bool possible_rv = true;
 
             if(RVAhead_id >= 0) {
-                // Acceleration HV would experience with RVAhead as new leader
-                IDMParams ego_params = getIDMParams(static_cast<StationType> (m_station_type), m_desired_speed);
-                double a_ego_after = idmAcceleration(my_speed, speed_RVAhead, min_dist_rv_ahead,
-                                                      ego_params.v0, ego_params.T,
-                                                      ego_params.s0, ego_params.a, ego_params.b, ego_params.d);
-                if(a_ego_after < MIN_DECELERATION) possible_hv = false;
-                if(!possible_hv) {
-                    // It is needed to open the gap between RVAhead and HV
-                    // RVAhead needs to accelerate
-                    std::tuple<double, double> tuple = computeRequiredAcceleration (speed_RVAhead, my_speed, min_dist_rv_ahead, ego_params, 0.1, round(m_maneuver_horizon / 1e3));
-                    double a = std::get<0>(tuple);
-                    double time = std::get<1>(tuple);
-                    NS_ASSERT((time >= 0.0 && time <= 5.0) || time == -1.0);
-                    if (std::abs(a - NO_SOLUTION) > DOUBLE_TOLERANCE)
-                      {
-                        acc_rv_ahead = a;
-                        time_rv_ahead = time;
-                        possible_hv = true;
-                      }
+              // Acceleration HV would experience with RVAhead as new leader
+              IDMParams ego_params = getIDMParams(static_cast<StationType> (m_station_type), m_desired_speed);
+              double a_ego_after = idmAcceleration(my_speed, speed_RVAhead, min_dist_rv_ahead,
+                                                    ego_params.v0, ego_params.T,
+                                                    ego_params.s0, ego_params.a, ego_params.b, ego_params.d);
+              if(a_ego_after < MIN_DECELERATION) possible_hv = false;
+              if(!possible_hv) {
+                // It is needed to open the gap between RVAhead and HV
+                // RVAhead needs to accelerate
+                std::tuple<double, double> tuple = computeRequiredAcceleration (speed_RVAhead, my_speed, min_dist_rv_ahead, ego_params, 0.1, round(m_maneuver_horizon / 1e3));
+                double a = std::get<0>(tuple);
+                double time = std::get<1>(tuple);
+                NS_ASSERT((time >= 0.0 && time <= 5.0) || time == -1.0);
+                if (std::abs(a - NO_SOLUTION) > DOUBLE_TOLERANCE){
+                    acc_rv_ahead = a;
+                    time_rv_ahead = time;
+                    possible_hv = true;
                   }
               }
+            }
 
             if(RV_id >= 0) {
-                // Acceleration RV would experience with HV as new leader
-                IDMParams params = getIDMParams(type_RV, desired_speed_RV);
-                double a_ego_after = idmAcceleration(speed_RV, my_speed, min_dist_rv,
-                                                      params.v0, params.T,
-                                                      params.s0, params.a, params.b, params.d);
-                if(a_ego_after < MIN_DECELERATION) possible_rv = false;
-                if(!possible_rv) {
-                    // It is needed to open the gap between RV and HV
-                    // RV needs to decelerate
-                    std::tuple<double, double> tuple = computeRequiredDeceleration (my_speed, speed_RV, min_dist_rv, params, 0.1, round(m_maneuver_horizon / 1e3));
-                    double a = std::get<0>(tuple);
-                    double time = std::get<1>(tuple);
-                    NS_ASSERT((time >= 0.0 && time <= 5.0) || time == -1.0);
-                    if (std::abs(a - NO_SOLUTION) > DOUBLE_TOLERANCE)
-                      {
-                        dec_rv = a;
-                        time_rv = time;
-                        possible_rv = true;
-                      }
-                  }
+              // Acceleration RV would experience with HV as new leader
+              IDMParams params = getIDMParams(type_RV, desired_speed_RV);
+              double a_ego_after = idmAcceleration(speed_RV, my_speed, min_dist_rv,
+                                                    params.v0, params.T,
+                                                    params.s0, params.a, params.b, params.d);
+              if(a_ego_after < MIN_DECELERATION) possible_rv = false;
+              if(!possible_rv) {
+                // It is needed to open the gap between RV and HV
+                // RV needs to decelerate
+                std::tuple<double, double> tuple = computeRequiredDeceleration (my_speed, speed_RV, min_dist_rv, params, 0.1, round(m_maneuver_horizon / 1e3));
+                double a = std::get<0>(tuple);
+                double time = std::get<1>(tuple);
+                NS_ASSERT((time >= 0.0 && time <= 5.0) || time == -1.0);
+                if (std::abs(a - NO_SOLUTION) > DOUBLE_TOLERANCE) {
+                    dec_rv = a;
+                    time_rv = time;
+                    possible_rv = true;
+                }
               }
+            }
             
             if (possible_hv && possible_rv) {
               // If we have RV and/or RVAhead but they don't need to change their current gap with HV, we ask them to keep constant speed
@@ -764,8 +762,6 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
   // FORESEE is designed for passenger cars and trucks
   mcBasicContainer.stationType = m_station_type == StationType_passengerCar ? Iso3833VehicleType_passengerCar : Iso3833VehicleType_truckStationWagon;
   mcmData.setBasicContainer(mcBasicContainer);
-  mcData::mcAdviceContainer advice_container{};
-  mcmData.setAdviceContainer(advice_container);
   std::vector<mcData::mcDataManeuverAdvice> parsed_advices;
   if (RV_id >= 0) {
     mcData::mcDataManeuverAdvice adv;
@@ -782,6 +778,8 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
     // Transform into Milliseconds
     time_rv = time_rv * 1e3;
     foresee.duration = time_rv;
+    subm.foreseeIndication = foresee;
+    adv.submaneuvers.push_back(subm);
     parsed_advices.push_back(adv);
   }
 
@@ -800,8 +798,14 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
     // Transform into Milliseconds
     time_rv_ahead = time_rv_ahead * 1e3;
     foresee.duration = time_rv_ahead;
+    subm.foreseeIndication = foresee;
+    adv.submaneuvers.push_back(subm);
     parsed_advices.push_back(adv);
   }
+
+  mcData::mcAdviceContainer advice_container{};
+  advice_container.advices = parsed_advices;
+  mcmData.setAdviceContainer(advice_container);
 
   if(RV_id >= 0) m_acceptance_map[RV_id] = {false, dec_rv, time_rv};
   if(RVAhead_id >= 0) m_acceptance_map[RVAhead_id] = {false, acc_rv_ahead, time_rv_ahead};
