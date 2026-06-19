@@ -31,7 +31,6 @@
 #include <random>
 #include <string>
 #include <tuple>
-#include "ns3/mcData.h"
 
 #define DOUBLE_TOLERANCE 0.5
 
@@ -182,16 +181,18 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
 
 void
 foresee::addMCMRxCallback () {
-  std::function<void(const asn1cpp::Seq<MCM>&, Address, StationID_t, StationType_t, SignalInfo)> rx_callback =
-      std::bind(&foresee::receiveMCM,
+  std::function<void(const asn1cpp::Seq<MCM>&, Address, StationID_t, StationType_t, SignalInfo, mcData::mcDataForeseeIndication, mcData::mcDataForeseeIndication)>
+  rx_callback = std::bind(&foresee::receiveMCM,
                  this,
                  std::placeholders::_1,
                  std::placeholders::_2,
                  std::placeholders::_3,
                  std::placeholders::_4,
-                 std::placeholders::_5);
-  m_MCMReceiveCallbackExtended = rx_callback;
-  m_mcs_ptr->addMCRxCallbackExtended (m_MCMReceiveCallbackExtended);
+                 std::placeholders::_5,
+                 std::placeholders::_6,
+                std::placeholders::_7);
+  m_MCMReceiveCallbackForesee = rx_callback;
+  m_mcs_ptr->addMCRxCallbackForesee (m_MCMReceiveCallbackForesee);
 }
 
 void
@@ -231,7 +232,7 @@ foresee::WrapperFORESEEMobilityModel(bool start_foresee)
   if (m_node == nullptr) {
       NS_FATAL_ERROR ("FORESEE Mobility Model needs the pointer of the vehicle node.");
     }
-  if (m_MCMReceiveCallbackExtended == nullptr) {
+  if (m_MCMReceiveCallbackForesee == nullptr) {
       NS_FATAL_ERROR ("FORESEE Mobility Model needs the callback for MCM.");
     }
   
@@ -769,16 +770,13 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
     adv.currentStateAdvisedChange.setData(CurrentStateAdvisedChange_PR_stayInLane);
 
     mcData::mcDataAdvisedSubmaneuver subm;
-    if (dec_rv < 0) subm.submaneuverID = ManeuverID::Slowdown;
-    else subm.submaneuverID = ManeuverID::StayInLane;
+    subm.submaneuverID = ManeuverID::Slowdown; // Always slow down for RV
 
     mcData::mcDataForeseeIndication foresee;
-    foresee.longitudinalAccelerationValue = dec_rv * CENTI;
+    foresee.longitudinalAccelerationValue = dec_rv;
     foresee.longitudinalAccelerationConfidence.setData(AccelerationConfidence::AccelerationConfidence_unavailable);
-    // Transform into Milliseconds
-    time_rv = time_rv * 1e3;
     foresee.duration = time_rv;
-    subm.foreseeIndication = foresee;
+    mcmData.setForeseeIndicationRV(foresee);
     adv.submaneuvers.push_back(subm);
     parsed_advices.push_back(adv);
   }
@@ -789,16 +787,13 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
     adv.currentStateAdvisedChange.setData(CurrentStateAdvisedChange_PR_stayInLane);
 
     mcData::mcDataAdvisedSubmaneuver subm;
-    if (acc_rv_ahead > 0) subm.submaneuverID = ManeuverID::Accelerate;
-    else subm.submaneuverID = ManeuverID::StayInLane;
+    subm.submaneuverID = ManeuverID::Accelerate; // Always accelerate for RVAhead
 
     mcData::mcDataForeseeIndication foresee;
-    foresee.longitudinalAccelerationValue = acc_rv_ahead * CENTI;
+    foresee.longitudinalAccelerationValue = acc_rv_ahead;
     foresee.longitudinalAccelerationConfidence.setData(AccelerationConfidence::AccelerationConfidence_unavailable);
-    // Transform into Milliseconds
-    time_rv_ahead = time_rv_ahead * 1e3;
     foresee.duration = time_rv_ahead;
-    subm.foreseeIndication = foresee;
+    mcmData.setForeseeIndicationRVAhead(foresee);
     adv.submaneuvers.push_back(subm);
     parsed_advices.push_back(adv);
   }
@@ -1109,7 +1104,7 @@ void foresee::targetCheckACK() {
   ScheduleNextCheck(MilliSeconds(m_FORESEE_check_ms));
 }
 
-void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info) {
+void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info, mcData::mcDataForeseeIndication foresee_indication_rv, mcData::mcDataForeseeIndication foresee_indication_rvahead) {
   StationId_t sender = mcm->header.stationId;
   long now = compute_timestampIts (m_real_time) % 65536;
   mcm->payload.basicContainer.generationDeltaTime;
@@ -1193,15 +1188,14 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
                     auto subm = adv->submaneuvres.list.array[0];
                     auto sub_id = asn1cpp::getField(subm->submanoeuvreId, Identifier1B_t);
                     sub_id_for_response = sub_id;
-                    auto acc_value = (double) asn1cpp::getField(subm->foreseeIndication->acceleration.longitudinalAccelerationValue, LongitudinalAccelerationValue) / CENTI;
-                    auto time_s = (double) asn1cpp::getField(subm->foreseeIndication->duration, DeltaTimeMilliSecondPositive_t) / MILLI;
-                    if ((sub_id == ManeuverID::Accelerate && acc_value < 0) || (sub_id == ManeuverID::Slowdown && acc_value > 0) || (sub_id == ManeuverID::StayInLane && acc_value != 0)) {
-                      // Error in message generation: acceleration/deceleration required but acceleration sign is not consistent
-                      if (m_verbose) {
-                        std::cout << "\n[ERROR IN MESSAGE]" << std::endl;
-                        std::cout << "Acceleration or deceleration not right" << std::endl;
-                      }
-                      break;
+                    double acc_value, time_s;
+                    if (sub_id == ManeuverID::Accelerate) {
+                      // I am the RVAhead in this situation, I need to take the acceleration
+                      acc_value = foresee_indication_rvahead.longitudinalAccelerationValue;
+                      time_s = foresee_indication_rvahead.duration;
+                    } else if (sub_id == ManeuverID::Slowdown) {
+                      acc_value = foresee_indication_rv.longitudinalAccelerationValue;
+                      time_s = foresee_indication_rv.duration;
                     }
                     double current_speed = m_vdp->getSpeedValue();
                     double future_speed = current_speed + acc_value * time_s;

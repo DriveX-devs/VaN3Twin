@@ -374,6 +374,7 @@ int main (int argc, char *argv[])
       bs_container->addCAMRxCallback (std::bind(&receiveCAM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
       bs_container->setupContainer(true,false,false,false,true,false);
       bs_container->getCABasicService()->setDesiredSpeed(speed);
+      bs_container->getMCBasicService()->setForesee(true);
 
       // Store the container for this vehicle inside a local global BSMap, i.e., a structure (similar to a hash table) which allows you to easily
       // retrieve the right BSContainer given a vehicle ID

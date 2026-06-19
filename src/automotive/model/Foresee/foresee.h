@@ -15,6 +15,7 @@
 #include "ns3/geonet.h"
 #include <cstdint>
 #include <unordered_map>
+#include "ns3/mcData.h"
 
 #define MAX_DIST_AHEAD_BEHIND 50
 #define ACCELERATION_STEP 0.5
@@ -139,7 +140,7 @@ public:
   void terminateCoordination ();
   void startCoordination (long RV_id, long RVAhead_id, double dec_rv, double acc_rv_ahead, double time_rv, double time_rv_ahead, bool left_criterion, int target_lane);
   void addMCMRxCallback();
-  void receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info);
+  void receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info, mcData::mcDataForeseeIndication foresee_indication_rv, mcData::mcDataForeseeIndication foresee_indication_rvahead);
   void negotiationPhase(bool left_criterion, int target_lane);
   void targetCheckACK();
   void executeManeuver();
@@ -184,7 +185,7 @@ private:
   EventId m_continue_constant_speed_event;
   Ptr<Node> m_node = nullptr;
   StationType_t m_station_type;
-  std::function<void(const asn1cpp::Seq<MCM>& mcm, Address, StationID_t, StationType_t, SignalInfo)> m_MCMReceiveCallbackExtended = nullptr;
+  std::function<void(const asn1cpp::Seq<MCM>& mcm, Address, StationID_t, StationType_t, SignalInfo, mcData::mcDataForeseeIndication, mcData::mcDataForeseeIndication)> m_MCMReceiveCallbackForesee = nullptr;
   bool m_real_time;
   Strategy m_strategy;
   bool m_coordinator = false;

@@ -15,6 +15,10 @@
 #include "ns3/LDM.h"
 #include "ns3/signalInfoUtils.h"
 #include "ns3/mcData.h"
+#include "ns3/acceleration_rvahead_tag.h"
+#include "ns3/duration_rvahead_tag.h"
+#include "ns3/deceleration_rv_tag.h"
+#include "ns3/duration_rv_tag.h"
 
 extern "C" {
   #include "ns3/constr_TYPE.h"
@@ -210,6 +214,7 @@ enum ManeuverID
      */
     void addMCRxCallback(std::function<void(asn1cpp::Seq<MCM>, Address)> rx_callback) {m_MCReceiveCallback=rx_callback;}
     void addMCRxCallbackExtended(std::function<void(const asn1cpp::Seq<MCM>&, Address, StationId_t, StationType_t, SignalInfo)> rx_callback) {m_MCReceiveCallbackExtended=rx_callback;}
+    void addMCRxCallbackForesee(std::function<void(const asn1cpp::Seq<MCM>&, Address, StationId_t, StationType_t, SignalInfo, mcData::mcDataForeseeIndication, mcData::mcDataForeseeIndication)> rx_callback) {m_MCReceiveCallbackForesee=rx_callback;}
     void setRealTime(bool real_time){m_real_time=real_time;}
 
     /**
@@ -263,6 +268,8 @@ enum ManeuverID
      */
     mcData convertASN1IntoMcData(asn1cpp::Seq<MCM> decoded_mcm);
 
+    void setForesee(bool foresee) {m_foresee = foresee;};
+
 
   private:
     const size_t m_MaxPHLength = 23;
@@ -284,6 +291,7 @@ enum ManeuverID
     std::function<void(asn1cpp::Seq<MCM>, Address)> m_MCReceiveCallback;
     std::function<void(asn1cpp::Seq<MCM>, Address, Ptr<Packet>)> m_MCReceiveCallbackPkt;
     std::function<void(const asn1cpp::Seq<MCM>&, Address, StationId_t, StationType_t, SignalInfo)> m_MCReceiveCallbackExtended;
+    std::function<void(const asn1cpp::Seq<MCM>&, Address, StationId_t, StationType_t, SignalInfo, mcData::mcDataForeseeIndication, mcData::mcDataForeseeIndication)> m_MCReceiveCallbackForesee;
 
     Ptr<btp> m_btp; //! BTP object
 
@@ -346,6 +354,9 @@ enum ManeuverID
 
     mcData m_last_received_mcm;
 
+    bool m_foresee = false;
+    std::vector<mcData::mcDataForeseeIndication> m_foresee_rvahead;
+    // TODO
   };
 }
 

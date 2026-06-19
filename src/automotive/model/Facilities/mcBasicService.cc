@@ -29,10 +29,13 @@
 #include "ns3/SequenceOf.hpp"
 #include "ns3/BitString.hpp"
 #include "ns3/assert.h"
+#include "ns3/duration_rvahead_tag.h"
+#include "ns3/mcData.h"
 #include "ns3/vdp.h"
 #include "asn_utils.h"
 #include <absl/strings/internal/str_format/extension.h>
 #include <cmath>
+#include <tuple>
 #include "ns3/snr-tag.h"
 #include "ns3/sinr-tag.h"
 #include "ns3/rssi-tag.h"
@@ -256,6 +259,28 @@ namespace ns3 {
       }
 
     free(buffer);
+    
+    mcData::mcDataForeseeIndication foresee_indication_rvahead;
+    mcData::mcDataForeseeIndication foresee_indication_rv;
+    if (m_foresee) {
+        AccelerationRVAheadTag tag_acc_rvahead;
+        bool acc_rvahead = dataIndication.data->PeekPacketTag(tag_acc_rvahead);
+        DurationRVAheadTag tag_dur_rvahead;
+        bool dur_rvaehad = dataIndication.data->PeekPacketTag(tag_dur_rvahead);
+        if (acc_rvahead && dur_rvaehad) {
+            foresee_indication_rvahead.longitudinalAccelerationValue = tag_acc_rvahead.GetAcceleration();
+            foresee_indication_rvahead.duration = tag_dur_rvahead.GetDuration();
+        }
+
+        DecelerationRVTag tag_dec_rv;
+        bool dec_rv = dataIndication.data->PeekPacketTag(tag_dec_rv);
+        DurationRVTag tag_dur_rv;
+        bool dur_rv = dataIndication.data->PeekPacketTag(tag_dur_rv);
+        if (dec_rv && dur_rv) {
+            foresee_indication_rv.longitudinalAccelerationValue = tag_dec_rv.GetAcceleration();
+            foresee_indication_rv.duration = tag_dur_rv.GetDuration();
+        }
+    }
 
     /** Decoding **/
     decoded_MCM = asn1cpp::uper::decodeASN(packetContent, MCM);
@@ -277,6 +302,9 @@ namespace ns3 {
     }
     if(m_MCReceiveCallbackExtended!=nullptr) {
       m_MCReceiveCallbackExtended(decoded_MCM,from,m_station_id,m_stationtype,GetSignalInfo());
+    }
+    if(m_foresee && m_MCReceiveCallbackForesee!=nullptr) {
+        m_MCReceiveCallbackForesee(decoded_MCM,from,m_station_id,m_stationtype,GetSignalInfo(),foresee_indication_rv, foresee_indication_rvahead);
     }
   }
 
@@ -1053,10 +1081,28 @@ namespace ns3 {
 
     Ptr<Packet> packet = Create<Packet> ((uint8_t*) encode_result.c_str(), encode_result.size());
 
-    // TODO Add Foresee indication as tags of packet
-    DesiredSpeedTag tag;
-    tag.SetDesiredSpeed(m_desired_speed);
-    packet->AddPacketTag(tag);
+    if (m_foresee){
+        auto foresee_rvahead = mcmData.getForeseeIndicationRVAhead();
+        if (foresee_rvahead.isAvailable()) {
+            auto d = foresee_rvahead.getData();
+            AccelerationRVAheadTag tag_acc_rvahead;
+            tag_acc_rvahead.SetAcceleration(d.longitudinalAccelerationValue);
+            DurationRVAheadTag tag_dur_rvahead;
+            tag_dur_rvahead.SetDuration(d.duration);
+            packet->AddPacketTag(tag_acc_rvahead);
+            packet->AddPacketTag(tag_dur_rvahead);
+        }
+        auto foresee_rv = mcmData.getForeseeIndicationRV();
+        if (foresee_rv.isAvailable()) {
+            auto d = foresee_rv.getData();
+            DecelerationRVTag tag_dec_rv;
+            tag_dec_rv.SetAcceleration(d.longitudinalAccelerationValue);
+            DurationRVTag tag_dur_rv;
+            tag_dur_rv.SetDuration(d.duration);
+            packet->AddPacketTag(tag_dec_rv);
+            packet->AddPacketTag(tag_dur_rv);
+        }
+    }
 
     // dataRequest.socket = specification->socket;
     dataRequest.BTPType = BTP_B; //!< BTP-B

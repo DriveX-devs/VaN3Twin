@@ -1610,6 +1610,10 @@ set(header_files
         model/Facilities/mcData.h
         model/Foresee/foresee.h
         model/Foresee/desired_speed_tag.h
+        model/Foresee/acceleration_rvahead_tag.h
+        model/Foresee/duration_rvahead_tag.h
+        model/Foresee/deceleration_rv_tag.h
+        model/Foresee/duration_rv_tag.h
 
         model/Facilities/signalInfoUtils.h
         model/Security/security.h

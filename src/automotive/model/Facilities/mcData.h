@@ -111,9 +111,9 @@ namespace ns3 {
         } mcDataAdvisedTrrContainer;
 
         typedef struct _mcDataForeseeIndication {
-            long longitudinalAccelerationValue;
+            double longitudinalAccelerationValue;
             MCDataItem<long> longitudinalAccelerationConfidence;
-            long duration;
+            double duration;
         } mcDataForeseeIndication;
 
         // Advised Submaneuver is used by AdviceManeuverContainer
@@ -121,7 +121,7 @@ namespace ns3 {
             long submaneuverID;
             MCDataItem<mcDataTrajectory> advisedTrajectory;
             MCDataItem<mcDataAdvisedTrrContainer> advisedTrrContainer;
-            MCDataItem<mcDataForeseeIndication> foreseeIndication;
+            // MCDataItem<mcDataForeseeIndication> foreseeIndication;
         } mcDataAdvisedSubmaneuver;
 
         typedef struct _mcDataManeuverAdvice {
@@ -193,7 +193,8 @@ namespace ns3 {
         long getCost() const { return m_basic_container.getData().cost; }
         long getGoal() const { return m_basic_container.getData().goal; }
         MCDataItem<long> getExecutionStatus() const { return m_basic_container.getData().executionStatus; }
-
+        MCDataItem<mcDataForeseeIndication> getForeseeIndicationRVAhead () const {return m_foresee_indication_rvahead;}
+        MCDataItem<mcDataForeseeIndication> getForeseeIndicationRV () const {return m_foresee_indication_rv;}
 
         // Setters
         void setHeader(const mcDataHeader& v) { m_header.setData(v); }
@@ -203,6 +204,8 @@ namespace ns3 {
         void setResponseContainer(const mcResponseContainer& v) { m_response_container.setData(v); }
         void setAcknowledgmentContainer(const mcAcknowledgeContainer& v) { m_acknowledgment_container.setData(v); }
         void setTerminationContainer(const mcTerminationContainer& v) { m_termination_container.setData(v); }
+        void setForeseeIndicationRVAhead (const mcDataForeseeIndication& v) {m_foresee_indication_rvahead.setData(v);}
+        void setForeseeIndicationRV (const mcDataForeseeIndication& v) {m_foresee_indication_rv.setData(v);}
 
     private:
         MCDataItem<mcDataHeader> m_header;
@@ -212,6 +215,8 @@ namespace ns3 {
         MCDataItem<mcResponseContainer> m_response_container;
         MCDataItem<mcAcknowledgeContainer> m_acknowledgment_container;
         MCDataItem<mcTerminationContainer> m_termination_container;
+        MCDataItem<mcDataForeseeIndication> m_foresee_indication_rvahead;
+        MCDataItem<mcDataForeseeIndication> m_foresee_indication_rv;
     };
 }
 
