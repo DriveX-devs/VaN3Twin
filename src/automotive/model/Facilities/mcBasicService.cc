@@ -1024,6 +1024,9 @@ namespace ns3 {
     } else if (mcmData.getResponseContainer().isAvailable()) {
       asn1cpp::setField(MCM_message->payload.mcmContainer.present, McmContainer_PR_responseContainer);
       const auto& resp_data = mcmData.getResponseContainer().getData();
+    
+      // Needed in FORESEE
+      asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.coordinatorID, resp_data.coordinator);
 
       if (resp_data.response == 0) {
         asn1cpp::setField(MCM_message->payload.mcmContainer.choice.responseContainer.manouevreResponse, ManouevreResponse_accept);

@@ -162,6 +162,7 @@ namespace ns3 {
 
         typedef struct _responseContainer {
             long response;
+            long coordinator;
             MCDataItem<long> declineReason;
             MCDataItem<std::vector<mcDataSubmaneuverDescription>> submaneuvers;
         } mcResponseContainer;

@@ -79,14 +79,13 @@ int main (int argc, char *argv[])
   int interfering_up=0;
   bool verbose = false; // Set to true to get a lot of verbose output from the IEEE 802.11p PHY model (leave this to false)
   bool verbose_foresee = true;
-  bool register_log = true;
+  bool register_log = false;
   int numberOfNodes; // Total number of vehicles, automatically filled in by reading the XML file
   double m_baseline_prr = 150.0; // PRR baseline value (default: 150 m)
   int txPower = 33.0; // IEEE 802.11p transmission power in dBm (default: 23 dBm)
   xmlDocPtr rou_xml_file;
-  double simTime = 10.0; // Total simulation time (default: 100 seconds)
+  double simTime = 150.0; // Total simulation time (default: 100 seconds)
   bool sumo_gui = false;
-  bool store_coordinations_in_csv = true;
   int seed = 42;
   int threads = 5;
 
@@ -185,7 +184,7 @@ int main (int argc, char *argv[])
   sumoClient->SetAttribute ("SumoStepLog", BooleanValue (false));
   sumoClient->SetAttribute ("SumoSeed", IntegerValue (seed));
   sumoClient->SetAttribute ("SumoWaitForSocket", TimeValue (Seconds (10)));
-  sumoClient->SetAttribute ("SumoAdditionalCmdOptions", StringValue("--threads " + std::to_string(threads)));
+  sumoClient->SetAttribute ("SumoAdditionalCmdOptions", StringValue("--threads " + std::to_string(threads) + " --collision.action warn"));
   
   // Set up a Metricsupervisor
   // This module enables a trasparent and seamless collection of one-way latency (in ms) and PRR metrics
@@ -261,7 +260,7 @@ int main (int argc, char *argv[])
 
   bool use_foresee = true;
 
-  if (store_coordinations_in_csv)
+  if (register_log)
   {
     std::ofstream file;
     file.open("coordinations_seed" + std::to_string(seed) + "_new.csv", std::ios::out | std::ios::trunc);
@@ -425,7 +424,7 @@ int main (int argc, char *argv[])
       // as index for the nodeContainer), so we don't use "-1" to compute "intVehicleID" here
       unsigned long intVehicleID = std::stol(vehicleID.substr (3));
       long nodeID = intVehicleID - 1;
-      if (store_coordinations_in_csv)
+      if (register_log)
       {
         std::ofstream file;
         file.open("coordinations_seed" + std::to_string(seed) + "_new.csv", std::ios::out | std::ios::app);

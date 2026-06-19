@@ -32,9 +32,9 @@
 #include <string>
 #include <tuple>
 
-#define DOUBLE_TOLERANCE 0.5
-
+#define DOUBLE_TOLERANCE 0.5 
 #define NOT_PRESENT -2000
+constexpr int N_SAMPLES = 25;
 
 /*
 TODO List:
@@ -85,7 +85,7 @@ double foresee::idmAcceleration(double v, double v_lead, double gap, double v0,
   return a * (1.0 - std::pow(v / v0, d) - std::pow(s_star / std::max(gap, 0.1), 2));
 }
 
-std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_leader, double speed_follower,
+/*std::tuple<double, double> foresee::computeRequiredAcceleration(double speed_leader, double speed_follower,
                                       double current_gap, IDMParams p,
                                       double dt, double horizon) {
   // Binary search on acceleration of leader in [0, a_max]
@@ -177,6 +177,94 @@ std::tuple<double, double> foresee::computeRequiredDeceleration(double speed_lea
     return {NO_SOLUTION, -1};
   if (lo > -0.1) lo = 0.0;
   return {lo, best_delta_t}; // minimum deceleration
+}*/
+
+std::tuple<bool, double> foresee::simulateCandidate(
+    double candidate, bool is_leader_case,
+    double speed_leader, double speed_follower, double current_gap,
+    const IDMParams& p, double dt, double horizon) {
+ 
+  double gap = current_gap;
+  double v_f = speed_follower;
+  double v_l = speed_leader;
+ 
+  for (double t = 0.0; t <= horizon + dt; t += dt) {
+    double a_f = idmAcceleration(v_f, v_l, gap, p.v0, p.T, p.s0, p.a, p.b, p.d);
+    if (a_f >= MIN_DECELERATION) {
+      return {true, t};
+    }
+    if (is_leader_case) {
+      // Leader accelera con il candidato
+      v_l = std::min(v_l + candidate * dt, p.v0);
+    } else {
+      // Follower decelera con il candidato (candidate è negativo)
+      v_f = std::max(0.0, v_f + candidate * dt);
+    }
+    gap += (v_l - v_f) * dt;
+  }
+  return {false, -1.0};
+}
+
+std::tuple<double, double> foresee::optimizeWeighted(
+    double lo, double hi, bool is_leader_case,
+    double speed_leader, double speed_follower, double current_gap,
+    const IDMParams& p, double dt, double horizon, double lambda) {
+ 
+  double range = std::abs(hi - lo);
+  if (range < 1e-9) {
+    return {NO_SOLUTION, -1.0};
+  }
+ 
+  double best_cost = std::numeric_limits<double>::infinity();
+  double best_candidate = NO_SOLUTION;
+  double best_delta_t = -1.0;
+  bool found_any = false;
+ 
+  for (int i = 0; i < N_SAMPLES; i++) {
+    double candidate = lo + (hi - lo) * (static_cast<double>(i) / (N_SAMPLES - 1));
+ 
+    auto [success, delta_t] = simulateCandidate(
+        candidate, is_leader_case,
+        speed_leader, speed_follower, current_gap, p, dt, horizon);
+ 
+    if (!success) {
+      continue; // candidato scartato: non porta a successo entro horizon
+    }
+ 
+    double norm_action = std::abs(candidate) / range;
+    double norm_time    = delta_t / horizon;
+    double cost = lambda * norm_action + (1.0 - lambda) * norm_time;
+ 
+    if (cost < best_cost) {
+      best_cost = cost;
+      best_candidate = candidate;
+      best_delta_t = delta_t;
+      found_any = true;
+    }
+  }
+ 
+  if (!found_any) {
+    return {NO_SOLUTION, -1.0};
+  }
+  return {best_candidate, best_delta_t};
+}
+
+std::tuple<double, double> foresee::computeRequiredAcceleration(
+    double speed_leader, double speed_follower, double current_gap,
+    IDMParams p, double dt, double horizon, double lambda) {
+ 
+  return optimizeWeighted(
+      0.0, p.a, /*is_leader_case=*/true,
+      speed_leader, speed_follower, current_gap, p, dt, horizon, lambda);
+}
+
+std::tuple<double, double> foresee::computeRequiredDeceleration(
+    double speed_leader, double speed_follower, double current_gap,
+    IDMParams p, double dt, double horizon, double lambda) {
+ 
+  return optimizeWeighted(
+      -p.b, 0.0, /*is_leader_case=*/false,
+      speed_leader, speed_follower, current_gap, p, dt, horizon, lambda);
 }
 
 void
@@ -540,7 +628,7 @@ foresee::FORESEEMobilityModel () {
               if(!possible_hv) {
                 // It is needed to open the gap between RVAhead and HV
                 // RVAhead needs to accelerate
-                std::tuple<double, double> tuple = computeRequiredAcceleration (speed_RVAhead, my_speed, min_dist_rv_ahead, ego_params, 0.1, round(m_maneuver_horizon / 1e3));
+                std::tuple<double, double> tuple = computeRequiredAcceleration (speed_RVAhead, my_speed, min_dist_rv_ahead, ego_params, 0.1, round(m_maneuver_horizon / 1e3), 0.7);
                 double a = std::get<0>(tuple);
                 double time = std::get<1>(tuple);
                 NS_ASSERT((time >= 0.0 && time <= 5.0) || time == -1.0);
@@ -548,6 +636,7 @@ foresee::FORESEEMobilityModel () {
                     acc_rv_ahead = a;
                     time_rv_ahead = time;
                     possible_hv = true;
+                    // std::cout << "\n" << acc_rv_ahead << " " << time_rv_ahead << std::endl;
                   }
               }
             }
@@ -562,7 +651,7 @@ foresee::FORESEEMobilityModel () {
               if(!possible_rv) {
                 // It is needed to open the gap between RV and HV
                 // RV needs to decelerate
-                std::tuple<double, double> tuple = computeRequiredDeceleration (my_speed, speed_RV, min_dist_rv, params, 0.1, round(m_maneuver_horizon / 1e3));
+                std::tuple<double, double> tuple = computeRequiredDeceleration (my_speed, speed_RV, min_dist_rv, params, 0.1, round(m_maneuver_horizon / 1e3), 0.7);
                 double a = std::get<0>(tuple);
                 double time = std::get<1>(tuple);
                 NS_ASSERT((time >= 0.0 && time <= 5.0) || time == -1.0);
@@ -570,6 +659,7 @@ foresee::FORESEEMobilityModel () {
                     dec_rv = a;
                     time_rv = time;
                     possible_rv = true;
+                    // std::cout << "\n" << dec_rv << " " << time_rv << std::endl;
                 }
               }
             }
@@ -807,7 +897,7 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
   m_coordinator = true;
   m_busy_with_maneuver = true;
   // Set constant speed for the negotiation time for HV
-  m_traci->vehicle.setSpeedMode(m_vehicle_id, 1);
+  m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
   m_traci->vehicle.setAcceleration(m_vehicle_id, 0, 1);
   double value = m_dist(m_gen);
   EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, mcmData);
@@ -873,7 +963,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane) {
         m_tx_mcm_event = e;
         double time_to_wait = *std::max_element(times.begin(), times.end());
         // HV should keep constant speed until the time to change lane
-        m_traci->vehicle.setSpeedMode(m_vehicle_id, 1);
+        m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
         m_traci->vehicle.setAcceleration(m_vehicle_id, 0, time_to_wait / 1e3);
         
         // Lambda function to schedule the lane change after the coordinaiton
@@ -1231,7 +1321,7 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
                 std::cout << "For vehicle " << m_vehicle_id << " the maneuver requested by veh" << sender << " is feasible" << std::endl;
               }
               // Keep constant speed until the HV will start the maneuver
-              m_traci->vehicle.setSpeedMode(m_vehicle_id, 1);
+              m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
               m_traci->vehicle.setAcceleration(m_vehicle_id, 0, 1.5);
               // Accept the coordination
               mcData mcmData;
@@ -1246,6 +1336,7 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
               mcmData.setBasicContainer(mcBasicContainer);
               mcData::mcResponseContainer resp{};
               resp.response = 0;
+              resp.coordinator = sender;
               mcmData.setResponseContainer(resp);
               m_busy_with_maneuver = true;
               m_my_coordinator = sender;
@@ -1431,7 +1522,7 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
 void foresee::executeManeuver() {
   double acc = std::get<0>(m_required_acceleration_time);
   double duration = std::get<1>(m_required_acceleration_time);
-  m_traci->vehicle.setSpeedMode(m_vehicle_id, 1);
+  m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
   m_traci->vehicle.setAcceleration(m_vehicle_id, acc, duration);
   m_continue_constant_speed_event = Simulator::Schedule(MilliSeconds(duration*1e3), &foresee::continueWithConstantSpeed, this, m_my_coordinator);
 }

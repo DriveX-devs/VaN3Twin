@@ -150,6 +150,10 @@ public:
   void checkLane(int target_lane_id);
   const std::vector<CoordinationLog>& getCoordinationLog() const { return m_coordination_log; }
   void ScheduleNextCheck(Time delay);
+  std::tuple<bool, double> simulateCandidate(double candidate, bool is_leader_case, double speed_leader, double speed_follower, double current_gap, const IDMParams& p, double dt, double horizon);
+  std::tuple<double, double> optimizeWeighted(double lo, double hi, bool is_leader_case, double speed_leader, double speed_follower, double current_gap, const IDMParams& p, double dt, double horizon, double lambda);
+  std::tuple<double, double> computeRequiredAcceleration(double speed_leader, double speed_follower, double current_gap, IDMParams p, double dt, double horizon, double lambda);
+  std::tuple<double, double> computeRequiredDeceleration(double speed_leader, double speed_follower, double current_gap, IDMParams p, double dt, double horizon, double lambda);
 
 private:
   std::string m_vehicle_id;
