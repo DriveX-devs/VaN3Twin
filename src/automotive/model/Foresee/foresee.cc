@@ -32,7 +32,7 @@
 #include <string>
 #include <tuple>
 
-#define DOUBLE_TOLERANCE 0.5 
+#define DOUBLE_TOLERANCE 0.5
 #define NOT_PRESENT -2000
 
 /*
@@ -924,7 +924,7 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
   m_busy_with_maneuver = true;
   // Set constant speed for the negotiation time for HV
   m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
-  m_traci->vehicle.setAcceleration(m_vehicle_id, 0, m_maneuver_horizon);
+  m_traci->vehicle.setAcceleration(m_vehicle_id, 0, round(m_negotiation_time / 1e3) + m_maneuver_horizon + 1);
   double value = m_dist(m_gen);
   EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, mcmData);
   m_tx_mcm_event = e;
@@ -998,8 +998,8 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane, bool no_wai
         m_tx_mcm_event = e;
         double time_to_wait = *std::max_element(times.begin(), times.end());
         // HV should keep constant speed until the time to change lane
-        m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
-        m_traci->vehicle.setAcceleration(m_vehicle_id, 0, time_to_wait);
+        // m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
+        // m_traci->vehicle.setAcceleration(m_vehicle_id, 0, time_to_wait);
         
         // Lambda function to schedule the lane change after the coordinaiton
         std::shared_ptr<bool> alive = m_alive;
@@ -1354,7 +1354,7 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
               }
               // Keep constant speed until the HV will start the maneuver
               m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
-              m_traci->vehicle.setAcceleration(m_vehicle_id, 0, m_maneuver_horizon);
+              m_traci->vehicle.setAcceleration(m_vehicle_id, 0, m_maneuver_horizon + 1);
               // Accept the coordination
               mcData mcmData;
               mcData::mcBasicContainer mcBasicContainer{};
@@ -1577,7 +1577,7 @@ void foresee::continueWithConstantSpeed(StationId_t coordinator) {
       std::cout << "\n[TERMINATION NOT YET RECEIVED " << now_s << "]" << std::endl;
       std::cout << "Vehicle " << m_vehicle_id << " will continue with constant speed" << std::endl;
     }
-    m_traci->vehicle.setAcceleration(m_vehicle_id, 0, m_maneuver_horizon);
+    m_traci->vehicle.setAcceleration(m_vehicle_id, 0, m_maneuver_horizon + 1);
     // Watchdog: if termination still not received after the horizon, free ourselves
     m_watchdog_event = Simulator::Schedule(MilliSeconds(m_maneuver_horizon * 1e3 + 500), &foresee::targetWatchdog, this, coordinator);
   }
