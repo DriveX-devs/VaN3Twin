@@ -34,13 +34,10 @@
 
 #define DOUBLE_TOLERANCE 0.5 
 #define NOT_PRESENT -2000
-constexpr int N_SAMPLES = 25;
 
 /*
 TODO List:
-- Spread MCMs during the execution phase (is it necessary?)
-- Cancellation of the maneuver from one of the cooperands after the negotiation phase (while the maneuver is in execution) --> quiete difficult to design a refusal reason for the cooperand, and to control the message flow
-- Be careful in not overwriting txMCM events (when busy with manouver)
+- Changed the time but maybe we need more
 */
 
 namespace ns3 {
@@ -183,24 +180,43 @@ std::tuple<bool, double> foresee::simulateCandidate(
     double candidate, bool is_leader_case,
     double speed_leader, double speed_follower, double current_gap,
     const IDMParams& p, double dt, double horizon) {
- 
+  
+  // candidate can be 2 for RVAhead and -2 for RV
   double gap = current_gap;
+  double x0 = 0.0;
+  double x1 = x0 + gap;
   double v_f = speed_follower;
   double v_l = speed_leader;
  
-  for (double t = 0.0; t <= horizon + dt; t += dt) {
+  int n_steps = static_cast<int>(horizon / dt);
+  for (int i = 1; i <= n_steps; ++i) {
+    double t = i * dt;
+    // Propagate state
+    // The reference position (x0) is always the follower vehicle
+    if (is_leader_case) {
+      // RVAhead is accelerating, x1 refers to its position and x0 refers to HV position
+      x1 += v_l * dt + 0.5 * candidate * dt * dt;
+      x0 += v_f * dt;
+      v_l += candidate * dt;
+    }
+    else {
+      // RV is decelerating, x0 refers to its position and x1 refers to HV position
+      x0 += v_f * dt + 0.5 * candidate * dt * dt;
+      x1 += v_l * dt;
+      v_f += candidate * dt;
+    }
+    gap = x1 - x0;
+    if (gap <= 0) {
+      // Overtaking by the follower
+      return {false, -1.0};
+    }
+    
+    // Evaluate IDM at time t
     double a_f = idmAcceleration(v_f, v_l, gap, p.v0, p.T, p.s0, p.a, p.b, p.d);
-    if (a_f >= MIN_DECELERATION) {
+
+    if (a_f >= (MIN_DECELERATION + 0.2)) {
       return {true, t};
     }
-    if (is_leader_case) {
-      // Leader accelera con il candidato
-      v_l = std::min(v_l + candidate * dt, p.v0);
-    } else {
-      // Follower decelera con il candidato (candidate è negativo)
-      v_f = std::max(0.0, v_f + candidate * dt);
-    }
-    gap += (v_l - v_f) * dt;
   }
   return {false, -1.0};
 }
@@ -215,7 +231,7 @@ std::tuple<double, double> foresee::optimizeWeighted(
     return {NO_SOLUTION, -1.0};
   }
  
-  double best_cost = std::numeric_limits<double>::infinity();
+  /*double best_cost = std::numeric_limits<double>::infinity();
   double best_candidate = NO_SOLUTION;
   double best_delta_t = -1.0;
   bool found_any = false;
@@ -241,12 +257,17 @@ std::tuple<double, double> foresee::optimizeWeighted(
       best_delta_t = delta_t;
       found_any = true;
     }
-  }
+  }*/
+
+  double candidate = is_leader_case ? 2 : -2;
+  auto [success, delta_t] = simulateCandidate(
+        candidate, is_leader_case,
+        speed_leader, speed_follower, current_gap, p, dt, horizon);
  
-  if (!found_any) {
+  if (!success) {
     return {NO_SOLUTION, -1.0};
   }
-  return {best_candidate, best_delta_t};
+  return {candidate, delta_t};
 }
 
 std::tuple<double, double> foresee::computeRequiredAcceleration(
@@ -288,28 +309,28 @@ foresee::WrapperFORESEEMobilityModel(bool start_foresee)
 {
   // Check if the number of lanes is valid
   if (m_num_lanes <= 0) {
-      NS_FATAL_ERROR ("Set a number of lanes greater than 0 to use FORESEE Mobility Model.");
-    }
+    NS_FATAL_ERROR ("Set a number of lanes greater than 0 to use FORESEE Mobility Model.");
+  }
   // Check if the LDM (Local Dynamic Map) is set
   if (m_LDM == nullptr) {
-      NS_FATAL_ERROR ("FORESEE Mobility Model needs the LDM of the vehicle.");
-    }
+    NS_FATAL_ERROR ("FORESEE Mobility Model needs the LDM of the vehicle.");
+  }
   // Check if TraCI (Traffic Control Interface) is set
   if (m_traci == nullptr) {
-      NS_FATAL_ERROR ("FORESEE Mobility Model needs TraCI.");
-    }
+    NS_FATAL_ERROR ("FORESEE Mobility Model needs TraCI.");
+  }
   // Check if the desired speed is valid
   if (m_desired_speed <= 0) {
-      NS_FATAL_ERROR ("FORESEE Mobility Model needs a Desired Speed greater than 0.");
-    }
+    NS_FATAL_ERROR ("FORESEE Mobility Model needs a Desired Speed greater than 0.");
+  }
   // Check if the VDP (Vehicle Data Provider) is set
   if (m_vdp == nullptr) {
-      NS_FATAL_ERROR ("FORESEE Mobility Model needs the VDP of the vehicle.");
-    }
+    NS_FATAL_ERROR ("FORESEE Mobility Model needs the VDP of the vehicle.");
+  }
   // Check if the MCM (Maneuver Coordination Message) service is set
   if (m_mcs_ptr == nullptr) {
-      NS_FATAL_ERROR ("FORESEE Mobility Model needs the MCM Basic Service of the vehicle.");
-    }
+    NS_FATAL_ERROR ("FORESEE Mobility Model needs the MCM Basic Service of the vehicle.");
+  }
   /*
   // Check for predictor
   if (m_prediction_type == UNKNOWN)
@@ -412,20 +433,20 @@ foresee::FORESEEMobilityModel () {
 
     // Process each vehicle in the LDM
     for(auto it = vehicles.begin(); it != vehicles.end(); ++it) {
-        // Skip vehicles in different directions
-        if ((it->vehData.heading - my_heading) > DOUBLE_TOLERANCE) continue;
-        auto pos = m_traci->simulation.convertLonLattoXY (it->vehData.lon, it->vehData.lat);
-        // Take the back bumper position
-        double x = pos.x;
-        // Skip vehicles behind the ego vehicle
-        if (std::abs(my_heading - 90) < DOUBLE_TOLERANCE && x < my_x) continue;
-        if (std::abs(my_heading - 270) < DOUBLE_TOLERANCE && x > my_x) continue;
-        OptionalDataItem<long> lane = it->vehData.lanePosition;
-        if (lane.isAvailable()) {
-            // Store vehicle speed and ID in the corresponding lane
-            speeds_per_lane[lane.getData()].push_back (it->vehData.speed_ms);
-            veh_per_lane[lane.getData()].push_back (std::to_string (it->vehData.stationID));
-          }
+      // Skip vehicles in different directions
+      if ((it->vehData.heading - my_heading) > DOUBLE_TOLERANCE) continue;
+      auto pos = m_traci->simulation.convertLonLattoXY (it->vehData.lon, it->vehData.lat);
+      // Take the back bumper position
+      double x = pos.x;
+      // Skip vehicles behind the ego vehicle
+      if (std::abs(my_heading - 90) < DOUBLE_TOLERANCE && x < my_x) continue;
+      if (std::abs(my_heading - 270) < DOUBLE_TOLERANCE && x > my_x) continue;
+      OptionalDataItem<long> lane = it->vehData.lanePosition;
+      if (lane.isAvailable()) {
+          // Store vehicle speed and ID in the corresponding lane
+          speeds_per_lane[lane.getData()].push_back (it->vehData.speed_ms);
+          veh_per_lane[lane.getData()].push_back (std::to_string (it->vehData.stationID));
+        }
       }
 
     // Determine lane change possibilities and criteria
@@ -624,20 +645,24 @@ foresee::FORESEEMobilityModel () {
               double a_ego_after = idmAcceleration(my_speed, speed_RVAhead, min_dist_rv_ahead,
                                                     ego_params.v0, ego_params.T,
                                                     ego_params.s0, ego_params.a, ego_params.b, ego_params.d);
-              if(a_ego_after < MIN_DECELERATION) possible_hv = false;
+              if(a_ego_after < MIN_DECELERATION) {
+                possible_hv = false;
+              }
               if(!possible_hv) {
                 // It is needed to open the gap between RVAhead and HV
                 // RVAhead needs to accelerate
-                std::tuple<double, double> tuple = computeRequiredAcceleration (speed_RVAhead, my_speed, min_dist_rv_ahead, ego_params, 0.1, round(m_maneuver_horizon / 1e3), 0.7);
+                std::tuple<double, double> tuple = computeRequiredAcceleration (speed_RVAhead, my_speed, min_dist_rv_ahead, ego_params, 0.1, m_maneuver_horizon, 0.7);
                 double a = std::get<0>(tuple);
                 double time = std::get<1>(tuple);
-                NS_ASSERT((time >= 0.0 && time <= 5.0) || time == -1.0);
+                // TODO to check
+                // if (time + 0.2 <= m_maneuver_horizon && time != -1.0) time += 0.2;
+                NS_ASSERT((time >= 0.0 && time <= m_maneuver_horizon) || time == -1.0);
                 if (std::abs(a - NO_SOLUTION) > DOUBLE_TOLERANCE){
-                    acc_rv_ahead = a;
-                    time_rv_ahead = time;
-                    possible_hv = true;
-                    // std::cout << "\n" << acc_rv_ahead << " " << time_rv_ahead << std::endl;
-                  }
+                  acc_rv_ahead = a;
+                  time_rv_ahead = time;
+                  possible_hv = true;
+                  // std::cout << "\n" << acc_rv_ahead << " " << time_rv_ahead << std::endl;
+                }
               }
             }
 
@@ -647,35 +672,37 @@ foresee::FORESEEMobilityModel () {
               double a_ego_after = idmAcceleration(speed_RV, my_speed, min_dist_rv,
                                                     params.v0, params.T,
                                                     params.s0, params.a, params.b, params.d);
-              if(a_ego_after < MIN_DECELERATION) possible_rv = false;
+              if(a_ego_after < MIN_DECELERATION) {
+                possible_rv = false;
+              }
               if(!possible_rv) {
                 // It is needed to open the gap between RV and HV
                 // RV needs to decelerate
-                std::tuple<double, double> tuple = computeRequiredDeceleration (my_speed, speed_RV, min_dist_rv, params, 0.1, round(m_maneuver_horizon / 1e3), 0.7);
+                std::tuple<double, double> tuple = computeRequiredDeceleration (my_speed, speed_RV, min_dist_rv, params, 0.1, m_maneuver_horizon, 0.7);
                 double a = std::get<0>(tuple);
                 double time = std::get<1>(tuple);
                 NS_ASSERT((time >= 0.0 && time <= 5.0) || time == -1.0);
                 if (std::abs(a - NO_SOLUTION) > DOUBLE_TOLERANCE) {
-                    dec_rv = a;
-                    time_rv = time;
-                    possible_rv = true;
-                    // std::cout << "\n" << dec_rv << " " << time_rv << std::endl;
+                  dec_rv = a;
+                  time_rv = time;
+                  possible_rv = true;
+                  // std::cout << "\n" << dec_rv << " " << time_rv << std::endl;
                 }
               }
             }
             
             if (possible_hv && possible_rv) {
               // If we have RV and/or RVAhead but they don't need to change their current gap with HV, we ask them to keep constant speed
-              if (RV_id >= 0 && dec_rv == DEFAULT_ACC_VALUE) {dec_rv = 0; time_rv = 5;}
-              if (RVAhead_id >= 0 && acc_rv_ahead == DEFAULT_ACC_VALUE) {acc_rv_ahead = 0; time_rv_ahead = 5;}
+              if (RV_id >= 0 && dec_rv == DEFAULT_ACC_VALUE) {dec_rv = 0; time_rv = m_maneuver_horizon;}
+              if (RVAhead_id >= 0 && acc_rv_ahead == DEFAULT_ACC_VALUE) {acc_rv_ahead = 0; time_rv_ahead = m_maneuver_horizon;}
               // Need for a coordination
-              int original_target_lane = target_lane;
               target_lane = 3 - target_lane;
               startCoordination(RV_id, RVAhead_id, dec_rv, acc_rv_ahead, time_rv, time_rv_ahead, left_criterion, target_lane);
               if (m_register_log) {
                 // Register all the information for the csv
                 m_coordination_structure.execution_success = 0;
                 m_coordination_structure.coordination_id = m_vehicle_id + "_" + std::to_string(m_coordination_counter);
+                m_coordination_counter ++;
                 m_coordination_structure.sim_time_ms = Simulator::Now().GetMilliSeconds();
                 m_coordination_structure.desired_speed_hv = m_desired_speed;
                 m_coordination_structure.desired_speed_rv = RV_id == -1 ? NOT_PRESENT : desired_speed_RV;
@@ -813,8 +840,7 @@ foresee::FORESEEMobilityModel () {
                   m_coordination_structure.rel_acc_rvahead1_rvahead2 = NOT_PRESENT;
                 }
               }
-            }
-            else {
+            } else {
               // For one of the cooperand the maneuver requested is not possible, try again later
               ScheduleNextCheck(MilliSeconds(m_FORESEE_check_ms));
             }
@@ -892,22 +918,25 @@ foresee::startCoordination (long RV_id, long RVAhead_id, double dec_rv, double a
   advice_container.advices = parsed_advices;
   mcmData.setAdviceContainer(advice_container);
 
-  if(RV_id >= 0) m_acceptance_map[RV_id] = {false, dec_rv, time_rv};
-  if(RVAhead_id >= 0) m_acceptance_map[RVAhead_id] = {false, acc_rv_ahead, time_rv_ahead};
+  if(RV_id >= 0) m_acceptance_map[RV_id] = {"RV", false, dec_rv, time_rv};
+  if(RVAhead_id >= 0) m_acceptance_map[RVAhead_id] = {"RVAhead", false, acc_rv_ahead, time_rv_ahead};
   m_coordinator = true;
   m_busy_with_maneuver = true;
   // Set constant speed for the negotiation time for HV
   m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
-  m_traci->vehicle.setAcceleration(m_vehicle_id, 0, 1);
+  m_traci->vehicle.setAcceleration(m_vehicle_id, 0, m_maneuver_horizon);
   double value = m_dist(m_gen);
   EventId e = Simulator::Schedule(NanoSeconds(value * 1e6), &txMCM, m_mcs_ptr, mcmData);
   m_tx_mcm_event = e;
   m_left_criterion = left_criterion;
   m_target_lane = target_lane;
-  m_negotiation_event = Simulator::Schedule(MilliSeconds(m_negotiation_time), &foresee::negotiationPhase, this, left_criterion, target_lane);
+  bool no_wait_for_rvahead = false, no_wait_for_rv = false;
+  if (RVAhead_id >= 0 && acc_rv_ahead == 0) no_wait_for_rvahead = true;
+  if (RV_id >= 0 && dec_rv == 0) no_wait_for_rv = true;
+  m_negotiation_event = Simulator::Schedule(MilliSeconds(m_negotiation_time), &foresee::negotiationPhase, this, left_criterion, target_lane, no_wait_for_rvahead, no_wait_for_rv);
 }
 
-void foresee::negotiationPhase(bool left_criterion, int target_lane) {
+void foresee::negotiationPhase(bool left_criterion, int target_lane, bool no_wait_for_rvahead, bool no_wait_for_rv) {
   try {
     if (!m_coordinator || !m_busy_with_maneuver) {
       // State was cleared externally (e.g. cancellation request received between
@@ -923,13 +952,19 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane) {
     std::vector<std::string> coordinators;
     std::vector<double> accelerations;
     for (auto it : m_acceptance_map) {
-        // Found an actor that doesn't want to coordinate
-        if(!it.second.accepted) {its_ok = false; veh_refused = "veh" + std::to_string(it.first); reason = it.second.decline_reason; break;}
-        times.push_back(it.second.time);
-        coordinators.push_back("veh" + std::to_string(it.first));
-        accelerations.push_back(it.second.acceleration);
-        // Highlight vehicles involved
+      // Found an actor that doesn't want to coordinate
+      if(!it.second.accepted) {
+        its_ok = false;
+        veh_refused = "veh" + std::to_string(it.first);
+        reason = it.second.decline_reason;
+        break;
       }
+      if ((it.second.role == "RVAhead" && no_wait_for_rvahead) || (it.second.role == "RV" && no_wait_for_rv)) times.push_back(0);
+      else times.push_back(it.second.time);
+      coordinators.push_back("veh" + std::to_string(it.first));
+      accelerations.push_back(it.second.acceleration);
+      // Highlight vehicles involved
+    }
     if(its_ok) {
         if (m_verbose) {
           double now_s = Simulator::Now().GetSeconds();
@@ -938,8 +973,8 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane) {
           int counter = 0;
           for (auto it = coordinators.begin(); it != coordinators.end(); ++it) {
             double speed = m_traci->vehicle.getSpeed(*it);
-            double final_speed = speed + times[counter] / 1e3 * accelerations[counter];
-            std::cout << "Vehicle " << *it << " is going at " << speed << " and after " << times[counter] / 1e3 << " seconds will be at " << final_speed << std::endl;
+            double final_speed = speed + times[counter] * accelerations[counter];
+            std::cout << "Vehicle " << *it << " is going at " << speed << " and after " << times[counter] << " seconds will be at " << final_speed << std::endl;
             counter ++;
           }
         }
@@ -964,12 +999,12 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane) {
         double time_to_wait = *std::max_element(times.begin(), times.end());
         // HV should keep constant speed until the time to change lane
         m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
-        m_traci->vehicle.setAcceleration(m_vehicle_id, 0, time_to_wait / 1e3);
+        m_traci->vehicle.setAcceleration(m_vehicle_id, 0, time_to_wait);
         
         // Lambda function to schedule the lane change after the coordinaiton
         std::shared_ptr<bool> alive = m_alive;
         m_change_lane_event = Simulator::Schedule(
-          MilliSeconds(time_to_wait), 
+          Seconds(time_to_wait), 
           [this, alive, target_lane, coordinators]() {
             if (!*alive) return;  
             if (!m_busy_with_maneuver) {
@@ -981,8 +1016,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane) {
                 double now_s = Simulator::Now().GetSeconds();
                 std::cout << "\n[LANE CHANGE TIME " << now_s << "]" << std::endl;
                 std::cout << "Vehicle " << m_vehicle_id << " is trying to coordinate" << std::endl;
-                for (auto it = coordinators.begin(); it != coordinators.end(); ++it)
-                {
+                for (auto it = coordinators.begin(); it != coordinators.end(); ++it) {
                   double speed = m_traci->vehicle.getSpeed(*it);
                   std::cout << "Vehicle " << *it << " is going at " << speed << " after coordination" << std::endl;
                 }
@@ -1033,7 +1067,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane) {
                   }
                   
                   if(a < MIN_DECELERATION) {
-                    // Comfort criterion if not reached for this item, coordination failed
+                    // Comfort criterion is not reached for this item, coordination failed
                     can_change = false;
                     veh_blocking = behind ? "RV" : "RVAhead";
                     break;
@@ -1046,11 +1080,6 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane) {
                 double pos = m_traci->vehicle.getLanePosition(m_vehicle_id);
                 std::string target_lane_id = edge_id + "_" + std::to_string(target_lane);
                 m_traci->vehicle.moveTo(m_vehicle_id, target_lane_id, pos);
-                if (m_register_log) {
-                  m_coordination_structure.execution_success = 2;
-                  m_coordination_log.push_back(m_coordination_structure);
-                  m_coordination_counter ++;
-                }
                 Simulator::Schedule(MilliSeconds(150), &foresee::checkLane, this, target_lane);
                 ScheduleNextCheck(MilliSeconds(2 * m_FORESEE_check_ms));
               }
@@ -1059,11 +1088,14 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane) {
                   double now_s = Simulator::Now().GetSeconds();
                   std::cout << "\n[COORDINATION FAILED " << now_s << "]" << std::endl;
                   std::cout << "Vehicle " << m_vehicle_id << " cannot complete the coordination due to comfort criteria not reached by " << veh_blocking << std::endl;
+                  for (auto it = coordinators.begin(); it != coordinators.end(); ++it) {
+                    double speed = m_traci->vehicle.getSpeed(*it);
+                    std::cout << "Vehicle " << *it << " is now at " << speed << " after coordination" << std::endl;
+                  } 
                 }
                 if (m_register_log) {
                   m_coordination_structure.execution_success = 0;
                   m_coordination_log.push_back(m_coordination_structure);
-                  m_coordination_counter ++;
                 }
                 // Failed: retry sooner
                 ScheduleNextCheck(MilliSeconds(m_FORESEE_check_ms));
@@ -1322,7 +1354,7 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
               }
               // Keep constant speed until the HV will start the maneuver
               m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
-              m_traci->vehicle.setAcceleration(m_vehicle_id, 0, 1.5);
+              m_traci->vehicle.setAcceleration(m_vehicle_id, 0, m_maneuver_horizon);
               // Accept the coordination
               mcData mcmData;
               mcData::mcBasicContainer mcBasicContainer{};
@@ -1403,7 +1435,8 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
 
     case McmType::McmType_response:
       if (resp_container) {
-          // Checke whether I am currently a coordinator and I am waiting for the response of the sender
+          // Check whether I am currently a coordinator and I am waiting for the response of the sender
+          bool no_wait_for_rvahead = false, no_wait_for_rv = false;
           if (m_coordinator && sender_role == McmItssRole::McmItssRole_targetVehicle && m_acceptance_map.find(sender) != m_acceptance_map.end()) {
               // Response received from the sender, but it could be for another coordinator
               // We need to ensure the response is for us
@@ -1421,12 +1454,18 @@ void foresee::receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t
                   // Check if we have received all the acceptance, we can anticipate the negotiation end
                   bool received_all = true;
                   for (auto it = m_acceptance_map.begin(); it != m_acceptance_map.end(); ++it) {
-                    if (!it->second.accepted) {received_all = false; break;}
+                    if (!it->second.accepted) {
+                      received_all = false;
+                      break;
+                    } else {
+                      if (it->second.role == "RVAhead" && it->second.acceleration == 0) no_wait_for_rvahead = true;
+                      else if (it->second.role == "RV" && it->second.acceleration == 0) no_wait_for_rv = true;
+                    }
                   }
                   // If we have already received all the acceptances requested, we can cancel the scheduled negotiation and instead start one immediately 
                   if (received_all) {
                     Simulator::Cancel(m_negotiation_event);
-                    negotiationPhase(m_left_criterion, m_target_lane);
+                    negotiationPhase(m_left_criterion, m_target_lane, no_wait_for_rvahead, no_wait_for_rv);
                   }
                 }
               // Response is for us, but it is a refusal
@@ -1538,9 +1577,9 @@ void foresee::continueWithConstantSpeed(StationId_t coordinator) {
       std::cout << "\n[TERMINATION NOT YET RECEIVED " << now_s << "]" << std::endl;
       std::cout << "Vehicle " << m_vehicle_id << " will continue with constant speed" << std::endl;
     }
-    m_traci->vehicle.setAcceleration(m_vehicle_id, 0, m_maneuver_horizon / 1e3);
+    m_traci->vehicle.setAcceleration(m_vehicle_id, 0, m_maneuver_horizon);
     // Watchdog: if termination still not received after the horizon, free ourselves
-    m_watchdog_event = Simulator::Schedule(MilliSeconds(m_maneuver_horizon + 500), &foresee::targetWatchdog, this, coordinator);
+    m_watchdog_event = Simulator::Schedule(MilliSeconds(m_maneuver_horizon * 1e3 + 500), &foresee::targetWatchdog, this, coordinator);
   }
   else {
     // The termination has already been received, we are in normal speed mode, so we can avoid to set a specific speed
@@ -1567,16 +1606,27 @@ void foresee::targetWatchdog(StationId_t coordinator) {
 
 void foresee::checkLane(int target_lane_id) {
   if (!*m_alive) return;
-  if (m_verbose) {
-    int new_lane = m_traci->vehicle.getLaneIndex(m_vehicle_id);
-    double now_s = Simulator::Now().GetSeconds();
-    if (new_lane == target_lane_id) {
+  double now_s = Simulator::Now().GetSeconds();
+  int new_lane = m_traci->vehicle.getLaneIndex(m_vehicle_id);
+  bool success = new_lane == target_lane_id;
+  if (success) {
+    if (m_verbose) {
       std::cout << "\n[COORDINATION SUCCESS " << now_s << "]" << std::endl;
       std::cout << "Vehicle " << m_vehicle_id << " changed lane" << std::endl;
     }
-    else {
+    if (m_register_log) {
+      m_coordination_structure.execution_success = 3;
+      m_coordination_log.push_back(m_coordination_structure);
+      m_coordination_success_counter ++;
+    }
+  } else {
+    if (m_verbose) {
       std::cout << "\n[COORDINATION FAILED " << now_s << "]" << std::endl;
       std::cout << "Vehicle " << m_vehicle_id << " didn't change lane" << std::endl;
+    }
+    if (m_register_log) {
+      m_coordination_structure.execution_success = 2;
+      m_coordination_log.push_back(m_coordination_structure);
     }
   }
 }

@@ -41,6 +41,7 @@ public:
 
   typedef struct Strategy
   {
+    std::string role;
     bool accepted;
     double acceleration;
     double time;
@@ -141,7 +142,7 @@ public:
   void startCoordination (long RV_id, long RVAhead_id, double dec_rv, double acc_rv_ahead, double time_rv, double time_rv_ahead, bool left_criterion, int target_lane);
   void addMCMRxCallback();
   void receiveMCM(const asn1cpp::Seq<MCM>& mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info, mcData::mcDataForeseeIndication foresee_indication_rv, mcData::mcDataForeseeIndication foresee_indication_rvahead);
-  void negotiationPhase(bool left_criterion, int target_lane);
+  void negotiationPhase(bool left_criterion, int target_lane, bool no_wait_for_rvahead, bool no_wait_for_rv);
   void targetCheckACK();
   void executeManeuver();
   void continueWithConstantSpeed(StationId_t coordinator);
@@ -178,7 +179,7 @@ private:
   int m_step_time;
   int m_negotiation_time;
   int m_FORESEE_max_time = 10000;
-  int m_maneuver_horizon = 5000;
+  int m_maneuver_horizon = 5;
 
   EventId m_foresee_event;
   EventId m_cleanup_event;
@@ -208,6 +209,7 @@ private:
   bool m_register_log = false;
   std::vector<struct CoordinationLog> m_coordination_log;
   uint64_t m_coordination_counter = 0;
+  uint64_t m_coordination_success_counter = 0;
   struct CoordinationLog m_coordination_structure;
 
   std::mt19937 m_gen;
