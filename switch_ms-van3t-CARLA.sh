@@ -122,7 +122,7 @@ if [ "$mode" = "base" ]; then
 		sudo add-apt-repository ppa:deadsnakes/ppa
 		sudo apt-get install -y python3.7 ffmpeg libsm6 libxext6 python3-pip python3.7-distutils python3-apt python3-dev protobuf-compiler libprotobuf-dev libgrpc++-dev libzmq5-dev libglfw3-dev python-dev libpython3.7-dev libpython3-dev libyaml-cpp-dev
 
-		git clone https://github.com/carlosrisma/OpenCDA.git
+		git clone https://github.com/DriveX-devs/OpenCDA.git
 		cd OpenCDA
 
 	    case $install_method in
