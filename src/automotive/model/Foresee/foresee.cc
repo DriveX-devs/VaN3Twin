@@ -40,6 +40,11 @@ TODO List:
 - Changed the time but maybe we need more
 */
 
+// Apply a margin to compensate for SUMO's actuation imprecision:
+// the simulation predicts with `acc`, but we command slightly more
+// to ensure the real gap opening matches the prediction.
+constexpr double ACTUATION_MARGIN = 0.3;
+
 namespace ns3 {
 
 void txMCM(Ptr<MCBasicService> mc, mcData mcmData) {
@@ -215,6 +220,7 @@ std::tuple<bool, double> foresee::simulateCandidate(
     double a_f = idmAcceleration(v_f, v_l, gap, p.v0, p.T, p.s0, p.a, p.b, p.d);
 
     if (a_f >= (MIN_DECELERATION + 0.2)) {
+      // std::cout << "\n[DEBUG] GAP, SPEEDS AND ACC: " << gap << " " << v_f << " " << v_l << " " << a_f << std::endl;
       return {true, t};
     }
   }
@@ -651,6 +657,7 @@ foresee::FORESEEMobilityModel () {
               if(!possible_hv) {
                 // It is needed to open the gap between RVAhead and HV
                 // RVAhead needs to accelerate
+                // std::cout << "\n[DEBUG] COMPUTE ACCELERATION: " << m_vehicle_id << " " << RVAhead_id << std::endl;
                 std::tuple<double, double> tuple = computeRequiredAcceleration (speed_RVAhead, my_speed, min_dist_rv_ahead, ego_params, 0.1, m_maneuver_horizon, 0.7);
                 double a = std::get<0>(tuple);
                 double time = std::get<1>(tuple);
@@ -678,6 +685,7 @@ foresee::FORESEEMobilityModel () {
               if(!possible_rv) {
                 // It is needed to open the gap between RV and HV
                 // RV needs to decelerate
+                // std::cout << "\n[DEBUG] COMPUTE ACCELERATION: " << m_vehicle_id << " " << RV_id << std::endl;
                 std::tuple<double, double> tuple = computeRequiredDeceleration (my_speed, speed_RV, min_dist_rv, params, 0.1, m_maneuver_horizon, 0.7);
                 double a = std::get<0>(tuple);
                 double time = std::get<1>(tuple);
@@ -1049,6 +1057,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane, bool no_wai
                     double leader_length = m_vdp->getVehicleLength();
                     if (gap > leader_length) gap -= leader_length;
                     else gap = 0;
+                    // std::cout << "\n[DEBUG] GAP AND SPEEDS: " << gap << " " << my_speed << " " << item->vehData.speed_ms << std::endl;
                     IDMParams params = getIDMParams(static_cast<StationType> (item->vehData.stationType), item->vehData.desired_speed.getData());
                     a = idmAcceleration(item->vehData.speed_ms, my_speed, gap,
                                                         params.v0, params.T,
@@ -1059,6 +1068,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane, bool no_wai
                     double leader_length = (double) item->vehData.vehicleLength.getData() / DECI;
                     if (gap > leader_length) gap -= leader_length;
                     else gap = 0;
+                    // std::cout << "\n[DEBUG] GAP AND SPEEDS: " << gap << " " << my_speed << " " << item->vehData.speed_ms << std::endl;
                     IDMParams params = getIDMParams(static_cast<StationType> (m_station_type), m_desired_speed);
                     
                     a = idmAcceleration(my_speed, item->vehData.speed_ms, gap,
@@ -1070,6 +1080,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane, bool no_wai
                     // Comfort criterion is not reached for this item, coordination failed
                     can_change = false;
                     veh_blocking = behind ? "RV" : "RVAhead";
+                    // std::cout << "\n[DEBUG] ACCELERATION: " << a << std::endl;
                     break;
                   }
                 }
@@ -1090,6 +1101,7 @@ void foresee::negotiationPhase(bool left_criterion, int target_lane, bool no_wai
                   std::cout << "Vehicle " << m_vehicle_id << " cannot complete the coordination due to comfort criteria not reached by " << veh_blocking << std::endl;
                   for (auto it = coordinators.begin(); it != coordinators.end(); ++it) {
                     double speed = m_traci->vehicle.getSpeed(*it);
+
                     std::cout << "Vehicle " << *it << " is now at " << speed << " after coordination" << std::endl;
                   } 
                 }
@@ -1562,6 +1574,10 @@ void foresee::executeManeuver() {
   double acc = std::get<0>(m_required_acceleration_time);
   double duration = std::get<1>(m_required_acceleration_time);
   m_traci->vehicle.setSpeedMode(m_vehicle_id, 0);
+  // TODO add margin to acceleration
+  if (std::abs(acc) > 1e-9) {
+    acc = (acc > 0) ? acc + ACTUATION_MARGIN : acc - ACTUATION_MARGIN;
+  }
   m_traci->vehicle.setAcceleration(m_vehicle_id, acc, duration);
   m_continue_constant_speed_event = Simulator::Schedule(MilliSeconds(duration*1e3), &foresee::continueWithConstantSpeed, this, m_my_coordinator);
 }
