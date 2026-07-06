@@ -106,14 +106,37 @@ MetricSupervisor::signalSentPacket(std::string buf, double lat, double lon, uint
         {
           StationType_t station_type = it->second.first;
           uint64_t stationID;
-          if (station_type == StationType_roadSideUnit)
+          try
             {
-              uint64_t id = std::stoi (it->first.substr (it->first.find ("_") + 1));
-              stationID = m_stationId_baseline + id;
+              if (station_type == StationType_roadSideUnit)
+                {
+                  // AI-generated, human-reviewed: handle both "rsu_<N>" and "rsu<N>" ID formats
+                  std::string id_str;
+                  std::size_t underscore_pos = it->first.find ("_");
+                  if (underscore_pos != std::string::npos)
+                    {
+                      id_str = it->first.substr (underscore_pos + 1);
+                    }
+                  else if (it->first.size () > 3 && it->first.substr (0, 3) == "rsu")
+                    {
+                      id_str = it->first.substr (3);
+                    }
+                  else
+                    {
+                      id_str = it->first;
+                    }
+                  stationID = m_stationId_baseline + std::stoi (id_str);
+                }
+              else
+                {
+                  stationID = std::stol (it->first.substr (3));
+                }
             }
-          else
+          catch (const std::exception &e)
             {
-              stationID = std::stol (it->first.substr (3));
+              NS_LOG_WARN ("MetricSupervisor: failed to parse station ID '"
+                           << it->first << "': " << e.what () << ", skipping");
+              continue;
             }
 
           libsumo::TraCIPosition pos;
@@ -123,7 +146,15 @@ MetricSupervisor::signalSentPacket(std::string buf, double lat, double lon, uint
             }
           else if (station_type == StationType_roadSideUnit)
             {
-              pos = m_traci_ptr->TraCIAPI::poi.getPosition (it->first);
+              // AI-generated, human-reviewed: try POI first, fall back to vehicle
+              try
+                {
+                  pos = m_traci_ptr->TraCIAPI::poi.getPosition (it->first);
+                }
+              catch (const libsumo::TraCIException &)
+                {
+                  pos = m_traci_ptr->TraCIAPI::vehicle.getPosition (it->first);
+                }
             }
           else
             {
