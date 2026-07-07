@@ -110,7 +110,7 @@ MetricSupervisor::signalSentPacket(std::string buf, double lat, double lon, uint
             {
               if (station_type == StationType_roadSideUnit)
                 {
-                  // AI-generated, human-reviewed: handle both "rsu_<N>" and "rsu<N>" ID formats
+                  // Handle both "rsu_<N>" and "rsu<N>" ID formats
                   std::string id_str;
                   std::size_t underscore_pos = it->first.find ("_");
                   if (underscore_pos != std::string::npos)
@@ -146,7 +146,7 @@ MetricSupervisor::signalSentPacket(std::string buf, double lat, double lon, uint
             }
           else if (station_type == StationType_roadSideUnit)
             {
-              // AI-generated, human-reviewed: try POI first, fall back to vehicle
+              // Try POI first, fall back to vehicle
               try
                 {
                   pos = m_traci_ptr->TraCIAPI::poi.getPosition (it->first);
