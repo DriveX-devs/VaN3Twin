@@ -19,6 +19,11 @@
 
 #include "DCC.h"
 
+#include "ns3/mac48-address.h"
+#include "ns3/wifi-mac-header.h"
+#include "ns3/wifi-remote-station-manager.h"
+#include "ns3/wifi-tx-vector.h"
+
 namespace ns3 {
 NS_LOG_COMPONENT_DEFINE("DCC");
 
@@ -450,6 +455,33 @@ bool DCC::checkGateOpen(float now)
 
 void DCC::updateTonpp(ssize_t pktSize)
 {
+  if (m_node != nullptr && m_node->GetNDevices () > 0)
+    {
+      Ptr<WifiNetDevice> wifiDevice = DynamicCast<WifiNetDevice> (m_node->GetDevice (0));
+      if (wifiDevice != nullptr && wifiDevice->GetPhy () != nullptr &&
+          wifiDevice->GetRemoteStationManager () != nullptr)
+        {
+          WifiMacHeader broadcastData;
+          broadcastData.SetType (WIFI_MAC_DATA);
+          broadcastData.SetAddr1 (Mac48Address::GetBroadcast ());
+          broadcastData.SetAddr2 (Mac48Address ("00:00:00:00:00:01"));
+          broadcastData.SetAddr3 (Mac48Address::GetBroadcast ());
+
+          WifiTxVector txVector = wifiDevice->GetRemoteStationManager ()->GetDataTxVector (broadcastData);
+          Time txDuration = WifiPhy::CalculateTxDuration (static_cast<uint32_t> (pktSize),
+                                                          txVector,
+                                                          wifiDevice->GetPhy ()->GetPhyBand ());
+          Time totalDuration = txDuration;
+          if (txVector.IsNonNgv10 () && txVector.GetNgvPpduRepetitions () > 0)
+            {
+              const uint8_t repetitions = txVector.GetNgvPpduRepetitions ();
+              totalDuration = txDuration * (1 + repetitions) + wifiDevice->GetPhy ()->GetSifs () * repetitions;
+            }
+          m_Ton_pp = static_cast<float> (totalDuration.GetSeconds () * 1000.0);
+          return;
+        }
+    }
+
   double bits = pktSize * 8;
   double tx_duration_s = static_cast<double>(bits) / m_bitrate_bps;
   double total_duration_s = tx_duration_s + (68e-6); // 68 µs extra

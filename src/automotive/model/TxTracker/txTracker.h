@@ -75,6 +75,14 @@ namespace ns3 {
 
     // Method to insert 11p nodes into the tracker
     void Insert11pNodes (std::vector<std::tuple<std::string, uint8_t, Ptr<WifiNetDevice>>> nodes);
+
+    // Method to insert 11bd nodes into the tracker.
+    // The current 11bd profile uses the ns-3 Wi-Fi/WAVE device path, so it
+    // shares the same coexistence bookkeeping as 11p.
+    void Insert11bdNodes (std::vector<std::tuple<std::string, uint8_t, Ptr<WifiNetDevice>>> nodes)
+    {
+      Insert11pNodes (nodes);
+    }
   
     // Method to insert NR nodes into the tracker
     void InsertNrNodes (std::vector<std::tuple<std::string, uint8_t, Ptr<NrUeNetDevice>>> nodes);

@@ -39,6 +39,7 @@ NS_LOG_COMPONENT_DEFINE("MetricSupervisor");
 
 std::unordered_map<std::string, Time> currentBusyCBR;
 std::unordered_map<std::string, std::pair<Time, WifiPhyState>> nodeLastState80211p;
+std::unordered_map<std::string, std::vector<std::pair<Time, Time>>> nodeBusyIntervals80211p;
 std::unordered_map<std::string, Time> nodeDurationStateNr;
 Time lastCBRCheck = Time(-1.0);
 
@@ -476,6 +477,56 @@ bool IsChannelBusy(WifiPhyState state) {
   return state != WifiPhyState::SLEEP && state != WifiPhyState::IDLE;
 }
 
+bool IsWaveCbrTechnology(const std::string& technology)
+{
+  return technology == "80211p" || technology == "80211bd";
+}
+
+void
+RefreshWaveBusyCbrForCurrentWindow ()
+{
+  Time windowStart = lastCBRCheck.IsNegative () ? Seconds (0) : lastCBRCheck;
+  Time windowEnd = Simulator::Now ();
+  currentBusyCBR.clear ();
+
+  for (auto it = nodeBusyIntervals80211p.begin (); it != nodeBusyIntervals80211p.end ();)
+    {
+      Time busyCbr = Seconds (0);
+      std::vector<std::pair<Time, Time>> remainingIntervals;
+
+      for (const auto& interval : it->second)
+        {
+          Time intervalStart = interval.first;
+          Time intervalEnd = interval.second;
+          if (intervalEnd > windowStart && intervalStart < windowEnd)
+            {
+              Time clippedStart = intervalStart < windowStart ? windowStart : intervalStart;
+              Time clippedEnd = intervalEnd > windowEnd ? windowEnd : intervalEnd;
+              if (clippedEnd > clippedStart)
+                {
+                  busyCbr += clippedEnd - clippedStart;
+                }
+            }
+
+          if (intervalEnd > windowEnd)
+            {
+              remainingIntervals.push_back (interval);
+            }
+        }
+
+      currentBusyCBR[it->first] = busyCbr;
+      if (remainingIntervals.empty ())
+        {
+          it = nodeBusyIntervals80211p.erase (it);
+        }
+      else
+        {
+          it->second = remainingIntervals;
+          ++it;
+        }
+    }
+}
+
 void
 storeCBR80211p (std::string context, Time start, Time duration, WifiPhyState state)
 {
@@ -487,24 +538,10 @@ storeCBR80211p (std::string context, Time start, Time duration, WifiPhyState sta
 
   if (IsChannelBusy (state))
     {
-      // Check if the last measurement for busy state started before the last CBR check
-      // In this case we need to consider only the time from the last CBR check
-      // The time before the last CBR check was already considered in the logic of the check
-      if (start < lastCBRCheck)
+      Time end = start + duration;
+      if (end > start)
         {
-          duration -= lastCBRCheck - start;
-          if (duration.IsNegative())
-            {
-              duration = Seconds (0);
-            }
-        }
-      if (currentBusyCBR.find(node) == currentBusyCBR.end())
-        {
-          currentBusyCBR[node] = duration;
-        }
-      else
-        {
-          currentBusyCBR[node] += duration;
+          nodeBusyIntervals80211p[node].push_back (std::make_pair (start, end));
         }
       // Storing the current state and the current time is essential
       // Situations where the next CBR check happens before the end of the current busy state must be handled with this method
@@ -550,6 +587,18 @@ MetricSupervisor::checkCBR ()
 {
 
   std::unordered_map<std::string, Time> nextTimeToAddNr;
+  if (IsWaveCbrTechnology (m_channel_technology))
+    {
+      RefreshWaveBusyCbrForCurrentWindow ();
+      for (uint32_t i = 0; i < m_node_container.GetN (); ++i)
+        {
+          const std::string node_id = std::to_string (m_node_container.Get (i)->GetId ());
+          if (currentBusyCBR.find (node_id) == currentBusyCBR.end ())
+            {
+              currentBusyCBR[node_id] = Seconds (0);
+            }
+        }
+    }
   if(m_traci_ptr != nullptr)
     {
       std::map<std::basic_string<char>, std::pair<StationType_t, Ptr<Node>>> nodes = m_traci_ptr->get_NodeMap ();
@@ -699,8 +748,45 @@ MetricSupervisor::checkCBR ()
             }
         }
     }
+  else
+    {
+      for (uint32_t i = 0; i < m_node_container.GetN (); ++i)
+        {
+          std::string node_id = std::to_string (m_node_container.Get (i)->GetId ());
+
+          if (currentBusyCBR.find (node_id) == currentBusyCBR.end ())
+            {
+              continue;
+            }
+
+          Time busyCbr = currentBusyCBR[node_id];
+
+          if (m_channel_technology == "Nr")
+            {
+              if (nodeDurationStateNr[node_id] > Simulator::Now ())
+                {
+                  Time nextToAdd = nodeDurationStateNr[node_id] - Simulator::Now ();
+                  busyCbr -= nextToAdd;
+                  nextTimeToAddNr[node_id] = nextToAdd;
+                }
+            }
+
+          double currentCbr = busyCbr.GetDouble () / (m_cbr_window * 1e6);
+
+          if (m_average_cbr.find (node_id) != m_average_cbr.end ())
+            {
+              double new_cbr =
+                  m_cbr_alpha * m_average_cbr[node_id].back () + (1 - m_cbr_alpha) * currentCbr;
+              m_average_cbr[node_id].push_back (new_cbr);
+            }
+          else
+            {
+              m_average_cbr[node_id].push_back (currentCbr);
+            }
+        }
+    }
   currentBusyCBR.clear();
-  if(m_channel_technology == "80211p") nodeLastState80211p.clear();
+  if(IsWaveCbrTechnology(m_channel_technology)) nodeLastState80211p.clear();
   if(m_channel_technology == "Nr")
     {
       nodeDurationStateNr.clear();
@@ -764,17 +850,23 @@ MetricSupervisor::startCheckCBR (int num_nodes)
   // Assert that the parameters for the CBR are set
   NS_ASSERT_MSG(m_cbr_window > 0, "CBR window must be greater than 0");
   NS_ASSERT_MSG(m_cbr_alpha >= 0 && m_cbr_alpha <= 1, "CBR alpha must be between 0 and 1");
-  NS_ASSERT_MSG (m_channel_technology != "", "Channel technology must be set, choose between 80211p and Nr");
+  NS_ASSERT_MSG (m_channel_technology != "", "Channel technology must be set, choose between 80211p, 80211bd, and Nr");
   NS_ASSERT_MSG (m_simulation_time > 0, "Simulation time must be greater than 0");
 
   NS_ASSERT_MSG (m_node_container.GetN() != 0, "The Node container must be filled before the CBR checking.");
+  currentBusyCBR.clear ();
+  nodeLastState80211p.clear ();
+  nodeBusyIntervals80211p.clear ();
+  nodeDurationStateNr.clear ();
+  lastCBRCheck = Time (-1.0);
+
   uint8_t i = 0;
   uint8_t nodes_to_check = num_nodes == -1 ? m_node_container.GetN() : num_nodes;
   for(; i < nodes_to_check; i++)
     {
       Ptr<Node> node = m_node_container.Get (i);
       std::basic_ostringstream<char> oss;
-      if (m_channel_technology == "80211p")
+      if (IsWaveCbrTechnology (m_channel_technology))
         {
           oss << "/NodeList/" << node->GetId() << "/DeviceList/*/$ns3::WifiNetDevice/Phy/State/State";
           std::string var = oss.str();

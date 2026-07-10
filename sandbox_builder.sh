@@ -220,10 +220,39 @@ cp src/automotive/model/SignalInfo/size-tag.h src/nr/model/
 cp src/automotive/model/SignalInfo/size-tag.h src/lte/model/
 
 cp src/automotive/model/SignalInfo/WiFi/wifi-mac-queue-item.h src/wifi/model/
+cp src/automotive/model/SignalInfo/WiFi/wifi-standards.h src/wifi/model/
+cp src/automotive/model/SignalInfo/WiFi/wifi-phy-common.h src/wifi/model/
+cp src/automotive/model/SignalInfo/WiFi/wifi-phy-common.cc src/wifi/model/
+cp src/automotive/model/SignalInfo/WiFi/wifi-tx-vector.h src/wifi/model/
+cp src/automotive/model/SignalInfo/WiFi/wifi-tx-vector.cc src/wifi/model/
+cp src/automotive/model/SignalInfo/WiFi/wifi-remote-station-manager.h src/wifi/model/
+cp src/automotive/model/SignalInfo/WiFi/wifi-remote-station-manager.cc src/wifi/model/
+cp src/automotive/model/SignalInfo/WiFi/error-rate-model.cc src/wifi/model/
+cp src/automotive/model/SignalInfo/WiFi/interference-helper.cc src/wifi/model/
+cp src/automotive/model/SignalInfo/WiFi/yans-wifi-channel.cc src/wifi/model/
+cp src/automotive/model/SignalInfo/WiFi/wifi-phy.cc src/wifi/model/
+cp src/automotive/model/SignalInfo/WiFi/spectrum-wifi-phy.cc src/wifi/model/
+cp src/automotive/model/SignalInfo/WiFi/mac-rx-middle.cc src/wifi/model/
+mkdir -p src/wifi/model/ngv
+cp src/automotive/model/SignalInfo/WiFi/ngv/ngv-calibration.h src/wifi/model/ngv/
+cp src/automotive/model/SignalInfo/WiFi/ngv/ngv-phy.h src/wifi/model/ngv/
+cp src/automotive/model/SignalInfo/WiFi/ngv/ngv-phy.cc src/wifi/model/ngv/
+cp src/automotive/model/SignalInfo/WiFi/ngv/ngv-ppdu.h src/wifi/model/ngv/
+cp src/automotive/model/SignalInfo/WiFi/ngv/ngv-ppdu.cc src/wifi/model/ngv/
+cp src/automotive/model/SignalInfo/WiFi/non-ht/ofdm-ppdu.h src/wifi/model/non-ht/
+cp src/automotive/model/SignalInfo/WiFi/non-ht/ofdm-ppdu.cc src/wifi/model/non-ht/
 cp src/automotive/model/SignalInfo/WiFi/ocb-wifi-mac.cc src/wave/model/
+cp src/automotive/model/SignalInfo/WiFi/wifi-80211p-helper.h src/wave/helper/
+cp src/automotive/model/SignalInfo/WiFi/wifi-80211p-helper.cc src/wave/helper/
 cp src/automotive/model/SignalInfo/WiFi/frame-exchange-manager.cc src/wifi/model/
 cp src/automotive/model/SignalInfo/WiFi/qos-frame-exchange-manager.cc src/wifi/model/
 cp src/automotive/model/SignalInfo/WiFi/CMakeLists.txt src/wifi/
+sed -i '/\/\/ 802.11p 5 MHz channels at the 5.855-5.925 band/i\
+  // 802.11bd 20 MHz channels at the 5.855-5.925 band\
+  { std::make_tuple (173, 5865, 20, WIFI_PHY_80211p_CHANNEL, WIFI_PHY_BAND_5GHZ) },\
+  { std::make_tuple (177, 5885, 20, WIFI_PHY_80211p_CHANNEL, WIFI_PHY_BAND_5GHZ) },\
+  { std::make_tuple (181, 5905, 20, WIFI_PHY_80211p_CHANNEL, WIFI_PHY_BAND_5GHZ) },\
+' src/wifi/model/wifi-phy-operating-channel.cc
 
 cp src/automotive/model/SignalInfo/CV2X/cv2x_lte-spectrum-phy.cc src/cv2x/model/
 cp src/automotive/model/SignalInfo/CV2X/cv2x_lte-spectrum-phy.h src/cv2x/model/
