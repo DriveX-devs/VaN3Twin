@@ -26,19 +26,16 @@ namespace ns3 {
 NS_LOG_COMPONENT_DEFINE ("TxTracker");
 
 // Helper function to convert dBm to Watts
-double DbmToW (double dbm)
-{
+double DbmToW (double dbm) {
   return std::pow(10, (dbm - 30) / 10);
 }
 
 // Helper function to convert Watts to dBm
-double WToDbm (double w)
-{
+double WToDbm (double w) {
   return 10 * std::log10(w) + 30;
 }
 
-uint8_t calculateNumRb (double lteBandwidthHz, double rbOh, uint8_t numerology)
-{
+uint8_t calculateNumRb (double lteBandwidthHz, double rbOh, uint8_t numerology) {
   double realBw = lteBandwidthHz * (1 - rbOh);
   uint32_t subcarrierSpacing = 15000 * static_cast<uint32_t> (std::pow (2, numerology));
   uint32_t rbWidth = subcarrierSpacing * NrSpectrumValueHelper::SUBCARRIERS_PER_RB;
@@ -47,10 +44,8 @@ uint8_t calculateNumRb (double lteBandwidthHz, double rbOh, uint8_t numerology)
 
 // Insert 802.11p nodes into the tracker
 void
-TxTracker::Insert11pNodes (std::vector<std::tuple<std::string, uint8_t, Ptr<WifiNetDevice>>> nodes)
-{
-  for (auto n : nodes)
-    {
+TxTracker::Insert11pNodes (std::vector<std::tuple<std::string, uint8_t, Ptr<WifiNetDevice>>> nodes) {
+  for (auto n : nodes) {
       // Extract vehicle ID, node ID, and network device from the tuple
       std::string vehID = std::get<0>(n);
       uint8_t nodeID = std::get<1>(n);
@@ -73,10 +68,8 @@ TxTracker::Insert11pNodes (std::vector<std::tuple<std::string, uint8_t, Ptr<Wifi
 
 // Insert NR (New Radio) nodes into the tracker
 void
-TxTracker::InsertNrNodes (std::vector<std::tuple<std::string, uint8_t, Ptr<NrUeNetDevice>>> nodes)
-{
-  for (auto n : nodes)
-    {
+TxTracker::InsertNrNodes (std::vector<std::tuple<std::string, uint8_t, Ptr<NrUeNetDevice>>> nodes) {
+  for (auto n : nodes) {
       // Extract vehicle ID, node ID, and network device from the tuple
       std::string vehID = std::get<0>(n);
       uint8_t nodeID = std::get<1>(n);
@@ -125,17 +118,14 @@ TxTracker::InsertLteNodes (std::vector<std::tuple<std::string, uint8_t, Ptr<cv2x
     }
 } */
 
-// Add interference from CV2X signals
+// Add interference from C-V2X (NR-V2X) signals to DSRC signals
 void
-TxTracker::AddInterferenceFromCV2X (Ptr<NetDevice> netDevice, Ptr<SpectrumValue> signal, Ptr<PropagationLossModel> propagationLoss, Time duration)
-{
+TxTracker::AddInterferenceFromCV2X (Ptr<NetDevice> netDevice, Ptr<SpectrumValue> signal, Ptr<PropagationLossModel> propagationLoss, Time duration) {
   // We need to determine the technology type of the transmitting node
   bool found = false;
   std::string technologyType;
-  for (auto it = m_txMapNr.begin(); it != m_txMapNr.end(); ++it)
-    {
-      if (it->second.netDevice == DynamicCast<NrUeNetDevice>(netDevice))
-        {
+  for (auto it = m_txMapNr.begin(); it != m_txMapNr.end(); ++it) {
+      if (it->second.netDevice == DynamicCast<NrUeNetDevice>(netDevice)) {
           found = true;
           technologyType = "Nr";
           break;
@@ -156,8 +146,7 @@ TxTracker::AddInterferenceFromCV2X (Ptr<NetDevice> netDevice, Ptr<SpectrumValue>
 
   // NS_ASSERT_MSG (found, "NetDevice not found in TxTracker.");
 
-  if (!m_txMap11p.empty())
-    {
+  if (!m_txMap11p.empty()) {
       double wifiCentralFreq = m_centralFrequency11p;
       double wifiBandwidth = m_bandWidth11p;
       // double cCentralFrequency = technologyType == "Nr" ? m_centralFrequencyNr : m_centralFrequencyLte;
@@ -171,48 +160,41 @@ TxTracker::AddInterferenceFromCV2X (Ptr<NetDevice> netDevice, Ptr<SpectrumValue>
       double wifiUpperFreq = wifiCentralFreq + wifiBandwidth / 2;
       bool overlap = std::max(cLowerFreq, wifiLowerFreq) <= std::min(cUpperFreq, wifiUpperFreq);
 
-      if (overlap)
-        {
+      if (overlap) {
           // double freqPerRb = technologyType == "Nr" ? m_bandWidthNr / signal->GetValuesN() : m_bandWidthLte / signal->GetValuesN();
           double freqPerRb = m_bandWidthNr / signal->GetValuesN();
           Ptr<MobilityModel> cMobility = netDevice->GetNode()->GetObject<ConstantPositionMobilityModel>();
 
-          for (auto it = m_txMap11p.begin(); it != m_txMap11p.end(); ++it)
-            {
+          for (auto it = m_txMap11p.begin(); it != m_txMap11p.end(); ++it) {
               Ptr<YansWifiPhy> wifiPhy = DynamicCast<YansWifiPhy>(it->second.netDevice->GetPhy());
               Ptr<MobilityModel> wifiMobility = it->second.netDevice->GetNode()->GetObject<ConstantPositionMobilityModel>();
-              uint8_t j = 1;
+              uint8_t j = 0;
               std::vector<uint8_t> indexesRB;
               double powerW = 0.0;
-              for (auto it2 = signal->ValuesBegin(); it2 != signal->ValuesEnd(); ++it2)
-                {
-                  if ((*it2) > 0)
-                    {
-                      double subBandFreq = cLowerFreq + j * freqPerRb;
-                      if (subBandFreq >= wifiLowerFreq && subBandFreq <= wifiUpperFreq)
-                        {
+              for (auto it2 = signal->ValuesBegin(); it2 != signal->ValuesEnd(); ++it2) {
+                  if ((*it2) > 0) {
+                      double subBandFreq = cLowerFreq + (j + 0.5) * freqPerRb;
+                      if (subBandFreq >= wifiLowerFreq && subBandFreq <= wifiUpperFreq) {
                           powerW += (*it2) * freqPerRb;
                         }
                     }
+		  j++;
                 }
 
               // Calculate interference delay and received power
-              if (powerW == 0.0)
-                {
+              if (powerW == 0.0) {
                   continue;
                 }
 
               double powerDbm = WToDbm(powerW);
-              double pathLoss = propagationLoss->CalcRxPower(0, wifiMobility, cMobility);
+              double pathLoss = propagationLoss->CalcRxPower(0, cMobility, wifiMobility);
               double finalInterferencePowerDbm = powerDbm - std::abs(pathLoss);
               double finalInterferencePowerW = DbmToW(finalInterferencePowerDbm);
 
-              if ((finalInterferencePowerDbm + wifiPhy->GetRxGain ()) < wifiPhy->GetRxSensitivity ())
-                {
+              if ((finalInterferencePowerDbm + wifiPhy->GetRxGain ()) < wifiPhy->GetRxSensitivity ()) {
                   continue;
                 }
-              else
-                {
+              else {
                   RxPowerWattPerChannelBand rxInterference = RxPowerWattPerChannelBand ();
                   rxInterference.insert ({std::make_pair (0, 0), finalInterferencePowerW});
                   wifiPhy->GetInterferenceHelper()->AddForeignSignal(duration, rxInterference);
@@ -328,23 +310,19 @@ TxTracker::AddInterferenceFromCV2X (Ptr<NetDevice> netDevice, Ptr<SpectrumValue>
     } */
 }
 
-// Add interference from NR signals to 80211p signals
+// Add interference from DSRC signals to C-V2X (NR-V2X) signals
 void
-TxTracker::AddInterferenceFrom11p (Ptr<YansWifiPhy> sender, Ptr<MobilityModel> receiverMobility, Ptr<PropagationLossModel> propagationLoss, Ptr<PropagationDelayModel> propagationDelay, Time duration)
-{
-  if(!m_txMapNr.empty())
-    {
+TxTracker::AddInterferenceFrom11p (Ptr<YansWifiPhy> sender, Ptr<MobilityModel> receiverMobility, Ptr<PropagationLossModel> propagationLoss, Ptr<PropagationDelayModel> propagationDelay, Time duration) {
+  if(!m_txMapNr.empty()) {
       double wifiLowerFreq = m_centralFrequency11p - m_bandWidth11p / 2;
       double wifiUpperFreq = m_centralFrequency11p + m_bandWidth11p / 2;
       double nrLowerFreq = m_centralFrequencyNr - m_bandWidthNr / 2;
       double nrUpperFreq = m_centralFrequencyNr + m_bandWidthNr / 2;
       bool overlap = std::max(wifiLowerFreq, nrLowerFreq) <= std::min(wifiUpperFreq, nrUpperFreq);
 
-      if (overlap)
-        {
+      if (overlap) {
           Ptr<MobilityModel> wifiMobility = sender->GetMobility();
-          for (auto it = m_txMapNr.begin (); it != m_txMapNr.end (); ++it)
-            {
+          for (auto it = m_txMapNr.begin (); it != m_txMapNr.end (); ++it) {
               double interferencePower = 0.0;
               Ptr<NrSpectrumPhy> nrPhy = it->second.netDevice->GetPhy (0)->GetSpectrumPhy ();
 
@@ -353,26 +331,23 @@ TxTracker::AddInterferenceFrom11p (Ptr<YansWifiPhy> sender, Ptr<MobilityModel> r
 
               // Calculate interference for overlapping frequency bands
               Ptr<MobilityModel> c1Mobility = it->second.netDevice->GetNode()->GetObject<ConstantPositionMobilityModel>();
-              double pathLoss = propagationLoss->CalcRxPower (0, c1Mobility, wifiMobility);
+              double pathLoss = propagationLoss->CalcRxPower (0, wifiMobility, c1Mobility);
 
-              if (std::abs(pathLoss) > m_noisePowerThreshold)
-                {
+              if (std::abs(pathLoss) > m_noisePowerThreshold) {
                   continue;
                 }
 
-              Time interfDuration = duration + propagationDelay->GetDelay (c1Mobility, wifiMobility);
+              Time interfDuration = duration /*+ propagationDelay->GetDelay (c1Mobility, wifiMobility)*/;
 
               uint8_t j = 0;
               double noisePowerDbm = sender->GetTxPowerStart() - std::abs(pathLoss);
               double noisePowerW = DbmToW (noisePowerDbm);
-              double noisePowerPerHz = noisePowerW / m_bandWidthNr;
+              double noisePowerPerHz = noisePowerW / m_bandWidth11p;
               double freqPerRb = m_bandWidthNr / interferenceSignal->GetValuesN();
-              for (uint8_t i = 0; i < interferenceSignal->GetValuesN(); ++i)
-                {
-                  double subBandFreq = nrLowerFreq + (i+1) * freqPerRb;
-                  if (subBandFreq >= wifiLowerFreq && subBandFreq <= wifiUpperFreq)
-                    {
-                      (*interferenceSignal)[j] = noisePowerPerHz * freqPerRb;
+              for (uint8_t i = 0; i < interferenceSignal->GetValuesN(); ++i) {
+                  double subBandFreq = nrLowerFreq + (i + 0.5) * freqPerRb;
+                  if (subBandFreq >= wifiLowerFreq && subBandFreq <= wifiUpperFreq) {
+                      (*interferenceSignal)[j] = noisePowerPerHz;
                     }
                   j += 1;
                 }
