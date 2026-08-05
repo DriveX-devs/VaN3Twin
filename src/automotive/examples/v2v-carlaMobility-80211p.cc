@@ -64,12 +64,14 @@ main (int argc, char *argv[])
    * OpenCDA_HOME=/path/to/OpenCDA/
    * CARLA_HOME=/path/to/CARLA_0.9.12
    * Python_Interpreter=/path/to/anaconda3/envs/opencda/bin/python3
+   * CARLA_Version=0.9.12
    *
    * If installation was done without anaconda -> Python_Interpreter=python3.7
   */
   std::string carla_opencda_config="CARLA-OpenCDA.conf";
 
   std::string OpenCDA_HOME, CARLA_HOME, Python_Interpreter;
+  std::string CARLA_Version = "0.9.12";
 
   std::string carla_host = "localhost";
   std::string carla_port = "2000";
@@ -206,7 +208,8 @@ main (int argc, char *argv[])
   std::unordered_map<std::string, std::string*> configMap = {
       {"OpenCDA_HOME", &OpenCDA_HOME},
       {"CARLA_HOME", &CARLA_HOME},
-      {"Python_Interpreter", &Python_Interpreter}
+      {"Python_Interpreter", &Python_Interpreter},
+      {"CARLA_Version", &CARLA_Version}
   };
 
   while (std::getline(configFile, line)) {
@@ -319,6 +322,7 @@ main (int argc, char *argv[])
   opencda_client->SetAttribute ("OpenCDA_config", StringValue(opencda_config));
   opencda_client->SetAttribute ("OpenCDA_HOME", StringValue(OpenCDA_HOME));
   opencda_client->SetAttribute ("CARLA_HOME", StringValue(CARLA_HOME));
+  opencda_client->SetAttribute ("CARLAVersion", StringValue(CARLA_Version));
   opencda_client->SetAttribute ("PythonInterpreter", StringValue(Python_Interpreter));
   opencda_client->SetAttribute ("CARLAHost", StringValue(carla_host));
   opencda_client->SetAttribute ("CARLAPort", UintegerValue(atoi(carla_port.c_str())));

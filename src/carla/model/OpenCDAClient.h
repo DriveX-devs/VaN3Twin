@@ -106,6 +106,7 @@ namespace ns3
       int m_carla_tm_port; //!< Port for CARLA Traffic Manager
       std::string m_opencda_config;
       std::string m_carla_home;
+      std::string m_carla_version;
       std::string m_opencda_home;
       std::string m_python_interpreter;
       bool m_apply_ml;
@@ -125,6 +126,7 @@ namespace ns3
       pid_t m_pid;
       pid_t m_carla_pid;
       pid_t m_opencda_pid;
+      bool m_processesStopped;
       bool m_adapter_debug; // Flag for toggle execution of adapter within ms-van3t or from outside (for debugging purposes)
 
       double m_penetration_rate;
