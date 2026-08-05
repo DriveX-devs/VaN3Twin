@@ -426,12 +426,12 @@ public:
   void setChannelTechnology(std::string channelTechnology)
   {
     // Define the set of valid channel technologies
-    std::set<std::string> validChannelTechnologies = {"80211p", "Nr", "Lte", "CV2X"};
+    std::set<std::string> validChannelTechnologies = {"80211p", "80211bd", "Nr", "Lte", "CV2X"};
 
     // Check if the provided channelTechnology is valid
     if (validChannelTechnologies.find(channelTechnology) == validChannelTechnologies.end()) {
         // If the channelTechnology is not valid, throw an error
-        NS_FATAL_ERROR("Invalid channel technology. Must be one of '80211p', 'Nr', 'Lte', or 'CV2X'.");
+        NS_FATAL_ERROR("Invalid channel technology. Must be one of '80211p', '80211bd', 'Nr', 'Lte', or 'CV2X'.");
       }
 
     // If the channelTechnology is valid, set it

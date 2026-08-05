@@ -23,6 +23,7 @@
 #include "ns3/log.h"
 #include "ns3/network-module.h"
 #include "ns3/gn-utils.h"
+#include <algorithm>
 #include <cmath>
 #include "ns3/ipv4-header.h"
 #include "ns3/DCC.h"
@@ -1143,123 +1144,120 @@ namespace ns3 {
     return gn_sock;
   }
 
+  GeoNet::GlobalCbrAggregation
+  GeoNet::ComputeGlobalCbrAggregation (std::vector<LocationTableExtension*> cbrExtensions,
+                                       int64_t nowMs,
+                                       int64_t cbrValidityMs,
+                                       double cbrTarget,
+                                       double cbrL0HopPrev)
+  {
+    double mean_cbr_r0_hop = 0.0;
+    uint64_t tot_r0 = 0;
+    double max_cbr_r0 = 0.0, second_max_cbr_r0 = 0.0;
+    double mean_cbr_r1_hop = 0.0;
+    uint64_t tot_r1 = 0;
+    double max_cbr_r1 = 0.0, second_max_cbr_r1 = 0.0;
+
+    for (auto cbr_data_ptr : cbrExtensions)
+      {
+        if (cbr_data_ptr == nullptr)
+          {
+            continue;
+          }
+        auto& cbr_data = *cbr_data_ptr;
+
+        auto isExpired = [nowMs, cbrValidityMs] (const std::tuple<int64_t, double>& sample) {
+          return nowMs - cbrValidityMs > std::get<0> (sample);
+        };
+        cbr_data.CBR_R0_Hop.erase (
+            std::remove_if (cbr_data.CBR_R0_Hop.begin (), cbr_data.CBR_R0_Hop.end (), isExpired),
+            cbr_data.CBR_R0_Hop.end ());
+        cbr_data.CBR_R1_Hop.erase (
+            std::remove_if (cbr_data.CBR_R1_Hop.begin (), cbr_data.CBR_R1_Hop.end (), isExpired),
+            cbr_data.CBR_R1_Hop.end ());
+
+        for (auto it2 = cbr_data.CBR_R0_Hop.begin (); it2 != cbr_data.CBR_R0_Hop.end (); ++it2)
+          {
+            double val = std::get<1> (*it2);
+            mean_cbr_r0_hop += val;
+
+            if (val > max_cbr_r0)
+              {
+                second_max_cbr_r0 = max_cbr_r0;
+                max_cbr_r0 = val;
+              }
+            else if (val < max_cbr_r0 && val > second_max_cbr_r0)
+              {
+                second_max_cbr_r0 = val;
+              }
+          }
+        tot_r0 += cbr_data.CBR_R0_Hop.size ();
+
+        for (auto it2 = cbr_data.CBR_R1_Hop.begin (); it2 != cbr_data.CBR_R1_Hop.end (); ++it2)
+          {
+            double val = std::get<1> (*it2);
+            mean_cbr_r1_hop += val;
+
+            if (val > max_cbr_r1)
+              {
+                second_max_cbr_r1 = max_cbr_r1;
+                max_cbr_r1 = val;
+              }
+            else if (val < max_cbr_r1 && val > second_max_cbr_r1)
+              {
+                second_max_cbr_r1 = val;
+              }
+          }
+        tot_r1 += cbr_data.CBR_R1_Hop.size ();
+      }
+
+    if (tot_r0 != 0)
+      {
+        mean_cbr_r0_hop /= tot_r0;
+      }
+    if (tot_r1 != 0)
+      {
+        mean_cbr_r1_hop /= tot_r1;
+      }
+
+    GlobalCbrAggregation aggregation;
+    aggregation.cbrL1Hop = mean_cbr_r0_hop > cbrTarget ? max_cbr_r0 : second_max_cbr_r0;
+    aggregation.cbrL2Hop = mean_cbr_r1_hop > cbrTarget ? max_cbr_r1 : second_max_cbr_r1;
+    aggregation.cbrG = std::max (cbrL0HopPrev, std::max (aggregation.cbrL1Hop, aggregation.cbrL2Hop));
+    aggregation.r0SampleCount = tot_r0;
+    aggregation.r1SampleCount = tot_r1;
+    return aggregation;
+  }
+
   void GeoNet::attachGlobalCBRCheck ()
   {
     if (m_dcc == nullptr) return;
     m_dcc->setCBRGCallback([this](){
-      struct timespec tv;
-      clock_gettime (CLOCK_MONOTONIC, &tv);
-      double now = static_cast<double>((tv.tv_sec * 1e9 + tv.tv_nsec)/1e6);
-      double mean_cbr_r0_hop = 0.0;
-      long tot_r0 = 0;
-      double max_cbr_r0 = 0.0, second_max_cbr_r0 = 0.0;
-      double mean_cbr_r1_hop = 0.0;
-      long tot_r1 = 0;
-      double max_cbr_r1 = 0.0, second_max_cbr_r1 = 0.0;
+      int64_t now = Simulator::Now ().GetMilliSeconds ();
+      std::vector<LocationTableExtension*> cbrExtensions;
       m_LocT_Mutex.lock ();
       for(auto it = m_GNLocT.begin(); it != m_GNLocT.end(); ++it)
         {
-          auto& cbr_data = it->second.cbr_extension;
-          // Clean old data
-          size_t counter = 0;
-          std::vector<size_t> to_delete;
-          for (auto it2 = cbr_data.CBR_R0_Hop.begin(); it2 != cbr_data.CBR_R0_Hop.end(); ++it2)
-            {
-              if(now - m_GNLocTTimerCBR_ms > std::get<0>(*it2)) to_delete.push_back (counter);
-              counter ++;
-            }
-          std::sort(to_delete.begin(), to_delete.end(), std::greater<size_t>());
-          for (size_t idx : to_delete) {
-              if (idx < cbr_data.CBR_R0_Hop.size()) {
-                  cbr_data.CBR_R0_Hop.erase(cbr_data.CBR_R0_Hop.begin() + idx);
-                }
-            }
-
-          counter = 0;
-          to_delete.clear();
-          for (auto it2 = cbr_data.CBR_R1_Hop.begin(); it2 != cbr_data.CBR_R1_Hop.end(); ++it2)
-            {
-              if(now - m_GNLocTTimerCBR_ms > std::get<0>(*it2)) to_delete.push_back (counter);
-              counter ++;
-            }
-          std::sort(to_delete.begin(), to_delete.end(), std::greater<size_t>());
-          for (size_t idx : to_delete) {
-              if (idx < cbr_data.CBR_R1_Hop.size()) {
-                  cbr_data.CBR_R1_Hop.erase(cbr_data.CBR_R1_Hop.begin() + idx);
-                }
-            }
-
-          for (auto it2 = cbr_data.CBR_R0_Hop.begin(); it2 != cbr_data.CBR_R0_Hop.end(); ++it2)
-            {
-              double val = std::get<1>(*it2);
-              mean_cbr_r0_hop += val;
-
-              if (val > max_cbr_r0)
-                {
-                  second_max_cbr_r0 = max_cbr_r0;
-                  max_cbr_r0 = val;
-                }
-              else if (val < max_cbr_r0 && val > second_max_cbr_r0)
-                {
-                  second_max_cbr_r0 = val;
-                }
-            }
-          tot_r0 += cbr_data.CBR_R0_Hop.size();
-
-          for (auto it2 = cbr_data.CBR_R1_Hop.begin(); it2 != cbr_data.CBR_R1_Hop.end(); ++it2)
-            {
-              double val = std::get<1>(*it2);
-              mean_cbr_r1_hop += val;
-
-              if (val > max_cbr_r1)
-                {
-                  second_max_cbr_r1 = max_cbr_r1;
-                  max_cbr_r1 = val;
-                }
-              else if (val < max_cbr_r1 && val > second_max_cbr_r1)
-                {
-                  second_max_cbr_r1 = val;
-                }
-            }
-          tot_r1 += cbr_data.CBR_R1_Hop.size();
+          cbrExtensions.push_back (&it->second.cbr_extension);
         }
+      GlobalCbrAggregation aggregation =
+          ComputeGlobalCbrAggregation (cbrExtensions,
+                                       now,
+                                       m_GNLocTTimerCBR_ms,
+                                       m_dcc->getCBRTarget (),
+                                       m_dcc->getCBRL0Prev ());
       m_LocT_Mutex.unlock ();
-      if (tot_r0 == 0) mean_cbr_r0_hop = 0;
-      else mean_cbr_r0_hop /= tot_r0;
-      if (tot_r1 == 0) mean_cbr_r1_hop = 0;
-      else mean_cbr_r1_hop /= tot_r1;
-      double CBR_L1_Hop, CBR_L2_Hop;
-      if (mean_cbr_r0_hop > m_dcc->getCBRTarget())
-        {
-          CBR_L1_Hop = max_cbr_r0;
-        }
-      else
-        {
-          CBR_L1_Hop = second_max_cbr_r0;
-        }
-
-      if (mean_cbr_r1_hop > m_dcc->getCBRTarget())
-        {
-          CBR_L2_Hop = max_cbr_r1;
-        }
-      else
-        {
-          CBR_L2_Hop = second_max_cbr_r1;
-        }
-      double CBR_L0_Hop_prev = m_dcc->getCBRL0Prev();
-      double CBR_G = std::max(CBR_L0_Hop_prev, CBR_L1_Hop);
-      CBR_G = std::max(CBR_G, CBR_L2_Hop);
       /*
 		std::ofstream file;
 		file.open("CBR_global.txt", std::ios::app);
 		file << std::fixed << std::setprecision(2);
 		file << "\n";
-		file << "[DCC] Global CBR: " << CBR_G << ", Local CBR L1: " << CBR_L1_Hop << ", Local CBR L2: " << CBR_L2_Hop << ", CBR L0 prev: " << CBR_L0_Hop_prev << std::endl;
+		file << "[DCC] Global CBR: " << aggregation.cbrG << ", Local CBR L1: " << aggregation.cbrL1Hop << ", Local CBR L2: " << aggregation.cbrL2Hop << ", CBR L0 prev: " << m_dcc->getCBRL0Prev() << std::endl;
 		file << "\n";
 		file.close();
 		*/
-      m_dcc->setCBRG(CBR_G);
-      m_dcc->setCBRL1(CBR_L1_Hop);
+      m_dcc->setCBRG(aggregation.cbrG);
+      m_dcc->setCBRL1(aggregation.cbrL1Hop);
     });
   }
 

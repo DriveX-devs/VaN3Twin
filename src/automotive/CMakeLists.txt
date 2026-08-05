@@ -16,6 +16,8 @@ Set(source_files
         helper/v2xEmulator-helper.cc
         helper/simpleCAMSender-helper.cc
         helper/simpleVAMSender-helper.cc
+        helper/vehicular-wifi-helper.cc
+        model/Wifi/vehicular-ngv-wifi.cc
         helper/emergencyVehicleWarningServer80211p-helper.cc
         helper/emergencyVehicleWarningClient80211p-helper.cc
         helper/trafficManagerClient80211p-helper.cc
@@ -1574,6 +1576,8 @@ set(header_files
         helper/v2xEmulator-helper.h
         helper/simpleCAMSender-helper.h
         helper/simpleVAMSender-helper.h
+        helper/vehicular-wifi-helper.h
+        model/Wifi/vehicular-ngv-wifi.h
 
         helper/cooperativePerception-helper.h
         model/utilities/opencda-sensor.h
@@ -5853,6 +5857,7 @@ set_source_files_properties(
 
         PROPERTIES SKIP_PRECOMPILE_HEADERS ON)
 set(test_sources
+        test/vehicular-wifi-profile-test.cc
 )
 
 build_lib(
