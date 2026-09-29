@@ -66,7 +66,7 @@ or
 
 This script will download the proper version of ns-3-dev and install this framework. The folder `ns-3-dev` will remain linked to this GitHub repository (not to the vanilla ns-3-dev one), allowing you to more easily develop updates and possibile contributions to *VaN3Twin*.
     
-* Configure `ns3` to build the framework with `<ns3-folder>./ns3 configure --build-profile=optimized --enable-examples --enable-tests --disable-python (add here what you want to enable)"` - The usage of the optimized profile allows to speed up the simulation time. This command should be launched from inside the `ns-3-dev` folder.
+* Configure `ns3` to build the framework with `ulimit -n 4096 && <ns3-folder>./ns3 configure --build-profile=optimized --enable-examples --enable-tests --disable-python (add here what you want to enable)"` - The usage of the optimized profile allows to speed up the simulation time. This command should be launched from inside the `ns-3-dev` folder.
 
 * Suggested build profiles are `optimized` and `debug`. The first profile significantly speeds up the run time execution, while the second is more useful during the development phase.
 
