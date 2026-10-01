@@ -17,6 +17,7 @@
  * (carlosrisma@gmail.com)
 */
 #include "btp.h"
+#include "ns3/asn_utils.h"
 
 
 namespace ns3
@@ -45,6 +46,7 @@ namespace ns3
     m_denm_ReceiveCallback = nullptr;
     m_ivim_ReceiveCallback = nullptr;
     m_vam_ReceiveCallback = nullptr;
+    m_vru_ReceiveCallback_tip = nullptr;
   }
 
   void
@@ -132,31 +134,40 @@ namespace ns3
 
     if(btpDataIndication.destPort == CA_PORT) {
       if(m_cam_ReceiveCallback!=nullptr) {
-        m_cam_ReceiveCallback(btpDataIndication,address);
+        m_cam_ReceiveCallback(btpDataIndication, address);
+        if (m_station_type == StationType_pedestrian || m_station_type == StationType_cyclist) {
+          if (m_vru_ReceiveCallback_tip != nullptr) {
+            m_vru_ReceiveCallback_tip(btpDataIndication, true);
+          }
+        }
       }
     } else if(btpDataIndication.destPort == DEN_PORT) {
       if(m_denm_ReceiveCallback!=nullptr) {
-        m_denm_ReceiveCallback(btpDataIndication,address);
+        m_denm_ReceiveCallback(btpDataIndication, address);
       }
     } else if(btpDataIndication.destPort == IVIM_PORT) {
       if(m_ivim_ReceiveCallback!=nullptr) {
-        m_ivim_ReceiveCallback(btpDataIndication,address);
+        m_ivim_ReceiveCallback(btpDataIndication, address);
       }
-    }
-    else if(btpDataIndication.destPort == CP_PORT){
+    } else if(btpDataIndication.destPort == CP_PORT){
       if(m_cpm_ReceiveCallback!=nullptr){
-          m_cpm_ReceiveCallback(btpDataIndication,address);
+          m_cpm_ReceiveCallback(btpDataIndication, address);
         }
-      } else if(btpDataIndication.destPort == VA_PORT) {
-        if(m_vam_ReceiveCallback!=nullptr) {
-          m_vam_ReceiveCallback(btpDataIndication,address);
+    } else if(btpDataIndication.destPort == VA_PORT) {
+      if(m_vam_ReceiveCallback!=nullptr) {
+        m_vam_ReceiveCallback(btpDataIndication, address);
+      }
+      if(m_station_type == StationType_pedestrian || m_station_type == StationType_cyclist) {
+				if (m_vru_ReceiveCallback_tip != nullptr) {
+          m_vru_ReceiveCallback_tip(btpDataIndication, false);    
         }
+			}
     } else if (btpDataIndication.destPort == MC_PORT) {
-        if (m_mcm_ReceiveCallback != nullptr) {
-            m_mcm_ReceiveCallback(btpDataIndication, address);
-          }
+      if (m_mcm_ReceiveCallback != nullptr) {
+          m_mcm_ReceiveCallback(btpDataIndication, address);
+      }
     } else {
-    NS_LOG_ERROR("BTP : Unknown port");
+      NS_LOG_ERROR("BTP : Unknown port");
     }
   }
 

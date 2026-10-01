@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<routes>
+
+    <route id="pedroute_0" edges="p_sx_0 p_sx_1 p_sx_2 cross_c_5 cross_c_4 cross_c_3 cross_c_2 cross_c_1 cross_c_0 p_dx_1 cross_n_0 cross_n_1 cross_n_2 cross_n_3 cross_n_4 cross_n_5 p_sx_0"/>
+    <route id="pedroute_0_var" edges="p_sx_2 cross_c_5 cross_c_4 cross_c_3 cross_c_2 cross_c_1 cross_c_0 p_dx_1 cross_n_0 cross_n_1 cross_n_2 cross_n_3 cross_n_4 cross_n_5 p_sx_0"/>
+    <route id="pedroute_1" edges="p_dx_3 p_dx_2 cross_n_0 cross_n_1 cross_n_2 cross_n_3 cross_n_4 cross_n_5 p_sx_1 p_sx_2 cross_c_5 cross_c_4 cross_c_3 cross_c_2 cross_c_1 cross_c_0 p_dx_0 cross_s_0 cross_s_1 cross_s_2 cross_s_3 p_sx_5 p_sx_4 p_sx_3 p_sx_8"/>
+    <route id="pedroute_1_var" edges="cross_n_0 cross_n_1 cross_n_2 cross_n_3 cross_n_4 cross_n_5 p_sx_1 p_sx_2 cross_c_5 cross_c_4 cross_c_3 cross_c_2 cross_c_1 cross_c_0 p_dx_0 cross_s_0 cross_s_1 cross_s_2 cross_s_3 p_sx_5 p_sx_4 p_sx_3 p_sx_8"/>
+    <route id="pedroute_2" edges="cross_s_3 cross_s_2 cross_s_1 cross_s_0 p_dx_0 cross_c_0 cross_c_1 cross_c_2 cross_c_3 cross_c_4 cross_c_5 p_sx_2 p_sx_1 cross_n_5 cross_n_4 cross_n_3 cross_n_2 cross_n_1 cross_n_0 p_dx_2"/>
+    <route id="pedroute_2_var" edges="cross_s_0 cross_s_1 cross_s_2 cross_s_3 p_sx_5 p_sx_4 p_sx_3 cross_c_5 cross_c_4 cross_c_3 cross_c_2 cross_c_1 cross_c_0 p_dx_1 cross_n_0 cross_n_1 cross_n_2 cross_n_3 cross_n_4 cross_n_5 p_sx_6"/>
+    <route id="pedroute_3" edges="p_sx_8 cross_c_5 cross_c_4 cross_c_3 cross_c_2 cross_c_1 cross_c_0 p_dx_1 cross_n_0 cross_n_1 cross_n_2 cross_n_3 cross_n_4 cross_n_5 p_sx_0"/>
+    <route id="pedroute_4" edges="p_dx_1 p_dx_0 cross_s_0 cross_s_1 cross_s_2 cross_s_3 p_sx_5 p_sx_4 p_sx_3 p_sx_2 p_sx_1 cross_n_5 cross_n_4 cross_n_3 cross_n_2 cross_n_1 cross_n_0 p_dx_2"/>
+    <route id="pedroute_5" edges="p_sx_3 p_sx_4 p_sx_5 cross_s_3 cross_s_2 cross_s_1 cross_s_0 p_dx_0 p_dx_1 cross_n_0 cross_n_1 cross_n_2 cross_n_3 cross_n_4 cross_n_5 p_sx_6"/>
+    <route id="pedroute_5_var" edges="p_sx_6 cross_n_5 cross_n_4 cross_n_3 cross_n_2 cross_n_1 cross_n_0 p_dx_1 p_dx_0 cross_s_0 cross_s_1 cross_s_2 cross_s_3 p_sx_5 p_sx_4 p_sx_3"/>
+    <route id="pedroute_6" edges="p_dx_1 cross_c_0 cross_c_1 cross_c_2 cross_c_3 cross_c_4 cross_c_5 p_sx_3 p_sx_4 p_sx_5 cross_s_3 cross_s_2 cross_s_1 cross_s_0 p_dx_0 cross_c_0 cross_c_1 cross_c_2 cross_c_3 cross_c_4 cross_c_5 p_sx_8"/>
+    <route id="pedroute_7" edges="p_dx_2 p_dx_1 cross_c_0 cross_c_1 cross_c_2 cross_c_3 cross_c_4 cross_c_5 p_sx_2 p_sx_1 p_sx_0"/>
+    <route id="pedroute_8" edges="p_sx_6 p_sx_6.13 p_sx_7 p_sx_1 cross_n_5 cross_n_4 cross_n_3 cross_n_2 cross_n_1 cross_n_0 p_dx_2 p_dx_3"/>
+    <route id="pedroute_9" edges="cross_n_0 cross_n_1 cross_n_2 cross_n_3 cross_n_4 cross_n_5 p_sx_1 p_sx_7 p_sx_8 p_sx_3 p_sx_4 p_sx_5"/>
+    <route id="pedroute_10" edges="cross_n_3 cross_n_2 cross_n_1 cross_n_0"/>
+
+    <person id="ped1000" depart="0.00" maxSpeed="2.00">
+        <walk route="pedroute_0"/>
+    </person>
+    <person id="ped1001" depart="0.50" maxSpeed="2.00">
+        <walk route="pedroute_1"/>
+    </person>
+    <person id="ped1002" depart="1.5" maxSpeed="2.00">
+        <walk route="pedroute_5"/>
+    </person>
+    <!--<person id="ped1003" depart="2.5" maxSpeed="2.00">
+        <walk route="pedroute_3"/>
+    </person>-->
+    <person id="ped1003" depart="2.5" jmIgnoreFoeProb="1.0" color="red">
+        <walk route="pedroute_10"/>
+    </person>
+    <person id="ped1004" depart="3.2" maxSpeed="2.00">
+        <walk route="pedroute_4"/>
+    </person>
+    <person id="ped1005" depart="3.9" maxSpeed="2.00">
+        <walk route="pedroute_2"/>
+    </person>
+    <person id="ped1006" depart="5.8" maxSpeed="2.00">
+        <walk route="pedroute_9"/>
+    </person>
+    <person id="ped1007" depart="7.6" maxSpeed="2.00">
+        <walk route="pedroute_5_var"/>
+    </person>
+    <person id="ped1008" depart="8.5" maxSpeed="2.00">
+        <walk route="pedroute_0_var"/>
+    </person>
+    <person id="ped1009" depart="10.7" maxSpeed="2.00">
+        <walk route="pedroute_7"/>
+    </person> 
+    <person id="ped1010" depart="15.2" maxSpeed="2.00">
+        <walk route="pedroute_8"/>
+    </person>
+    <person id="ped1011" depart="21.8" maxSpeed="2.00">
+        <walk route="pedroute_0"/>
+    </person>
+    <person id="ped1012" depart="23" maxSpeed="2.00">
+        <walk route="pedroute_1"/>
+    </person>
+    <person id="ped1013" depart="27.9" maxSpeed="2.00">
+        <walk route="pedroute_6"/>
+    </person>
+    <person id="ped1014" depart="28.3" maxSpeed="2.00">
+        <walk route="pedroute_5_var"/>
+    </person>
+    <person id="ped1015" depart="30.9" maxSpeed="2.00">
+        <walk route="pedroute_2_var"/>
+    </person>
+    <person id="ped1016" depart="32.3" maxSpeed="2.00">
+        <walk route="pedroute_0_var"/>
+    </person>
+    <person id="ped1017" depart="34.9" maxSpeed="2.00">
+        <walk route="pedroute_4"/>
+    </person>
+    <person id="ped1018" depart="36.4" maxSpeed="2.00">
+        <walk route="pedroute_3"/>
+    </person>
+    <person id="ped1019" depart="38.5" maxSpeed="2.00">
+        <walk route="pedroute_5"/>
+    </person>
+    <person id="ped1020" depart="39.7" maxSpeed="2.00">
+        <walk route="pedroute_2"/>
+    </person>
+    <person id="ped1021" depart="41.3" maxSpeed="2.00">
+        <walk route="pedroute_7"/>
+    </person>
+    <person id="ped1022" depart="41.8" maxSpeed="2.00">
+        <walk route="pedroute_1_var"/>
+    </person>
+    <person id="ped1023" depart="43.5" maxSpeed="2.00">
+        <walk route="pedroute_8"/>
+    </person>
+    <person id="ped1024" depart="45" maxSpeed="2.00">
+        <walk route="pedroute_0"/>
+    </person>
+</routes>
+

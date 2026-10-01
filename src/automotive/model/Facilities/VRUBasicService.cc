@@ -11,13 +11,31 @@
 #include "ns3/SetOf.hpp"
 #include "ns3/SequenceOf.hpp"
 #include "ns3/BitString.hpp"
+#include "ns3/VRUdp.h"
 #include "ns3/asn_utils.h"
+#include "ns3/ldm-utils.h"
+#include "ns3/simulator.h"
 #include <cmath>
+
+// TODO make a metric to measure the Age of Information with and without the TIP
+
+// TODO import the example and create a main file in which is possible to set the TIP parameters
 
 namespace ns3
 {
 
 NS_LOG_COMPONENT_DEFINE("VRUBasicService");
+
+double tip_exponential(double t2c, double t2c_min, double k) {
+    double exp_term = std::exp(-k * (t2c - t2c_min));
+    return std::min(1.0, exp_term);
+}
+
+double tip_gaussian(double ttc, double sigma) {
+    double numerator = -(ttc * ttc);
+    double denominator = 2.0 * (sigma * sigma);
+    return std::exp(numerator / denominator);
+}
 
 VRUBasicService::~VRUBasicService(){
     //NS_LOG_INFO("VRUBasicService object destroyed.");
@@ -125,10 +143,8 @@ VRUBasicService::VRUBasicService(unsigned long fixed_stationid,long fixed_statio
   m_VRUdp = VRUdp;
 }
 
-void VRUBasicService::write_log_triggering(bool condition_verified, bool vamredmit_verified, float head_diff, float pos_diff, float speed_diff, long time_difference, std::string data_head, std::string data_pos, std::string data_speed, std::string data_safed, std::string data_time, std::string data_vamredmit, std::string data_dcc)
-{
-  if (m_log_triggering && m_log_filename != "")
-    {
+void VRUBasicService::write_log_triggering(bool condition_verified, bool vamredmit_verified, float head_diff, float pos_diff, float speed_diff, long time_difference, std::string data_head, std::string data_pos, std::string data_speed, std::string data_safed, std::string data_tip, std::string data_time, std::string data_vamredmit, std::string data_dcc) {
+  if (m_log_triggering && m_log_filename != "") {
       std::string data="";
       std::string sent="false";
 
@@ -173,14 +189,20 @@ void VRUBasicService::write_log_triggering(bool condition_verified, bool vamredm
               numConditions++;
             }
 
-          if (m_min_dist.size() != 0)
-            {
+          if (m_min_dist.size() != 0) {
               if((m_min_dist[1].longitudinal < m_long_safe_d && m_min_dist[1].lateral < m_lat_safe_d && m_min_dist[1].vertical < m_vert_safe_d) || (m_min_dist[0].longitudinal < m_long_safe_d && m_min_dist[0].lateral < m_lat_safe_d && m_min_dist[0].vertical < m_vert_safe_d)){
                   motivation="safe_distances";
                   joint=joint+"D";
                   num_VAMs_sent=std::to_string(m_safedist_sent);
                   numConditions++;
                 }
+            }
+
+          if (m_tip_array.size() > 0) {
+              motivation="TIP";
+              joint=joint+"TI";
+              num_VAMs_sent=std::to_string(m_tip_sent);
+              numConditions++;
             }
 
           if(abs(time_difference - m_T_GenVam_ms) <= 10 || (m_T_GenVam_ms - time_difference) <= 0 ) {
@@ -195,16 +217,19 @@ void VRUBasicService::write_log_triggering(bool condition_verified, bool vamredm
               motivation="joint("+joint+")";
               if(joint=="HT") {
                   motivation="heading";
-                }
+              }
               if(joint=="PT") {
                   motivation="position";
-                }
+              }
               if(joint=="ST") {
                   motivation="speed";
-                }
+              }
               if(joint=="DT") {
                   motivation="safe_distances";
-                }
+              }
+              if(joint=="TI") {
+                motivation="TIP";
+              }
             }
 
           if(condition_verified && strlen(motivation.c_str())==0) {
@@ -213,8 +238,8 @@ void VRUBasicService::write_log_triggering(bool condition_verified, bool vamredm
         }
 
       // Create the data for the log print
-      data+="[LOG] Timestamp="+std::to_string(time)+" VAMSent="+sent+" Motivation="+motivation+" NUMVAMsSent="+num_VAMs_sent+" HeadDiff="+std::to_string(head_diff)+" PosDiff="+std::to_string(pos_diff)+" SpeedDiff="+std::to_string(speed_diff)+" TimeDiff="+std::to_string(time_difference)+"\n";
-      data=data+data_head+data_pos+data_speed+data_safed+data_time+data_vamredmit+data_dcc+"\n";
+      data+="[LOG] Timestamp="+std::to_string(time)+" VAMSent="+sent+" Motivation="+motivation+" NUMVAMsSent="+num_VAMs_sent+" HeadDiff="+std::to_string(head_diff)+" PosDiff="+std::to_string(pos_diff)+" SpeedDiff="+std::to_string(speed_diff)+" TIP="+std::to_string(m_tip_map.size())+" TimeDiff="+std::to_string(time_difference)+"\n";
+      data=data+data_head+data_pos+data_speed+data_safed+data_tip+data_time+data_vamredmit+data_dcc+"\n";
 
       std::ofstream file (m_log_filename, std::ios::app);
       file << data;
@@ -240,6 +265,7 @@ void VRUBasicService::setStationType(long fixed_stationtype){
 void VRUBasicService::setSocketRx(Ptr<Socket> socket_rx){
   m_btp->setSocketRx(socket_rx);
   m_btp->addVAMRxCallback (std::bind(&VRUBasicService::receiveVam,this,std::placeholders::_1,std::placeholders::_2));
+  m_btp->addVRURxCallback(std::bind(&VRUBasicService::VRUreceivedNewMessageForTIP,this,std::placeholders::_1,std::placeholders::_2));
 }
 
 void VRUBasicService::setVAMmetricsfile(std::string file_name, bool collect_metrics){
@@ -361,6 +387,7 @@ void VRUBasicService::checkVamConditions(){
   std::string data_vamredmit="";
   std::string data_time="";
   std::string data_dcc="";
+  std::string data_tip="";
 
   // If no initial VAM has been triggered before checkCamConditions() has been called, throw an error
   if(m_prev_heading==-1 || m_prev_speed==-1 || (m_prev_position.x==-1 && m_prev_position.y==-1))
@@ -553,6 +580,36 @@ void VRUBasicService::checkVamConditions(){
         }
     }
 
+    // Clean the TIP map from old data
+    double now_ms = Simulator::Now().GetMilliSeconds();
+    cleanTIPMap(now_ms);
+    searchFirstEightTIPs();
+    if (m_tip_array.size() > 0) {
+      data_tip += "[TIP] TIPs found in the TIP map that require a VAM to be sent:\n";
+      if (!condition_verified && !vamredmit_verified) {
+        if (!redundancy_mitigation && (m_N_GenVam_red == 0 || m_N_GenVam_red == m_N_GenVam_max_red)) {
+          if (m_T_next_dcc == -1 || now - lastVamGen >= m_T_next_dcc) {
+            m_N_GenVam_red = 0;
+
+            m_trigg_cond = TIP_TRIGGER;
+            vam_error = generateAndEncodeVam();
+            if (vam_error == VAM_NO_ERROR) {
+              condition_verified = true;
+              m_tip_sent++;
+            } else {
+              std::cerr << "Cannot generate VAM. Error code: " << std::to_string(vam_error) << std::endl;
+            }
+          }
+        } else {
+          m_N_GenVam_red++;
+          vamredmit_verified = true;
+        }
+      }
+    } else {
+      // Create the data for the log print
+      data_tip += "[TIP] No TIPs found in the TIP map that require a VAM to be sent\n";
+    }
+
   /* 2)
    * The time elapsed since the last VAM generation is equal to or greater than T_GenVam
   */
@@ -589,7 +646,7 @@ void VRUBasicService::checkVamConditions(){
   data_vamredmit = "[REDUNDANCY MITIGATION] numSkipVAMsForRedMitMax="+std::to_string(m_N_GenVam_max_red)+" numSkipVAMsForRedMit="+std::to_string(m_N_GenVam_red)+" TimestampLastVAMGen="+std::to_string(lastVamGen)+" TimeIntervalSinceLastVAMGen="+std::to_string(time_difference)+"\n";
 
   int n=0;
-  write_log_triggering (condition_verified, vamredmit_verified, head_diff, pos_diff, speed_diff, time_difference, data_head, data_pos, data_speed, data_safed, data_time, data_vamredmit, data_dcc);
+  write_log_triggering (condition_verified, vamredmit_verified, head_diff, pos_diff, speed_diff, time_difference, data_head, data_pos, data_speed, data_safed, data_tip, data_time, data_vamredmit, data_dcc);
 
   if((m_VRU_clust_state==VRU_IDLE || m_VRU_clust_state==VRU_ACTIVE_STANDALONE || m_VRU_clust_state==VRU_ACTIVE_CLUSTER_LEADER) && m_VRU_role==VRU_ROLE_ON)
     m_event_vamCheckConditions = Simulator::Schedule (MilliSeconds(m_T_CheckVamGen_ms), &VRUBasicService::checkVamConditions, this);
@@ -697,12 +754,54 @@ VRUBasicService_error_t VRUBasicService::generateAndEncodeVam(){
                         vam_mandatory_data.longAcceleration.getConfidence ());
     }
 
+  /* Fill the lowFrequencyContainer */
+  now = computeTimestampUInt64 ()/NANO_TO_MILLI;
+  if(m_last_vam_gen_LF == -1 || now - m_last_vam_gen_LF >= m_T_GenVamLFMin_ms) {
+    if (m_stationtype == StationType_cyclist)
+      asn1cpp::setField(vam->vam.vamParameters.vruLowFrequencyContainer->profileAndSubprofile.present, VruProfileAndSubprofile_PR_bicyclistAndLightVruVehicle);
+    else if (m_stationtype == StationType_pedestrian)
+      asn1cpp::setField(vam->vam.vamParameters.vruLowFrequencyContainer->profileAndSubprofile.present, VruProfileAndSubprofile_PR_pedestrian);
+    asn1cpp::setField(vam->vam.vamParameters.vruLowFrequencyContainer->sizeClass, VruSizeClass_medium);
+    // We do not set the exteriorLights field, as it is not used in the current implementation with pedestrians and cyclists.
+    // If needed, it can be set here using the following line: asn1cpp::setField(vam->vam.vamParameters.vruLowFrequencyContainer->exteriorLights);
+
+    // Store the time in which the last VAM LF has been generated and successfully sent
+    m_last_vam_gen_LF = now;
+  }
+
+  long numberOfTIPs = 0;
+  if (m_tip_array.size() > 0) {
+    numberOfTIPs = m_tip_array.size();
+    auto TIP_container = asn1cpp::makeSeq (VruMotionPredictionContainer);
+    auto TIPs = asn1cpp::makeSeq (SequenceOfTrajectoryInterceptionIndication);
+    for (auto it = m_tip_array.begin(); it != m_tip_array.end(); ++it) {
+      uint64_t stationId = std::get<0>(*it);
+      double tip = std::get<1>(*it);
+      auto TIP = asn1cpp::makeSeq(TrajectoryInterceptionIndication);
+      asn1cpp::setField(TIP->subjectStation, stationId);
+      long tip_scaled = std::lround(tip * 50.0);
+      asn1cpp::setField(TIP->trajectoryInterceptionProbability, tip_scaled);
+      asn1cpp::setField(TIP->trajectoryInterceptionConfidence, TrajectoryInterceptionConfidence_above90Percent);
+      asn1cpp::sequenceof::pushList(*TIPs, TIP);
+    }
+    // Set the TIPs in the motionPredictionContainer
+    asn1cpp::setField(TIP_container->trajectoryInterceptionIndication, TIPs);
+    // Set the motionPredictionContainer in the VAM
+    asn1cpp::setField(vam->vam.vamParameters.vruMotionPredictionContainer, TIP_container);
+  }
+
   // Store all the "previous" values used in checkVamConditions()
   m_prev_position = m_VRUdp->getPedPositionValue ();
   m_prev_lat = m_VRUdp->getPedPosition().lat;
   m_prev_lon = m_VRUdp->getPedPosition().lon;
   m_prev_speed = m_VRUdp->getPedSpeedValue ();
   m_prev_heading = m_VRUdp->getPedHeadingValue ();
+  // Previous TIPs are updated in the map when a VAM is sent, so no need to update them here
+  for (const auto& entry : m_tip_array) {
+    uint64_t id = std::get<0>(entry);
+    double tip = std::get<1>(entry);
+    updatePreviousSentTIPOnMap(id, tip);
+  }
 
   /* VAM encoding */
   std::string encode_result = asn1cpp::uper::encode(vam);
@@ -800,6 +899,203 @@ int64_t VRUBasicService::computeTimestampUInt64()
     }
 
   return int_tstamp;
+}
+
+void VRUBasicService::addNewTIPToMap(uint64_t id, double time, double tip) {
+  if (m_tip_map.find(id) == m_tip_map.end()) {
+    // Set the first previous TIP to 0
+    m_tip_map[id] = std::make_tuple(time, tip, 0);
+  } else {
+    // Preserve the previous sent tip and update with the new tip
+    double previous_sent_tip = std::get<2>(m_tip_map[id]);
+    m_tip_map[id] = std::make_tuple(time, tip, previous_sent_tip);
+  }
+}
+
+void VRUBasicService::updatePreviousSentTIPOnMap(uint64_t id, double previous_sent_tip) {
+  // Preserve the information about the last computed TIP
+  double time = std::get<0>(m_tip_map[id]);
+  double tip = std::get<1>(m_tip_map[id]);
+  m_tip_map[id] = std::make_tuple(time, tip, previous_sent_tip);
+}
+
+void VRUBasicService::searchFirstEightTIPs() {
+  // Find the first weight station IDs and the associated TIP
+  // Focus on the difference between latest registered TIP and previous TIP (>= DELTA_TIP)
+  m_tip_array.clear();
+  for (const auto& entry : m_tip_map) {
+    uint64_t id = entry.first;
+    double time = std::get<0>(entry.second);
+    double tip = std::get<1>(entry.second);
+    double previous_sent_tip = std::get<2>(entry.second);
+    if (tip - previous_sent_tip >= DELTA_TIP) {
+      m_tip_array.push_back(std::make_tuple(id, tip));
+    }
+  }
+  // Sort the vector based on the TIP values in descending order
+  std::sort(m_tip_array.begin(), m_tip_array.end(), [](const std::tuple<uint64_t, double>& a, const std::tuple<uint64_t, double>& b) {
+    return std::get<1>(a) > std::get<1>(b);
+  });
+  // Keep only the first 8 elements if there are more than 8
+  if (m_tip_array.size() > 8) {
+    m_tip_array.resize(8);
+  }
+}
+
+void VRUBasicService::cleanTIPMap(double time) {
+  for (auto it = m_tip_map.begin(); it != m_tip_map.end();) {
+      double tmp_time = std::get<0>(it->second);
+      
+      if (time - tmp_time >= MAX_TIP_MAP_TIME) {
+          it = m_tip_map.erase(it); 
+      } else {
+          ++it;
+      }
+  }
+}
+
+void VRUBasicService::VRUreceivedNewMessageForTIP(BTPDataIndication_t dataIndication, bool veh) {
+  uint8_t *buffer;
+  buffer=(uint8_t *)malloc((dataIndication.data->GetSize ())*sizeof(uint8_t));
+  dataIndication.data->CopyData (buffer, dataIndication.data->GetSize ());
+  std::string packetContent((char *)buffer,(int) dataIndication.data->GetSize ());
+  vehicleData_t vehdata;
+  if (veh) {
+      asn1cpp::Seq<CAM> decoded_cam = asn1cpp::uper::decodeASN(packetContent, CAM);
+
+      vehdata.stationID = decoded_cam->header.stationId;
+
+      // ASN.1 latitude/longitude -> degrees
+      vehdata.lat =
+          static_cast<double>(decoded_cam->cam.camParameters.basicContainer.referencePosition.latitude) / static_cast<double>(DOT_ONE_MICRO);
+
+      vehdata.lon =
+          static_cast<double>(decoded_cam->cam.camParameters.basicContainer.referencePosition.longitude) / static_cast<double>(DOT_ONE_MICRO);
+
+      // ASN.1 HeadingValue: 0.1 degree -> degrees
+      vehdata.heading =
+          static_cast<double>(decoded_cam->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.heading.headingValue) / static_cast<double>(DECI);
+
+      // ASN.1 SpeedValue: 0.01 m/s -> m/s
+      vehdata.speed_ms =
+          static_cast<double>(decoded_cam->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.speed.speedValue) / static_cast<double>(CENTI);
+  } else {
+      asn1cpp::Seq<VAM> decoded_vam = asn1cpp::uper::decodeASN(packetContent, VAM);
+
+      vehdata.stationID = decoded_vam->header.stationId;
+
+      // ASN.1 latitude/longitude -> degrees
+      vehdata.lat =
+          static_cast<double>(decoded_vam->vam.vamParameters.basicContainer.referencePosition.latitude) / static_cast<double>(DOT_ONE_MICRO);
+
+      vehdata.lon =
+          static_cast<double>(decoded_vam->vam.vamParameters.basicContainer.referencePosition.longitude) / static_cast<double>(DOT_ONE_MICRO);
+
+      // ASN.1 HeadingValue: 0.1 degree -> degrees
+      vehdata.heading =
+          static_cast<double>(decoded_vam->vam.vamParameters.vruHighFrequencyContainer.heading.value) / static_cast<double>(DECI);
+
+      // ASN.1 SpeedValue: 0.01 m/s -> m/s
+      vehdata.speed_ms =
+          static_cast<double>(decoded_vam->vam.vamParameters.vruHighFrequencyContainer.speed.speedValue) / static_cast<double>(CENTI);
+  }
+ auto [ttc, stc] = compute_ttc_stc(vehdata);
+  if (ttc > 0 && stc > 0) {
+    // If the TTC is below the configured threshold, and the STC is below the configured threshold, then we can trigger a VAM
+    if (ttc < m_TTC_max && stc < m_STC_min) {
+      std::string tip_modality = m_tip_modality;
+      double tip = -1;
+      if (tip_modality == "exp") {
+        tip = tip_exponential(ttc, m_STC_min, m_TTC_k);
+      } else if (tip_modality == "gaus") {
+        tip = tip_gaussian(ttc, m_TTC_sigma);
+      } else {
+        std::cerr << "[ERROR] Unknown TIP modality: " << tip_modality << std::endl;
+      }
+      if (tip >= 0) {
+        double now_ms = Simulator::Now().GetMilliSeconds(); // Convert to milliseconds
+        addNewTIPToMap(vehdata.stationID, now_ms, tip);
+      }
+    }
+  }
+}
+
+std::tuple<double, double> 
+VRUBasicService::compute_ttc_stc(vehicleData_t vehdata) {
+	double ttc = -1.0;
+	double stc = -1.0;
+	// Extract data from the VDP
+	VRUdp_position_latlon_t ped_pos_lat_lon = m_VRUdp->getPedPosition();
+  VRUdp::VRUDP_position_cartesian_t ped_pos_xy = m_VRUdp->getXY(ped_pos_lat_lon.lon, ped_pos_lat_lon.lat);
+	double speed_value = m_VRUdp->getPedSpeedValue();
+	double ped_heading = m_VRUdp->getPedHeadingValue();
+
+	// Remote vehicle position in XYZ
+	double node_lat = vehdata.lat;
+	double node_lon = vehdata.lon;
+	VRUdp::VRUDP_position_cartesian_t node_pos_xy = m_VRUdp->getXY(node_lon, node_lat);
+  double node_heading = vehdata.heading;
+
+	// Same "no heading available at all" bail-out as get_min_distance
+	if(node_heading == HeadingValue_unavailable && ped_heading == HeadingValue_unavailable) {
+	    return {ttc, stc};
+	  } else {
+		// Same fallback: borrow the ego heading if the remote one is missing and vice versa
+		if(node_heading == HeadingValue_unavailable) {
+			node_heading = ped_heading;
+		} else if (ped_heading == HeadingValue_unavailable) {
+			ped_heading = node_heading;
+		}
+
+		// Relative position vector, vehicle w.r.t. VRU
+		double dx = node_pos_xy.x - ped_pos_xy.x;
+		double dy = node_pos_xy.y - ped_pos_xy.y;
+		double distance = sqrt(dx*dx + dy*dy);
+
+		// Heading -> velocity components on the x=East, y=North axes
+		double ped_heading_rad = ped_heading * (3.14159265358979323846 / 180.0);
+    double node_heading_rad = node_heading * (3.14159265358979323846 / 180.0);
+
+		double vx_veh = vehdata.speed_ms * sin(node_heading_rad);
+		double vy_veh = vehdata.speed_ms * cos(node_heading_rad);
+
+		double vx_ped = speed_value * sin(ped_heading_rad);
+		double vy_ped = speed_value * cos(ped_heading_rad);
+
+		// Relative velocity of the vehicle w.r.t. the VRU
+		double dvx = vx_veh - vx_ped;
+		double dvy = vy_veh - vy_ped;
+
+		// Closing speed = -(d/dt) of the distance between the two nodes
+		double closing_speed = (distance > 0) ? -(dx*dvx + dy*dvy)/distance : 0;
+
+		if(distance > 0 && closing_speed > 0) {
+			ttc = distance / closing_speed;
+		} else {
+			// Not approaching each other (or already colocated) -> no meaningful TTC
+			ttc = -1.0;
+		}
+
+		if(ttc >= m_TTC_max || ttc < 0) {
+			// No collision predicted (diverging, parallel courses, or already colocated)
+			return {-1.0, -1.0};
+		}
+
+		// Linearly project the relative position (vehicle - VRU) forward to t = ttc.
+		// This is the SAME linear-motion assumption already baked into the ttc formula,
+		// so this is consistent with it rather than an extra approximation.
+		double dx_at_ttc = dx + dvx * ttc;
+		double dy_at_ttc = dy + dvy * ttc;
+
+		stc = sqrt(dx_at_ttc*dx_at_ttc + dy_at_ttc*dy_at_ttc);
+
+		if(stc > m_STC_min) {
+			// The projected separation at the predicted collision time is below the minimum threshold -> treat this as a "no collision" case
+			return {-1.0, -1.0};
+		}
+
+		return {ttc, stc};
+	}
 }
 
 }

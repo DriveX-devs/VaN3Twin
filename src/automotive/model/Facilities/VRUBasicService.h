@@ -5,6 +5,7 @@
 #ifndef VRUBasicService_h
 #define VRUBasicService_h
 
+#include "ns3/btpdatarequest.h"
 #include "ns3/vdp.h"
 #include "ns3/socket.h"
 #include "ns3/core-module.h"
@@ -17,7 +18,11 @@
 
 extern "C" {
   #include "ns3/VAM.h"
+  #include "ns3/CAM.h"
 }
+
+#define MAX_TIP_MAP_TIME 10000 // Maximum time in milliseconds to keep TIP values in the map (10 seconds)
+#define DELTA_TIP 0.1
 
 namespace ns3
 {
@@ -50,6 +55,7 @@ typedef enum{
     POSITION_CHANGE = 3,
     SPEED_CHANGE = 4,
     SAFE_DISTANCES = 5,
+    TIP_TRIGGER = 6,
   } triggcond_t;
 
 class VRUBasicService: public Object
@@ -71,6 +77,14 @@ public:
     void setSafeLateralDistance(double safe_lat_d) {m_lat_safe_d = safe_lat_d;}
     void setSafeVerticalDistance(double safe_vert_d) {m_vert_safe_d = safe_vert_d;}
 
+    void setTTCMax(double ttc_max) {m_TTC_max = ttc_max;}
+    void setTTCMin(double ttc_min) {m_TTC_min = ttc_min;}
+    void setSTCMin(double stc_min) {m_STC_min = stc_min;}
+    void setTIPThreshold(double tip_th) {m_TIP_th = tip_th;}
+    void setModality(std::string modality) {m_tip_modality = modality;}
+    void setK(double k) {m_TTC_k = k;}
+    void setSigma(double sigma) {m_TTC_sigma = sigma;}
+
     void setVAMmetricsfile(std::string file_name, bool collect_metrics);
 
     void receiveVam(BTPDataIndication_t dataIndication, Address from);
@@ -83,17 +97,34 @@ public:
     void startAccelerationComputation(long computationT_acc);
 
     uint64_t terminateDissemination();
+
+    double getTTCMax() {return m_TTC_max;}
+    double getTTCMin() {return m_TTC_min;}
+    double getSTCMin() {return m_STC_min;}
+    std::string getTIPModality() {return m_tip_modality;}
+    double getTIPThreshold() {return m_TIP_th;}
+    double getK() {return m_TTC_k;}
+    double getSigma() {return m_TTC_sigma;}
+
+    void addNewTIPToMap(uint64_t id, double time, double tip);
+    void updatePreviousSentTIPOnMap(uint64_t id, double previous_tip);
+    void cleanTIPMap(double time);
+    void searchFirstEightTIPs();
     
     const long T_GenVamMin_ms = 100;
     const long T_GenVamMax_ms = 5000;
+    const long T_GenVamLFMin_ms = 2000;
 
     void SetLogTriggering(bool log, std::string log_filename) {m_log_triggering = log; m_log_filename = log_filename;};
 
-    void write_log_triggering(bool condition_verified, bool vamredmit_verified, float head_diff, float pos_diff, float speed_diff, long time_difference, std::string data_head, std::string data_pos, std::string data_speed, std::string data_safed, std::string data_time, std::string data_vamredmit, std::string data_dcc);
+    void write_log_triggering(bool condition_verified, bool vamredmit_verified, float head_diff, float pos_diff, float speed_diff, long time_difference, std::string data_head, std::string data_pos, std::string data_speed, std::string data_safed, std::string data_tip, std::string data_time, std::string data_vamredmit, std::string data_dcc);
 
     std::string printMinDist(double minDist) {
       return ((minDist>-DBL_MAX && minDist<MAXFLOAT) ? std::to_string(minDist) : "unavailable");
     }
+    
+    void VRUreceivedNewMessageForTIP(BTPDataIndication_t dataIndication, bool veh);
+    std::tuple<double, double> compute_ttc_stc(vehicleData_t vehdata);
 
 
 private:
@@ -140,6 +171,15 @@ private:
     double m_lat_safe_d;
     double m_vert_safe_d;
 
+    // Trajectory Interception Probability parameters and thresholds
+    std::string m_tip_modality;
+    double m_TTC_k;
+    double m_TTC_max;
+    double m_TTC_sigma;
+    double m_TTC_min;
+    double m_STC_min;
+    double m_TIP_th;
+
     // Longitudinal acceleration
     VRUdpValueConfidence<> m_long_acceleration;
 
@@ -174,6 +214,8 @@ private:
     bool m_lowFreqContainerEnabled;
 
     double m_last_transmission = 0;
+    double m_last_vam_gen_LF = -1;
+    int64_t m_T_GenVamLFMin_ms;
 
     bool m_log_triggering = false;
     std::string m_log_filename;
@@ -184,8 +226,13 @@ private:
     uint64_t m_head_sent = 0;
     uint64_t m_safedist_sent = 0;
     uint64_t m_time_sent = 0;
+    uint64_t m_tip_sent;
 
     long m_T_next_dcc = -1;
+
+    std::unordered_map<uint64_t, std::tuple<double, double, double>> m_tip_map;
+    uint8_t m_tip_map_size = 0;
+    std::vector<std::tuple<uint64_t, double>> m_tip_array;
 };
 
 }

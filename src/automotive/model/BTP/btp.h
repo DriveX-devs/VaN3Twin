@@ -71,7 +71,7 @@ namespace ns3
      *
      * @param fixed_stationtype The station type of the ITS-S.
      */
-    void setStationType(long fixed_stationtype) {m_geonet->setStationType(fixed_stationtype);}
+    void setStationType(long fixed_stationtype) {m_station_type = fixed_stationtype; m_geonet->setStationType(fixed_stationtype);}
     /**
      * @brief Set the VDP object for GeoNet object.
      *
@@ -112,6 +112,11 @@ namespace ns3
      */
     void addMCMRxCallback(std::function<void(BTPDataIndication_t,Address)> rx_callback) {m_mcm_ReceiveCallback=rx_callback;}
     /**
+     * @brief Add a callback for VRU message reception for TIP calculation.
+     * @param rx_callback
+     */
+    void addVRURxCallback(std::function<void(BTPDataIndication_t,bool)> rx_callback) {m_vru_ReceiveCallback_tip = rx_callback;}
+    /**
      * @brief Add BTP headers and pass a data request to the GeoNet object.
      *
      * @param dataRequest The BTPDataRequest_t structure containing the BTP message to be sent.
@@ -130,12 +135,16 @@ namespace ns3
 
     Ptr<GeoNet> m_geonet; //! Pointer to the GeoNet object.
 
+    long m_station_type;
+
     std::function<void(BTPDataIndication_t,Address)> m_cam_ReceiveCallback; //! Callback for CAM message reception.
     std::function<void(BTPDataIndication_t,Address)> m_denm_ReceiveCallback; //! Callback for DENM message reception.
     std::function<void(BTPDataIndication_t,Address)> m_ivim_ReceiveCallback; //! Callback for IVIM message reception.
     std::function<void(BTPDataIndication_t,Address)> m_cpm_ReceiveCallback;   //! Callback for CPM message reception.
     std::function<void(BTPDataIndication_t,Address)> m_vam_ReceiveCallback;  //! Callback for VAM message reception.
     std::function<void(BTPDataIndication_t,Address)> m_mcm_ReceiveCallback;  //! Callback for MCM message reception.
+
+    std::function<void(BTPDataIndication_t, bool)> m_vru_ReceiveCallback_tip;
 
   };
 }
