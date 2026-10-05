@@ -17,7 +17,7 @@ static asn_oer_constraints_t asn_OER_type_DeclineReason_constr_1 CC_NOTUSED = {
 #endif  /* !defined(ASN_DISABLE_OER_SUPPORT) */
 #if !defined(ASN_DISABLE_UPER_SUPPORT) || !defined(ASN_DISABLE_APER_SUPPORT)
 asn_per_constraints_t asn_PER_type_DeclineReason_constr_1 CC_NOTUSED = {
-	{ APC_CONSTRAINED,	 3,  3,  0,  6 }	/* (0..6) */,
+	{ APC_CONSTRAINED,	 3,  3,  0,  7 }	/* (0..7) */,
 	{ APC_UNCONSTRAINED,	-1, -1,  0,  0 },
 	0, 0	/* No PER value map */
 };
@@ -29,21 +29,23 @@ static const asn_INTEGER_enum_map_t asn_MAP_DeclineReason_value2enum_1[] = {
 	{ 3,	21,	"allUnableToUnderstand" },
 	{ 4,	29,	"allErroneousBehaviourDetected" },
 	{ 5,	24,	"allMissbehaviourDetected" },
-	{ 6,	50,	"agreementSeekingManoeuvreCancellationRequestIssued" }
+	{ 6,	50,	"agreementSeekingManoeuvreCancellationRequestIssued" },
+	{ 7,	15,	"unableToConform" }
 };
 static const unsigned int asn_MAP_DeclineReason_enum2value_1[] = {
-	6,	/* agreementSeekingManoeuvreCancellationRequestIssued(6) */
-	0,	/* agreementSeekingUnknown(0) */
-	2,	/* agreementSeekingUnwanted(2) */
-	4,	/* allErroneousBehaviourDetected(4) */
-	5,	/* allMissbehaviourDetected(5) */
-	1,	/* allUnableToConform(1) */
-	3	/* allUnableToUnderstand(3) */
+    6,  /* agreementSeekingManoeuvreCancellationRequestIssued(6) */
+    0,  /* agreementSeekingUnknown(0) */
+    2,  /* agreementSeekingUnwanted(2) */
+    4,  /* allErroneousBehaviourDetected(4) */
+    5,  /* allMissbehaviourDetected(5) */
+    1,  /* allUnableToConform(1) */
+    3,  /* allUnableToUnderstand(3) */
+    7   /* unableToConform(7) */                                    
 };
 const asn_INTEGER_specifics_t asn_SPC_DeclineReason_specs_1 = {
 	asn_MAP_DeclineReason_value2enum_1,	/* "tag" => N; sorted by tag */
 	asn_MAP_DeclineReason_enum2value_1,	/* N => "tag"; sorted by N */
-	7,	/* Number of elements in the maps */
+	8,	/* Number of elements in the maps */
 	0,	/* Enumeration is not extensible */
 	1,	/* Strict enumeration */
 	0,	/* Native long size */

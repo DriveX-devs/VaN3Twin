@@ -1,0 +1,13 @@
+<viewsettings>
+    <scheme name="real world"/>
+    <viewport>
+        <backgroundColor r="0.0" g="0.6" b="0.0"/> <!-- Green background -->
+        <showGrid>false</showGrid>
+        <showLogo>false</showLogo>
+        <showVehId>true</showVehId> <!-- Optional: Show vehicle IDs -->
+        <drawEdges>true</drawEdges>
+        <drawJunctions>true</drawJunctions>
+        <drawVehicles>true</drawVehicles>
+        <drawRealShapes>true</drawRealShapes> <!-- Realistic vehicle shapes -->
+    </viewport>
+</viewsettings>

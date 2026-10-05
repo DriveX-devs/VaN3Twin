@@ -87,7 +87,6 @@ public:
 
   void SetSionnaUp() {m_sionna = true;};
 
-
 private:
   // perform sumo simulation for a certain time step
   void SumoSimulationStep(void);

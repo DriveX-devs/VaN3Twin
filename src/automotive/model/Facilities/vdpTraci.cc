@@ -19,6 +19,7 @@
 */
 
 #include "vdpTraci.h"
+#include "ns3/vdp.h"
 
 extern "C" {
   #include "ns3/CAM.h"

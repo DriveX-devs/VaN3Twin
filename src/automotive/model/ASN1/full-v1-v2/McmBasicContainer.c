@@ -5,6 +5,7 @@
  */
 
 #include "McmBasicContainer.h"
+#include "NativeInteger.h"
 
 asn_TYPE_member_t asn_MBR_McmBasicContainer_1[] = {
 	{ ATF_NOFLAGS, 0, offsetof(struct McmBasicContainer, generationDeltaTime),
@@ -167,8 +168,28 @@ asn_TYPE_member_t asn_MBR_McmBasicContainer_1[] = {
 		0, 0, /* No default value */
 		"concept"
 		},
+		{ ATF_NOFLAGS, 0, offsetof(struct McmBasicContainer, direction),
+				(ASN_TAG_CLASS_CONTEXT | (8 << 2)),
+				-1, /* IMPLICIT tag at current level */
+				&asn_DEF_NativeInteger,
+				0,
+				{
+			#if !defined(ASN_DISABLE_OER_SUPPORT)
+					0,
+			#endif
+			#if !defined(ASN_DISABLE_UPER_SUPPORT) || !defined(ASN_DISABLE_APER_SUPPORT)
+					0,
+			#endif
+			#if !defined(ASN_DISABLE_JER_SUPPORT)
+					0,
+			#endif
+					0
+				},
+				0, 0, /* No default value */
+				"direction"
+		},
 	{ ATF_POINTER, 2, offsetof(struct McmBasicContainer, rational),
-		(ASN_TAG_CLASS_CONTEXT | (8 << 2)),
+		(ASN_TAG_CLASS_CONTEXT | (9 << 2)),
 		+1,	/* EXPLICIT tag at current level */
 		&asn_DEF_ManoeuvreCoordinationRational,
 		0,
@@ -188,7 +209,7 @@ asn_TYPE_member_t asn_MBR_McmBasicContainer_1[] = {
 		"rational"
 		},
 	{ ATF_POINTER, 1, offsetof(struct McmBasicContainer, executionStatus),
-		(ASN_TAG_CLASS_CONTEXT | (9 << 2)),
+		(ASN_TAG_CLASS_CONTEXT | (10 << 2)),
 		-1,	/* IMPLICIT tag at current level */
 		&asn_DEF_ManoeuvreExecutionStatus,
 		0,
@@ -208,7 +229,7 @@ asn_TYPE_member_t asn_MBR_McmBasicContainer_1[] = {
 		"executionStatus"
 		},
 };
-static const int asn_MAP_McmBasicContainer_oms_1[] = { 8, 9 };
+static const int asn_MAP_McmBasicContainer_oms_1[] = { 9, 10 };
 static const ber_tlv_tag_t asn_DEF_McmBasicContainer_tags_1[] = {
 	(ASN_TAG_CLASS_UNIVERSAL | (16 << 2))
 };
@@ -221,14 +242,15 @@ static const asn_TYPE_tag2member_t asn_MAP_McmBasicContainer_tag2el_1[] = {
     { (ASN_TAG_CLASS_CONTEXT | (5 << 2)), 5, 0, 0 }, /* mcmType */
     { (ASN_TAG_CLASS_CONTEXT | (6 << 2)), 6, 0, 0 }, /* manoeuvreId */
     { (ASN_TAG_CLASS_CONTEXT | (7 << 2)), 7, 0, 0 }, /* concept */
-    { (ASN_TAG_CLASS_CONTEXT | (8 << 2)), 8, 0, 0 }, /* rational */
-    { (ASN_TAG_CLASS_CONTEXT | (9 << 2)), 9, 0, 0 } /* executionStatus */
+    { (ASN_TAG_CLASS_CONTEXT | (8 << 2)), 8, 0, 0 }, /* direction */
+	{ (ASN_TAG_CLASS_CONTEXT | (9 << 2)), 9, 0, 0 }, /* rational */
+	{ (ASN_TAG_CLASS_CONTEXT | (10 << 2)), 10, 0, 0 } /* executionStatus */
 };
 asn_SEQUENCE_specifics_t asn_SPC_McmBasicContainer_specs_1 = {
 	sizeof(struct McmBasicContainer),
 	offsetof(struct McmBasicContainer, _asn_ctx),
 	asn_MAP_McmBasicContainer_tag2el_1,
-	10,	/* Count of tags in the map */
+	11,	/* Count of tags in the map */
 	asn_MAP_McmBasicContainer_oms_1,	/* Optional members */
 	2, 0,	/* Root/Additions */
 	-1,	/* First extension addition */
@@ -256,7 +278,7 @@ asn_TYPE_descriptor_t asn_DEF_McmBasicContainer = {
 		SEQUENCE_constraint
 	},
 	asn_MBR_McmBasicContainer_1,
-	10,	/* Elements count */
+	11,	/* Elements count */
 	&asn_SPC_McmBasicContainer_specs_1	/* Additional specs */
 };
 

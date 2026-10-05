@@ -16,8 +16,10 @@ namespace ns3 {
     MCM_mandatory_data_t getMCMMandatoryData();
 
     double getSpeedValue() {return m_gps_trace_client->getSpeedms ();}
+    double getAccelerationValue() {return m_gps_trace_client->getAccelmsq();}
     double getTravelledDistance() {return m_gps_trace_client->getTravelledDistance ();}
     double getHeadingValue() {return m_gps_trace_client->getHeadingdeg ();}
+    double getVehicleLength() {return 0;}
 
     // Added for GeoNet functionalities
     VDP_position_latlon_t getPosition();

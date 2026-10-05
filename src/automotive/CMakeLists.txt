@@ -6,7 +6,6 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 link_libraries(${OpenCV_LIBS})
 
 Set(source_files
-        model/Foresee/trajectoryPrediction.cc
         model/LOS-NLOS/los_nlos.cc
         helper/areaSpeedAdvisorClient80211p-helper.cc
         helper/areaSpeedAdvisorServer80211p-helper.cc
@@ -1413,6 +1412,7 @@ Set(source_files
         model/ASN1/full-v1-v2/SubmanoeuvreDescription.c
         model/ASN1/full-v1-v2/SubmanoeuvreStrategy.c
         model/ASN1/full-v1-v2/Submanoeuvres.c
+        model/ASN1/full-v1-v2/ForeseeIndication.c
         model/ASN1/full-v1-v2/TRRLength.c
         model/ASN1/full-v1-v2/TRRWidth.c
         model/ASN1/full-v1-v2/TemporalCharacteristics.c
@@ -1563,7 +1563,6 @@ Set(source_files
 )
 
 set(header_files
-        model/Foresee/trajectoryPrediction.h
         model/LOS-NLOS/los_nlos.h
         model/Measurements/MetricSupervisor.h
         helper/areaSpeedAdvisorClientLTE-helper.h
@@ -1608,7 +1607,13 @@ set(header_files
         model/Applications/v2xEmulator.h
         model/utilities/csv-utils.h
         model/Facilities/mcBasicService.h
+        model/Facilities/mcData.h
         model/Foresee/foresee.h
+        model/Foresee/desired_speed_tag.h
+        model/Foresee/acceleration_rvahead_tag.h
+        model/Foresee/duration_rvahead_tag.h
+        model/Foresee/deceleration_rv_tag.h
+        model/Foresee/duration_rv_tag.h
 
         model/Facilities/signalInfoUtils.h
         model/Security/security.h
@@ -3118,6 +3123,7 @@ set(header_files
         model/ASN1/full-v1-v2/SubmanoeuvreDescription.h
         model/ASN1/full-v1-v2/SubmanoeuvreStrategy.h
         model/ASN1/full-v1-v2/Submanoeuvres.h
+        model/ASN1/full-v1-v2/ForeseeIndication.h
         model/ASN1/full-v1-v2/TRRLength.h
         model/ASN1/full-v1-v2/TRRWidth.h
         model/ASN1/full-v1-v2/TemporalCharacteristics.h

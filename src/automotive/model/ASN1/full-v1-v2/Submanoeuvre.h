@@ -12,8 +12,6 @@
 
 /* Including external dependencies */
 #include "Identifier1B.h"
-#include "LongitudinalAcceleration.h"
-#include "DeltaTimeMilliSecondPositive.h"
 #include "constr_SEQUENCE.h"
 
 #ifdef __cplusplus
@@ -27,8 +25,6 @@ struct AdvisedTrrContainer;
 /* Submanoeuvre */
 typedef struct Submanoeuvre {
 	Identifier1B_t	 submanoeuvreId;
-        LongitudinalAcceleration_t acceleration;
-        DeltaTimeMilliSecondPositive_t durationDeltaTime;
 	struct Trajectory	*advisedTrajectory;	/* OPTIONAL */
 	struct AdvisedTrrContainer	*advisedTargetRoadResource;	/* OPTIONAL */
 	
@@ -39,7 +35,7 @@ typedef struct Submanoeuvre {
 /* Implementation */
 extern asn_TYPE_descriptor_t asn_DEF_Submanoeuvre;
 extern asn_SEQUENCE_specifics_t asn_SPC_Submanoeuvre_specs_1;
-extern asn_TYPE_member_t asn_MBR_Submanoeuvre_1[5];
+extern asn_TYPE_member_t asn_MBR_Submanoeuvre_1[3];
 
 #ifdef __cplusplus
 }

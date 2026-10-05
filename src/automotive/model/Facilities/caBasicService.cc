@@ -27,6 +27,7 @@
 #include "ns3/SetOf.hpp"
 #include "ns3/SequenceOf.hpp"
 #include "ns3/BitString.hpp"
+#include "ns3/ldm-utils.h"
 #include "ns3/vdp.h"
 #include "asn_utils.h"
 #include <cmath>
@@ -36,6 +37,7 @@
 #include "ns3/timestamp-tag.h"
 #include "ns3/rsrp-tag.h"
 #include "ns3/size-tag.h"
+#include "ns3/desired_speed_tag.h"
 
 namespace ns3
 {
@@ -314,6 +316,9 @@ namespace ns3
     std::string packetContent((char *)buffer,(int) dataIndication.data->GetSize ());
     GNAddress gn_addr = dataIndication.GNAddressSource;
 
+    DesiredSpeedTag desired_speed;
+    dataIndication.data->PeekPacketTag(desired_speed);
+
     RssiTag rssi;
     bool rssi_result = dataIndication.data->PeekPacketTag(rssi);
 
@@ -375,7 +380,7 @@ namespace ns3
 
     if(m_LDM != NULL){
       //Update LDM
-      vLDM_handler(decoded_cam, gn_addr);
+      vLDM_handler(decoded_cam, gn_addr, desired_speed.GetDesiredSpeed());
     }
 
     if(m_CAReceiveCallback!=nullptr) {
@@ -387,7 +392,7 @@ namespace ns3
   }
 
   void
-  CABasicService::vLDM_handler(asn1cpp::Seq<CAM> decodedCAM, GNAddress gn_addr)
+  CABasicService::vLDM_handler(asn1cpp::Seq<CAM> decodedCAM, GNAddress gn_addr, double desired_speed)
   {
       vehicleData_t vehdata;
       LDM::LDM_error_t db_retval;
@@ -401,6 +406,7 @@ namespace ns3
       vehdata.elevation = asn1cpp::getField(decodedCAM->cam.camParameters.basicContainer.referencePosition.altitude.altitudeValue,double)/(double)CENTI;
       vehdata.heading = asn1cpp::getField(decodedCAM->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.heading.headingValue,double)/(double)DECI;
       vehdata.speed_ms = asn1cpp::getField(decodedCAM->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.speed.speedValue,double)/(double)CENTI;
+      vehdata.accel_msquares = asn1cpp::getField(decodedCAM->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.longitudinalAcceleration.value,double)/(double)DECI;
       vehdata.camTimestamp = asn1cpp::getField(decodedCAM->cam.generationDeltaTime,long);
       vehdata.timestamp_us = Simulator::Now ().GetMicroSeconds ();
 
@@ -408,6 +414,8 @@ namespace ns3
 
       vehdata.vehicleWidth = OptionalDataItem<long>(asn1cpp::getField(decodedCAM->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.vehicleWidth,long));
       vehdata.vehicleLength = OptionalDataItem<long>(asn1cpp::getField(decodedCAM->cam.camParameters.highFrequencyContainer.choice.basicVehicleContainerHighFrequency.vehicleLength.vehicleLengthValue,long));
+
+      vehdata.desired_speed = OptionalDataItem<double> (desired_speed);
 
       auto lowFreqContainer = asn1cpp::getSeqOpt(decodedCAM->cam.camParameters.lowFrequencyContainer,LowFrequencyContainer,&lowFreq_ok);
       if(lowFreq_ok)
@@ -987,6 +995,10 @@ namespace ns3
     }
 
     packet = Create<Packet> ((uint8_t*) encode_result.c_str(), encode_result.size());
+
+    DesiredSpeedTag tag;
+    tag.SetDesiredSpeed(m_desired_speed);
+    packet->AddPacketTag(tag);
 
     dataRequest.BTPType = BTP_B; //!< BTP-B
     dataRequest.destPort = CA_PORT;

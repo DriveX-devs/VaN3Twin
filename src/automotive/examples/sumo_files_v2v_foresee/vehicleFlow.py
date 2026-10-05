@@ -48,8 +48,8 @@ def write_init(f,options):
     f.write('  <route id="1" edges="nw_to_ne"/>\n')
  
     f.write('\n')
-    f.write('  <vType carFollowModel="IDM" tau="0.8" lcDuration="1.5" accel="3" decel="3" emergencyDecel="7" minGap="2.0" id="Car0" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1"/>\n')
-    f.write('  <vType carFollowModel="IDM" tau="1.0" lcDuration="1.5" accel="3" decel="3" emergencyDecel="7" minGap="2.0" id="Truck" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1"/>\n')
+    f.write('  <vType vClass="passenger" carFollowModel="IDM" tau="0.8" accel="1.5" decel="2" emergencyDecel="7" minGap="2.0" id="Car0" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1"/>\n')
+    f.write('  <vType vClass="truck" carFollowModel="IDM" tau="1" accel="1.5" decel="2" emergencyDecel="7" minGap="2.0" id="Truck" maxSpeed="40" lcKeepRight="0" lcContRight="0" lcSpeedGain="0" lcCooperative="-1" lcStrategic="-1"/>\n')
     f.write('\n')
 
 def write_veh(f, name, car_type, index, depart, route_var, departLane, desired_speed):
@@ -66,8 +66,6 @@ def main():
     i = 0
     departLane = 0
     with open(options.output, 'w') as f:
-        f.write('<!-- generated on %s by "%s" -->\n' %
-                (datetime.datetime.now(), os.path.basename(" ".join(sys.argv))))
         write_init(f, options)
         index = options.index
         # Time instant in which the last car is scheduled to depart

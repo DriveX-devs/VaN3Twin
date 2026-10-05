@@ -13,6 +13,7 @@
 /* Including external dependencies */
 #include "ManouevreResponse.h"
 #include "DeclineReason.h"
+#include "StationId.h"
 #include "constr_SEQUENCE.h"
 
 #ifdef __cplusplus
@@ -25,6 +26,7 @@ struct ListOfSubmanoeuvreDescriptionsContainer;
 /* ResponseContainer */
 typedef struct ResponseContainer {
 	ManouevreResponse_t	 manouevreResponse;
+	StationId_t	 coordinatorID;
 	DeclineReason_t	*declineReason;	/* OPTIONAL */
 	struct ListOfSubmanoeuvreDescriptionsContainer	*submaneuvres;	/* OPTIONAL */
 	
@@ -35,7 +37,7 @@ typedef struct ResponseContainer {
 /* Implementation */
 extern asn_TYPE_descriptor_t asn_DEF_ResponseContainer;
 extern asn_SEQUENCE_specifics_t asn_SPC_ResponseContainer_specs_1;
-extern asn_TYPE_member_t asn_MBR_ResponseContainer_1[3];
+extern asn_TYPE_member_t asn_MBR_ResponseContainer_1[4];
 
 #ifdef __cplusplus
 }

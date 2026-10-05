@@ -2,6 +2,8 @@
 #ifndef MCBASICSERVICE_H
 #define MCBASICSERVICE_H
 
+#include <vector>
+#include <unordered_map>
 #include "ns3/socket.h"
 #include "ns3/core-module.h"
 #include "ns3/vdp.h"
@@ -11,11 +13,15 @@
 #include "ns3/Seq.hpp"
 #include "ns3/Getter.hpp"
 #include "ns3/LDM.h"
-#include "signalInfoUtils.h"
-#include "ns3/trajectoryPrediction.h"
+#include "ns3/signalInfoUtils.h"
+#include "ns3/mcData.h"
+#include "ns3/acceleration_rvahead_tag.h"
+#include "ns3/duration_rvahead_tag.h"
+#include "ns3/deceleration_rv_tag.h"
+#include "ns3/duration_rv_tag.h"
 
 extern "C" {
-  #include "ns3/MCM.h"
+  #include "ns3/constr_TYPE.h"
 }
 
 //#define CURRENT_VDP_TYPE VDPTraCI
@@ -69,106 +75,6 @@ enum ManeuverID
     MCM_ASN1_UPER_ENC_ERROR=4,
     MCM_CANNOT_SEND=5
   } MCBasicService_error_t;
-
-  class MCSpecification: public Object
-  {
-  public:
-    MCSpecification()
-        : m_mcm_type(0), m_mcm_its_role(0), m_mcm_status(0),
-          m_mcm_concept(0), m_mcm_goal(0), m_maneuver_id(Undefined), m_mcm_cost(0),
-          m_vehicle_maneuver_container(false),
-          m_vehicle_advise_container(false),
-          m_vehicle_acknowledgement_container(false),
-          m_vehicle_response_container(false),
-          m_vehicle_terminator_container(false),
-          m_vehicle_type{}, m_mcm_response(0) {}
-
-    ~MCSpecification ();
-    template <typename T>
-    T* create()
-    {
-      T* new_item = (T *)CALLOC(1, sizeof(T));
-      return new_item;
-    }
-
-    template <typename T, typename Container, typename Item>
-    int add(T type, Container* container, Item* item)
-    {
-      if (ASN_SEQUENCE_ADD(container, item) != 0)
-        {
-          ASN_STRUCT_FREE(type, item);
-          return 0;
-        }
-      else return 1;
-    }
-
-    bool checkContainers();
-
-    void setAdviseContainer() {m_vehicle_advise_container = true;};
-    bool getAdviseContainer() {return m_vehicle_advise_container;};
-    void setManeuverContainer() {m_vehicle_maneuver_container = true;};
-    bool getManeuverContainer() {return m_vehicle_maneuver_container;};
-    void setAcknowledgmentContainer() {m_vehicle_acknowledgement_container = true;};
-    bool getAcknowledgmentContainer() {return m_vehicle_acknowledgement_container;};
-    void setResponseContainer() { m_vehicle_response_container = true; };
-    bool getResponseContainer() { return m_vehicle_response_container; };
-    void setTerminatorContainer() {m_vehicle_terminator_container = true;};
-    bool getTerminatorContainer() {return m_vehicle_terminator_container;};
-    void setMCMType(long type) {m_mcm_type = type;};
-    long getMCMType() {return m_mcm_type;};
-    void setMCMItsRole(long role) { m_mcm_its_role = role; };
-    long getMCMItsRole() { return m_mcm_its_role; };
-    void setMCMStatus(long status) { m_mcm_status = status; };
-    long getMCMStatus() { return m_mcm_status; };
-    void setMCMConcept(long concept) { m_mcm_concept = concept; };
-    long getMCMConcept() { return m_mcm_concept; };
-    void setMCMGoal(long goal) { m_mcm_goal = goal; };
-    long getMCMGoal() { return m_mcm_goal; };
-    void setMCMCost(long cost) { m_mcm_cost = cost; };
-    long getMCMCost() { return m_mcm_cost; };
-    void setMCMResponse(long response) { m_mcm_response = response; };
-    long getMCMResponse() { return m_mcm_response; };
-    void setManeuverID(ManeuverID id) { m_maneuver_id = id; };
-    ManeuverID getManeuverID() { return m_maneuver_id; };
-    void setVehicleType(Iso3833VehicleType type) { m_vehicle_type = type; };
-    Iso3833VehicleType getVehicleType() { return m_vehicle_type; };
-    void pushSubmaneuverDescription(SubmanoeuvreDescription* item)
-    {
-      m_submaneuver_description.push_back(item);
-    };
-    std::vector<SubmanoeuvreDescription*>& getSubmaneuverDescription()
-    {
-      return m_submaneuver_description;
-    };
-    void pushManeuverAdvice(ManoeuvreAdvice* item)
-    {
-      m_maneuver_advice.push_back(item);
-    };
-    std::vector<ManoeuvreAdvice*>& getManeuverAdvice()
-    {
-      return m_maneuver_advice;
-    };
-
-  private:
-    long m_mcm_type;
-    ManeuverID m_maneuver_id;
-    long m_mcm_its_role;
-    long m_mcm_status;
-    long m_mcm_concept;
-    long m_mcm_goal;
-    long m_mcm_cost;
-    bool m_vehicle_maneuver_container;
-    bool m_vehicle_advise_container;
-    bool m_vehicle_acknowledgement_container;
-    bool m_vehicle_response_container;
-    bool m_vehicle_terminator_container;
-    std::vector<SubmanoeuvreDescription*> m_submaneuver_description; // For Vehicle Maneuver Container
-    std::vector<ManoeuvreAdvice*> m_maneuver_advice; // For Vehicle Maneuver Container and Vehicle Advice Container
-
-    Iso3833VehicleType m_vehicle_type;
-    long m_mcm_response;
-  };
-
 
   /**
    * \ingroup automotive
@@ -307,7 +213,8 @@ enum ManeuverID
      * @param rx_callback   The callback function to be called when a MCM message is received
      */
     void addMCRxCallback(std::function<void(asn1cpp::Seq<MCM>, Address)> rx_callback) {m_MCReceiveCallback=rx_callback;}
-    void addMCRxCallbackExtended(std::function<void(asn1cpp::Seq<MCM>, Address, StationId_t, StationType_t, SignalInfo)> rx_callback) {m_MCReceiveCallbackExtended=rx_callback;}
+    void addMCRxCallbackExtended(std::function<void(const asn1cpp::Seq<MCM>&, Address, StationId_t, StationType_t, SignalInfo)> rx_callback) {m_MCReceiveCallbackExtended=rx_callback;}
+    void addMCRxCallbackForesee(std::function<void(const asn1cpp::Seq<MCM>&, Address, StationId_t, StationType_t, SignalInfo, mcData::mcDataForeseeIndication, mcData::mcDataForeseeIndication)> rx_callback) {m_MCReceiveCallbackForesee=rx_callback;}
     void setRealTime(bool real_time){m_real_time=real_time;}
 
     /**
@@ -346,7 +253,22 @@ enum ManeuverID
      *
      * @return MCBasicService_error_t   The error code
      */
-    MCBasicService_error_t generateAndEncodeMCM(MCSpecification *specification);
+    MCBasicService_error_t generateAndEncodeMCM(const mcData& mcmData);
+
+     /**
+     * @brief Convert a decoded ASN.1 MCM into the native mcData representation.
+     *
+     * Inverse of generateAndEncodeMCM(): reads an MCM_t* (already decoded from UPER)
+     * and produces a populated mcData. Header, basic container, and the active
+     * container variant (vehicle / advice / response / acknowledgment / termination)
+     * are filled. Ownership of decoded_mcm is not changed.
+     *
+     * @param decoded_mcm   Pointer to a decoded ASN.1 MCM
+     * @return mcData       The native representation
+     */
+    mcData convertASN1IntoMcData(asn1cpp::Seq<MCM> decoded_mcm);
+
+    void setForesee(bool foresee) {m_foresee = foresee;};
 
 
   private:
@@ -368,7 +290,8 @@ enum ManeuverID
     // std::function<void(MCM_t *, Address)> m_CAReceiveCallback;
     std::function<void(asn1cpp::Seq<MCM>, Address)> m_MCReceiveCallback;
     std::function<void(asn1cpp::Seq<MCM>, Address, Ptr<Packet>)> m_MCReceiveCallbackPkt;
-    std::function<void(asn1cpp::Seq<MCM>, Address, StationId_t, StationType_t, SignalInfo)> m_MCReceiveCallbackExtended;
+    std::function<void(const asn1cpp::Seq<MCM>&, Address, StationId_t, StationType_t, SignalInfo)> m_MCReceiveCallbackExtended;
+    std::function<void(const asn1cpp::Seq<MCM>&, Address, StationId_t, StationType_t, SignalInfo, mcData::mcDataForeseeIndication, mcData::mcDataForeseeIndication)> m_MCReceiveCallbackForesee;
 
     Ptr<btp> m_btp; //! BTP object
 
@@ -429,6 +352,11 @@ enum ManeuverID
 
     long m_T_next_dcc = -1;
 
+    mcData m_last_received_mcm;
+
+    bool m_foresee = false;
+    std::vector<mcData::mcDataForeseeIndication> m_foresee_rvahead;
+    // TODO
   };
 }
 

@@ -11,7 +11,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU General Public License for more details
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -19,12 +19,11 @@
  */
 
 
+#include "ns3/asn_utils.h"
+#include <string>
 #define HORIZON_TIME 8000
-#define NEGOTIATION_TIME 1000
-#define DECELERATION_TIME 1000
-#define STEP_TIME 100
-#define LC_TIME_MSEC 1500
-
+#define NEGOTIATION_TIME 1100
+#define START_TIME 5000
 
 #include "ns3/carla-module.h"
 
@@ -54,15 +53,23 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE ("V2VSimpleMCMExchange80211p");
+NS_LOG_COMPONENT_DEFINE ("V2VFORESEEMCM80211p");
 
 // ******* DEFINE HERE ANY LOCAL GLOBAL VARIABLE, ACCESSIBLE FROM ANY FUNCTION IN THIS FILE *******
 // Variables defined here should always be "static"
 static int packet_count=0;
 BSMap basicServices;
-void receiveMCM(asn1cpp::Seq<MCM> mcm, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info)
+void receiveCAM(asn1cpp::Seq<CAM> cam, Address from, StationID_t my_stationID, StationType_t my_StationType, SignalInfo phy_info)
 {
-
+  packet_count++;
+  // Logging the distance with respect to the RSSI
+  double lat_sender=asn1cpp::getField(cam->cam.camParameters.basicContainer.referencePosition.latitude,double)/1e7;
+  double lon_sender=asn1cpp::getField(cam->cam.camParameters.basicContainer.referencePosition.longitude,double)/1e7;
+  //
+  libsumo::TraCIPosition pos=basicServices.get(my_stationID)->getTraCIclient ()->TraCIAPI::vehicle.getPosition("veh" + std::to_string(my_stationID));
+  pos=basicServices.get(my_stationID)->getTraCIclient ()->TraCIAPI::simulation.convertXYtoLonLat(pos.x,pos.y);
+  //
+  double distance=haversineDist (lat_sender, lon_sender, pos.y, pos.x);
 }
 
 int main (int argc, char *argv[])
@@ -71,12 +78,16 @@ int main (int argc, char *argv[])
   int up=0;
   int interfering_up=0;
   bool verbose = false; // Set to true to get a lot of verbose output from the IEEE 802.11p PHY model (leave this to false)
+  bool verbose_foresee = true;
+  bool register_log = false;
   int numberOfNodes; // Total number of vehicles, automatically filled in by reading the XML file
   double m_baseline_prr = 150.0; // PRR baseline value (default: 150 m)
   int txPower = 33.0; // IEEE 802.11p transmission power in dBm (default: 23 dBm)
   xmlDocPtr rou_xml_file;
-  double simTime = 100.0; // Total simulation time (default: 100 seconds)
-  bool sumo_gui = true;
+  double simTime = 150.0; // Total simulation time (default: 100 seconds)
+  bool sumo_gui = false;
+  int seed = 42;
+  int threads = 5;
 
   // Set here the path to the SUMO XML files
   std::string sumo_folder = "src/automotive/examples/sumo_files_v2v_foresee/";
@@ -89,12 +100,15 @@ int main (int argc, char *argv[])
   // Syntax to add new options: cmd.addValue (<option>,<brief description>,<destination variable>)
   cmd.AddValue ("phyMode", "Wifi Phy mode", phyMode);
   cmd.AddValue ("verbose", "turn on all WifiNetDevice log components", verbose);
+  cmd.AddValue ("verbose-foresee", "turn on all FORESEE log components", verbose_foresee);
+  cmd.AddValue ("register-log-foresee", "turn on FORESEE dataset collection", register_log);
   cmd.AddValue ("userpriority","EDCA User Priority for the ETSI messages",up);
   cmd.AddValue ("interfering-userpriority","User Priority for interfering traffic (default: 0, i.e., AC_BE)",interfering_up);
   cmd.AddValue ("baseline", "Baseline for PRR calculation", m_baseline_prr);
   cmd.AddValue ("tx-power", "OBUs transmission power [dBm]", txPower);
   cmd.AddValue ("sim-time", "Total duration of the simulation [s]", simTime);
   cmd.AddValue ("sumo-gui", "Activate SUMO GUI", sumo_gui);
+  cmd.AddValue("seed", "Random seed", seed);
   cmd.Parse (argc, argv);
 
   /* Load the .rou.xml file (SUMO map and scenario) */
@@ -150,7 +164,7 @@ int main (int argc, char *argv[])
   NetDeviceContainer devices = wifi80211p.Install (wifiPhy, wifi80211pMac, c);
 
   // Enable saving to Wireshark PCAP traces
-  wifiPhy.EnablePcap ("v2v-80211p-foresee-mcm", devices.Get (0));
+  wifiPhy.EnablePcap ("v2v-80211p-foresee-mcm", devices.Get (22));
 
   // Set up the link between SUMO and ns-3, to make each node "mobile" (i.e., linking each ns-3 node to each moving vehicle in ns-3,
   // which corresponds to installing the network stack to each SUMO vehicle)
@@ -168,9 +182,10 @@ int main (int argc, char *argv[])
   sumoClient->SetAttribute ("PenetrationRate", DoubleValue (1.0));
   sumoClient->SetAttribute ("SumoLogFile", BooleanValue (false));
   sumoClient->SetAttribute ("SumoStepLog", BooleanValue (false));
-  sumoClient->SetAttribute ("SumoSeed", IntegerValue (10));
+  sumoClient->SetAttribute ("SumoSeed", IntegerValue (seed));
   sumoClient->SetAttribute ("SumoWaitForSocket", TimeValue (Seconds (10)));
-
+  sumoClient->SetAttribute ("SumoAdditionalCmdOptions", StringValue("--threads " + std::to_string(threads) + " --collision.action warn"));
+  
   // Set up a Metricsupervisor
   // This module enables a trasparent and seamless collection of one-way latency (in ms) and PRR metrics
   Ptr<MetricSupervisor> metSup = NULL;
@@ -182,30 +197,119 @@ int main (int argc, char *argv[])
   packetSocket.Install(c);
 
   std::unordered_map<ulong, foresee> lc_model;
-  // Create the Lane Change data structure shared with the environment
-  // No need for a mutex since we are not in multi threading programming
-  std::unordered_map<ulong, std::tuple<float, float, float>> lc_data_structure;
   // Set the coordination avoidance range to check ahead of ego vehicle (in meters)
-  float ca_range = 200;
+  double ca_range = 200;
 
   std::cout << "A transmission power of " << txPower << " dBm  will be used." << std::endl;
 
   std::cout << "Starting simulation... " << std::endl;
 
-  double avg_speed_cars = 33.3;  // m/s
-  double avg_speed_trucks = 22.2;  // m/s
-  double deviation = 0.2;   // 20%
+  // deviation per vehicle class (realism: trucks vary less than cars)
+  constexpr double car_dev       = 0.25;
+  constexpr double light_trk_dev = 0.20;
+  constexpr double heavy_trk_dev = 0.15;
+  constexpr double moto_dev      = 0.30;
+  constexpr double bus_dev       = 0.15;
 
-  double min_speed_cars = avg_speed_cars * (1.0 - deviation);
-  double min_speed_trucks = avg_speed_trucks * (1.0 - deviation);
-  double max_speed_cars = avg_speed_cars * (1.0 + deviation);
-  double max_speed_trucks = avg_speed_trucks * (1.0 + deviation);
+  // =====================
+  // AVERAGE SPEEDS (m/s)
+  // =====================
+
+  // Passenger car (~120 km/h)
+  constexpr double avg_speed_car0 = 33.3;
+  // Light truck (~100 km/h)
+  constexpr double avg_speed_light_truck = 27.7;
+  // Heavy truck (~80 km/h)
+  constexpr double avg_speed_heavy_truck = 22.2;
+  // Motorcycle (~130 km/h, more variable)
+  constexpr double avg_speed_motorcycle = 36.1;
+  // Bus (~90 km/h)
+  constexpr double avg_speed_bus = 25;
+
+  // =====================
+  // SPEED RANGES
+  // =====================
+
+  // Car0
+  constexpr double min_speed_car0 = avg_speed_car0 * (1.0 - car_dev);
+  constexpr double max_speed_car0 = avg_speed_car0 * (1.0 + car_dev);
+
+  // Light truck
+  constexpr double min_speed_light_truck = avg_speed_light_truck * (1.0 - light_trk_dev);
+  constexpr double max_speed_light_truck = avg_speed_light_truck * (1.0 + light_trk_dev);
+
+  // Heavy truck
+  constexpr double min_speed_heavy_truck = avg_speed_heavy_truck * (1.0 - heavy_trk_dev);
+  constexpr double max_speed_heavy_truck = avg_speed_heavy_truck * (1.0 + heavy_trk_dev);
+
+  // Motorcycle
+  constexpr double min_speed_motorcycle = avg_speed_motorcycle * (1.0 - moto_dev);
+  constexpr double max_speed_motorcycle = avg_speed_motorcycle * (1.0 + moto_dev);
+
+  // Bus
+  constexpr double min_speed_bus = avg_speed_bus * (1.0 - bus_dev);
+  constexpr double max_speed_bus = avg_speed_bus * (1.0 + bus_dev);
 
   // Random number generator
-  const unsigned int SEED = 42;
-  std::mt19937 gen(SEED);
-  std::uniform_real_distribution<double> dist1(min_speed_cars, max_speed_cars);
-  std::uniform_real_distribution<double> dist2(min_speed_trucks, max_speed_trucks);
+  std::mt19937 gen(seed);
+  std::uniform_real_distribution<double> dist_car0(min_speed_car0, max_speed_car0);
+  std::uniform_real_distribution<double> dist_light_truck(min_speed_light_truck, max_speed_light_truck);
+  std::uniform_real_distribution<double> dist_heavy_truck(min_speed_heavy_truck, max_speed_heavy_truck);
+  std::uniform_real_distribution<double> dist_motorcycle(min_speed_motorcycle, max_speed_motorcycle);
+  std::uniform_real_distribution<double> dist_bus(min_speed_bus, max_speed_bus);
+
+  bool use_foresee = true;
+
+  if (register_log)
+  {
+    std::ofstream file;
+    file.open("coordinations_seed" + std::to_string(seed) + "_new.csv", std::ios::out | std::ios::trunc);
+    file << "coordination_id,"
+        << "sim_time_ms,"
+        << "desired_speed_hv,"
+        << "desired_speed_rv,"
+        << "desired_speed_rvahead,"
+        << "min_lane_speed_hv,"
+        << "min_lane_speed_target,"
+        << "type_hv,"
+        << "type_rv,"
+        << "type_rvahead,"
+        << "type_rv1,"
+        << "type_rv2,"
+        << "type_rvahead1,"
+        << "type_rvahead2,"
+        << "gap_hv_rv,"
+        << "gap_hv_rvahead,"
+        << "gap_rv_rvahead,"
+        << "gap_rvahead_rvahead1,"
+        << "gap_rvahead1_rvahead2,"
+        << "gap_rv_rv1,"
+        << "gap_rv1_rv2,"
+        << "rel_desired_speed_hv_rv,"
+        << "rel_desired_speed_hv_rvahead,"
+        << "rel_desired_speed_rv_rvahead,"
+        << "rel_speed_hv_rv,"
+        << "rel_speed_hv_rvahead,"
+        << "rel_speed_rv_rvahead,"
+        << "rel_speed_rvahead_rvahead1,"
+        << "rel_speed_rvahead1_rvahead2,"
+        << "rel_speed_rv_rv1,"
+        << "rel_speed_rv1_rv2,"
+        << "rel_acc_hv_rv,"
+        << "rel_acc_hv_rvahead,"
+        << "rel_acc_rv_rvahead,"
+        << "rel_acc_rvahead_rvahead1,"
+        << "rel_acc_rvahead1_rvahead2,"
+        << "rel_acc_rv_rv1,"
+        << "rel_acc_rv1_rv2,"
+        << "dec_rv_requested,"
+        << "acc_rvahead_requested,"
+        << "time_rv_requested,"
+        << "time_rvahead_requested,"
+        << "execution_success"
+        << "\n";
+    file.close();
+  }
 
   STARTUP_FCN setupNewWifiNode = [&] (std::string vehicleID,TraciClient::StationTypeTraCI_t stationType) -> Ptr<Node>
     {
@@ -213,19 +317,50 @@ int main (int argc, char *argv[])
 
       std::string type = sumoClient->vehicle.getTypeID (vehicleID);
 
-      double speed = type == "Car0" ? dist1(gen) : dist2(gen);
+      // Differentiate between vehicle types to compute speed and station type
+      double speed;
+      StationType_t st_type = StationType_passengerCar;
+      if (type == "Car0")
+      {
+        speed = dist_car0(gen);
+        st_type = StationType_passengerCar;
+      }
+      else if (type == "LightTruck" || type == "light_truck")
+      {
+        speed = dist_light_truck(gen);
+        st_type = StationType_lightTruck;
+      }
+      else if (type == "HeavyTruck" || type == "heavy_truck")
+      {
+        speed = dist_heavy_truck(gen);
+        st_type = StationType_heavyTruck;
+      }
+      else if (type == "Motorcycle" || type == "motorcycle")
+      {
+        speed = dist_motorcycle(gen);
+        st_type = StationType_motorcycle;
+      }
+      else if (type == "Bus" || type == "bus")
+      {
+        speed = dist_bus(gen);
+        st_type = StationType_bus;
+      }
+      else
+      {
+        speed = dist_car0(gen);
+        st_type = StationType_passengerCar;
+      }
 
       // Set the desired speed
       sumoClient->vehicle.setMaxSpeed(vehicleID, speed);
       // Prevent uncontrolled lane change
-      sumoClient->vehicle.setParameter(vehicleID, "laneChangeMode", "0");
+      sumoClient->vehicle.setParameter(vehicleID, "laneChangeMode", "256");
 
       // Create a new ETSI GeoNetworking socket, thanks to the GeoNet::createGNPacketSocket() function, accepting as argument a pointer to the current node
       Ptr<Socket> sock;
       sock=GeoNet::createGNPacketSocket(c.Get(nodeID));
       // Set the proper AC, through the specified UP
       sock->SetPriority (up);
-      StationType_t st_type = type == "Car0" ? StationType_passengerCar : StationType_lightTruck;
       Ptr<BSContainer> bs_container = CreateObject<BSContainer>(std::stol(vehicleID.substr(3)),st_type,sumoClient,false,sock);
       // Setup the PRRsupervisor inside the BSContainer, to make each vehicle collect latency and PRR metrics
       bs_container->linkMetricSupervisor(metSup);
@@ -234,7 +369,11 @@ int main (int argc, char *argv[])
 
       // Set the function which will be called every time a CAM is received, i.e., receiveCAM()
       // bs_container->addMCMRxCallback (std::bind(&receiveMCM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
+      // bs_container->addMCMRxCallback (std::bind(&receiveMCM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
+      bs_container->addCAMRxCallback (std::bind(&receiveCAM,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,std::placeholders::_5));
       bs_container->setupContainer(true,false,false,false,true,false);
+      bs_container->getCABasicService()->setDesiredSpeed(speed);
+      bs_container->getMCBasicService()->setForesee(true);
 
       // Store the container for this vehicle inside a local global BSMap, i.e., a structure (similar to a hash table) which allows you to easily
       // retrieve the right BSContainer given a vehicle ID
@@ -248,15 +387,15 @@ int main (int argc, char *argv[])
       lc_model[nodeID].setVehicleID (vehicleID);
       lc_model[nodeID].setTraciAPI(sumoClient);
       lc_model[nodeID].setNumberOfLanes();
-      lc_model[nodeID].setCurrentLCData(&lc_data_structure);
       lc_model[nodeID].setCoordinationAvoidanceRange(ca_range);
       lc_model[nodeID].setMCBasicService(bs_container->getMCBasicService());
       lc_model[nodeID].addMCMRxCallback ();
-      lc_model[nodeID].setStartTime(10);
-      std::string my_type = sumoClient->vehicle.getTypeID (vehicleID);
-      lc_model[nodeID].setTrajectoryPredictor(HORIZON_TIME, STEP_TIME, NEGOTIATION_TIME, DECELERATION_TIME, LC_TIME_MSEC, foresee::PredictionType::CONSTANT_SPEED);
-
-      lc_model[nodeID].WrapperFORESEEMobilityModel();
+      lc_model[nodeID].setStartTime(START_TIME);
+      lc_model[nodeID].setNegotiationTime(NEGOTIATION_TIME);
+      lc_model[nodeID].setVerbose(verbose_foresee);
+      lc_model[nodeID].setSeed(seed);
+      if (register_log) lc_model[nodeID].setRegisterLog();
+      lc_model[nodeID].WrapperFORESEEMobilityModel(use_foresee);
 
       // Start transmitting CAMs
       // We randomize the instant in time in which the CAM dissemination is going to start
@@ -273,7 +412,7 @@ int main (int argc, char *argv[])
 
   // Important: what you write here is called every time a node exits the simulation in SUMO
   // You can safely keep this function as it is, and ignore it
-  SHUTDOWN_FCN shutdownWifiNode = [] (Ptr<Node> exNode, std::string vehicleID)
+  SHUTDOWN_FCN shutdownWifiNode = [&] (Ptr<Node> exNode, std::string vehicleID)
     {
       /* Set position outside communication range */
       Ptr<ConstantPositionMobilityModel> mob = exNode->GetObject<ConstantPositionMobilityModel>();
@@ -284,6 +423,69 @@ int main (int argc, char *argv[])
       // We need to get the right Ptr<BSContainer> based on the station ID (not the nodeID used
       // as index for the nodeContainer), so we don't use "-1" to compute "intVehicleID" here
       unsigned long intVehicleID = std::stol(vehicleID.substr (3));
+      long nodeID = intVehicleID - 1;
+      if (register_log)
+      {
+        std::ofstream file;
+        file.open("coordinations_seed" + std::to_string(seed) + "_new.csv", std::ios::out | std::ios::app);
+        auto coordination_log = lc_model[nodeID].getCoordinationLog();
+        for (auto s = coordination_log.begin(); s != coordination_log.end(); ++s)
+        {
+          file << s->coordination_id                  << ","
+              << s->sim_time_ms                      << ","
+              << s->desired_speed_hv                 << ","
+              << s->desired_speed_rv                 << ","
+              << s->desired_speed_rvahead            << ","
+              << s->lane_speed_hv                    << ","
+              << s->lane_speed_target                << ","
+              << s->type_hv                          << ","
+              << s->type_rv                          << ","
+              << s->type_rvahead                     << ","
+              << s->type_rv1                         << ","
+              << s->type_rv2                         << ","
+              << s->type_rvahead1                    << ","
+              << s->type_rvahead2                    << ","
+              << s->gap_hv_rv                        << ","
+              << s->gap_hv_rvahead                   << ","
+              << s->gap_rv_rvahead                   << ","
+              << s->gap_rvahead_rvahead1             << ","
+              << s->gap_rvahead1_rvahead2            << ","
+              << s->gap_rv_rv1                       << ","
+              << s->gap_rv1_rv2                      << ","
+              << s->rel_desired_speed_hv_rv          << ","
+              << s->rel_desired_speed_hv_rvahead     << ","
+              << s->rel_desired_speed_rv_rvahead     << ","
+              << s->rel_speed_hv_rv                  << ","
+              << s->rel_speed_hv_rvahead             << ","
+              << s->rel_speed_rv_rvahead             << ","
+              << s->rel_speed_rvahead_rvahead1       << ","
+              << s->rel_speed_rvahead1_rvahead2      << ","
+              << s->rel_speed_rv_rv1                 << ","
+              << s->rel_speed_rv1_rv2                << ","
+              << s->rel_acc_hv_rv                    << ","
+              << s->rel_acc_hv_rvahead               << ","
+              << s->rel_acc_rv_rvahead               << ","
+              << s->rel_acc_rvahead_rvahead1         << ","
+              << s->rel_acc_rvahead1_rvahead2        << ","
+              << s->rel_acc_rv_rv1                   << ","
+              << s->rel_acc_rv1_rv2                  << ","
+              << s->dec_rv_requested                 << ","
+              << s->acc_rvahead_requested            << ","
+              << s->time_rv_requested                << ","
+              << s->time_rvahead_requested           << ","
+              << s->execution_success                << "\n";
+        }
+        file.close();
+      }
+      
+      lc_model[nodeID].deleteEvents();
+      lc_model.erase(nodeID);
+
+      if (verbose_foresee)
+      {
+        std::cout << "\n[VEHICLE ARRIVED]" << std::endl;
+        std::cout << "Veh" << intVehicleID << " at " << Simulator::Now().GetSeconds() << "s" << std::endl;
+      }
 
       Ptr<BSContainer> bsc = basicServices.get(intVehicleID);
       bsc->cleanup();
@@ -299,7 +501,15 @@ int main (int argc, char *argv[])
   // When the simulation is terminated, gather the most relevant metrics from the PRRsupervisor
   std::cout << "Run terminated..." << std::endl;
 
-  std::cout << "Average PRR: " << metSup->getAveragePRR_overall () << std::endl;
+  std::cout << "\n=== Final Metrics ===" << std::endl;
+  std::cout << "Average CBR (overall):       " << metSup->getAverageCBROverall() << std::endl;
+  std::cout << "Number of TX (overall):      " << metSup->getNumberTx_overall() << std::endl;
+  std::cout << "Number of RX (overall):      " << metSup->getNumberRx_overall() << std::endl;
+  std::cout << "Average PRR (overall):       " << metSup->getAveragePRR_overall() << std::endl;
+  std::cout << "Number of TX (MCM):          " << metSup->getNumberTx_messagetype(ns3::MetricSupervisor::messageType_mcm) << std::endl;
+  std::cout << "Number of RX (MCM):          " << metSup->getNumberRx_messagetype(ns3::MetricSupervisor::messageType_mcm) << std::endl;
+  std::cout << "=====================" << std::endl;
+  std::cout << "End" << std::endl;
 
   Simulator::Destroy ();
 
