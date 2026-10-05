@@ -63,10 +63,12 @@ namespace ns3 {
     // ETSI EN 302 636-4-1 [8.2.3] : At start-up all elements of egoPV should be set to 0
     m_egoPV = {};
 
-    m_RSU_epv_set=false;
+    m_RSU_epv_set = false;
     m_metric_supervisor_ptr = NULL;
 
     m_PRRsupervisor_beacons = true;
+
+    enableSecurity = false; // V2X security is disabled by default
   }
 
   void

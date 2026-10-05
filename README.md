@@ -12,10 +12,14 @@
 
 ns-3 modules to build and simulate ETSI-compliant VANET (V2X) applications using SUMO (v-1.6.0+) and ns-3 (ns-3-dev, version supporting the NR-V2X module by CTTC), with the possibility of easily switching stack and communication technology.
 
-It has been tested with SUMO v1.6.0, v1.7.0, v1.8.0, v1.12.0, v1.18.0 on Ubuntu 20.04 and 22.04.
-Back compatibility **is not** ensured with new versions of TraCI and Ubuntu 24.04 is **not** officially supported yet.
+Ubuntu has been selected and tested as the main Linux distro for VaN3Twin.
+Ubuntu's versions tested with VaN3Twin are: Ubuntu 20.04, Ubuntu 22.04, Ubuntu 24.04 (for the latter, see later how to properly configure ns-3 for it).
 
-**Contacts, developers, project coordination**: Marco MALINVERNO [marco.malinverno1@gmail.com], Francesco RAVIGLIONE [francescorav.es483@gmail.com], Carlos Mateo RISMA CARLETTI [carlosrisma@gmail.com], Diego GASCO [diego.gasco@polito.it], Roberto PEGURRI [roberto.pegurri@mail.polimi.it], Alessandro GENOVESE [alessandro.genovese@icloud.com], Alessandro GIACCAGLINI [alessandro.giaccaglini@gmail.com], Marco RAPELLI [rapelli.m@libero.it], Francesco LINSALATA [francesco.linsalata@polimi.it], Eugenio MORO [eugenio.moro@polimi.it], Claudio CASETTI [claudio.casetti@polito.it], Carla-Fabiana CHIASSERINI [carla.chiasserini@polito.it]
+It has been tested with SUMO v1.6.0, v1.7.0, v1.8.0, v1.12.0, v1.18.0.
+
+Back compatibility **is not** ensured with new versions of TraCI.
+
+**Contacts, developers, project coordination**: Marco MALINVERNO [marco.malinverno1@gmail.com], Francesco RAVIGLIONE [francescorav.es483@gmail.com], Carlos Mateo RISMA CARLETTI [carlosrisma@gmail.com], Diego GASCO [diego.gasco@polito.it, diego.gasco99@gmail.com], Roberto PEGURRI [roberto.pegurri@mail.polimi.it], Alessandro GENOVESE [alessandro.genovese@icloud.com], Alessandro GIACCAGLINI [alessandro.giaccaglini@gmail.com], Marco RAPELLI [rapelli.m@libero.it], Francesco LINSALATA [francesco.linsalata@polimi.it], Eugenio MORO [eugenio.moro@polimi.it], Claudio CASETTI [claudio.casetti@polito.it], Carla-Fabiana CHIASSERINI [carla.chiasserini@polito.it]
 
 This project is licensed under a GPL-2.0 License. Please see also the `LICENSE` file for more details.
 
@@ -30,8 +34,8 @@ VaN3Twin now integrates the whole ms-van3t framework, and much more, keeping the
 
 To build the project:
 * Install SUMO following the guide at [https://sumo.dlr.de/wiki/Downloads](https://sumo.dlr.de/wiki/Downloads)
-    * You can use 
-    
+    * You can use:
+
     	`sudo add-apt-repository ppa:sumo/stable`  
     	`sudo apt update`  
     	`sudo apt install sumo sumo-tools sumo-doc`  
@@ -62,7 +66,11 @@ or
 
 This script will download the proper version of ns-3-dev and install this framework. The folder `ns-3-dev` will remain linked to this GitHub repository (not to the vanilla ns-3-dev one), allowing you to more easily develop updates and possibile contributions to *VaN3Twin*.
     
-* Configure `ns3` to build the framework with `<ns3-folder>./ns3 configure --build-profile=optimized --enable-examples --enable-tests --disable-python (add here what you want to enable)"` - The usage of the optimized profile allows to speed up the simulation time. This command should be launched from inside the `ns-3-dev` folder.
+* Configure `ns3` to build the framework with `ulimit -n 4096 && <ns3-folder>./ns3 configure --build-profile=optimized --enable-examples --enable-tests --disable-python (add here what you want to enable)"` - The usage of the optimized profile allows to speed up the simulation time. This command should be launched from inside the `ns-3-dev` folder.
+
+* Suggested build profiles are `optimized` and `debug`. The first profile significantly speeds up the run time execution, while the second is more useful during the development phase.
+
+* **Important**: If you are compiling VaN3Twin on Ubuntu 24.04 LTS, you need to add `CXXFLAGS="-include cstdint"` to the configure command, as follows: `CXXFLAGS="-include cstdint" ./ns3 configure ...` 
 
 * **Important**: If you are compiling VaN3Twin on Ubuntu 22.04 LTS or later, you need to specify, when calling `./ns3 configure`, also the `--disable-werror` flag
 
@@ -156,7 +164,7 @@ Visual Studio Code can be easily installed with the [Microsoft Visual Studio Cod
 
 * Install the CMake Tools extension by Microsoft.
 
-* Install clangd extension by LLVM, and then, when required, install also the clangd server.
+* Install `clangd` extension by LLVM, and then, when required, install also the `clangd` server.
 
 * Go to the Command Palette (Ctrl+Shift+P) and select: > CMake: Open CMake Settings (JSON)
 
@@ -179,14 +187,15 @@ Visual Studio Code can be easily installed with the [Microsoft Visual Studio Cod
   ```
 * Save the settings.json
 * Go to the Command Palette (Ctrl+Shift+P) and select: > CMake: Delete Cache and Reconfigure
+* **Important**: you sometimes might need to run the above command to refresh the project, especially when you modify a `.h` file
 * In the `.vscode/` folder you can find three files: settings.json, task.json, and launch.json
-* To configure launch parameters, refer to `.vscode/settings.json`, particularly in the `cmake.debugConfig` section, where you can set the working directory and other debug configurations.
-* To build a specific target, go to the Command Palette (Ctrl+Shift+P) and select: > CMake: Build Target, then choose the desired target (e.g. v2i-areaSpeedAdvisor-80211p).
-* The selected target will be the default one for the next run/debug commands. To change it, repeat the previous step and select a different target.
-* You can also change the target by directly open the left sidebar, clicking on the CMake Projects tab, and selecting the desired target from the list of available targets.
-* To run/debug the selected target, you can use the standard Visual Studio Code debug options (e.g., F5 to start debugging, Ctrl+F5 to run without debugging), or the button in the toolbar.
-* If you want to run the simulation with display forwarding, in `.vscode/settings.json`, add to `cmake.debugConfig` the following line: `"env": {"DISPLAY": "yourdisplay", "LIBGL_ALWAYS_INDIRECT": "1"}`. Then in your Visual Studio Code terminal, before running the simulation, set the DISPLAY variable with the command: `export DISPLAY=yourdisplay` (this operation must be done for each run/debug launch).
-
+* To configure launch parameters, refer to `.vscode/settings.json`, particularly in the `cmake.debugConfig` section, where you can set the working directory and other debug configurations
+* To build a specific target, go to the Command Palette (Ctrl+Shift+P) and select: > CMake: Build Target, then choose the desired target (e.g. v2i-areaSpeedAdvisor-80211p)
+* The selected target will be the default one for the next run/debug commands. To change it, repeat the previous step and select a different target
+* You can also change the target by directly open the left sidebar, clicking on the CMake Projects tab, and selecting the desired target from the list of available targets
+* To run/debug the selected target, you can use the standard Visual Studio Code debug options (e.g., F5 to start debugging, Ctrl+F5 to run without debugging), or the button in the toolbar
+* If you want to run the simulation with display forwarding, in `.vscode/settings.json`, add to `cmake.debugConfig` the following line: `"env": {"DISPLAY": "yourdisplay", "LIBGL_ALWAYS_INDIRECT": "1"}`. Then in your Visual Studio Code terminal, before running the simulation, set the DISPLAY variable with the command: `export DISPLAY=yourdisplay` (this operation must be done for each run/debug launch)
+* **Important**: while using Visual Studio Code you might sometimes need to refresh `clangd` server (through Command Palette (Ctrl+Shift+P) and select: > clangd: Restart language server) 
 
 # VaN3Twin-CARLA extension
 
@@ -194,7 +203,7 @@ In addition to SUMO and GPS traces VaN3Twin supports the use of CARLA for mobili
 
 **System requirements**
 
-We highly recommend running VaN3Twin-CARLA on Ubuntu 20.04 (used for developing the framework) or Ubuntu 18.04, Ubuntu 22.04 is not officially supported by CARLA. If both CARLA and OpenCDA need to be installed we recommend at least 35GB of free space on your system. For smooth execution of simulation (especially if AI/ML models are leveraged for the perception simulation) we recommend using a GPU with at least 8GB of memory.
+We highly recommend running VaN3Twin-CARLA on Ubuntu 20.04 (used for developing the framework), Ubuntu 18.04, or Ubuntu 22.04, while Ubuntu 24.04 is not officially supported by CARLA. If both CARLA and OpenCDA need to be installed we recommend at least 35GB of free space on your system. For smooth execution of simulation (especially if AI/ML models are leveraged for the perception simulation) we recommend using a GPU with at least 8GB of memory.
 The version of CARLA supported by VaN3Twin-CARLA is CARLA 0.9.12.
 
 **Installing VaN3Twin-CARLA**

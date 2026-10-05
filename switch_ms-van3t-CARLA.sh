@@ -81,6 +81,32 @@ if [ "$mode" = "base" ]; then
 
 		echo "CARLA_HOME=$carla_dir" >> "$config_file"
 		echo "CARLA_0.9.12 installation completed."
+
+		cd "$ns_3_dir/CARLA_0.9.12/PythonAPI/carla/dist"
+
+		CARLA_WHL=$(ls carla-0.9.12-cp37-cp37m-manylinux_2_27_x86_64.whl 2>/dev/null)
+
+		if [ -f "$CARLA_WHL" ]; then
+		    echo "Installing CARLA Python API wheel..."
+		    pip install "$CARLA_WHL"
+		else
+		    echo "Error: CARLA wheel file not found."
+		    exit 1
+		fi
+
+		# Install PythonAPI example requirements
+		cd "$ns_3_dir/CARLA_0.9.12/PythonAPI/examples"
+
+		if [ -f "requirements.txt" ]; then
+		    echo "Installing CARLA PythonAPI example requirements..."
+		    pip install -r requirements.txt
+		else
+		    echo "Error: requirements.txt not found in PythonAPI/examples."
+		    exit 1
+		fi
+
+		cd "$ns_3_dir"
+
 	fi
 
 
@@ -96,7 +122,7 @@ if [ "$mode" = "base" ]; then
 		sudo add-apt-repository ppa:deadsnakes/ppa
 		sudo apt-get install -y python3.7 ffmpeg libsm6 libxext6 python3-pip python3.7-distutils python3-apt python3-dev protobuf-compiler libprotobuf-dev libgrpc++-dev libzmq5-dev libglfw3-dev python-dev libpython3.7-dev libpython3-dev libyaml-cpp-dev
 
-		git clone https://github.com/carlosrisma/OpenCDA.git
+		git clone https://github.com/DriveX-devs/OpenCDA.git
 		cd OpenCDA
 
 	    case $install_method in
@@ -107,7 +133,7 @@ if [ "$mode" = "base" ]; then
 	    				echo "Anaconda is already installed."
 					else
 					    echo "Installing Anaconda..."
-					    wget https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh -O anaconda.sh
+					    wget https://repo.anaconda.com/archive/Anaconda3-2025.12-Linux-x86_64.sh -O anaconda.sh
 					    bash anaconda.sh -b
 					    source ~/anaconda3/etc/profile.d/conda.sh
 					    rm anaconda.sh
@@ -129,6 +155,8 @@ if [ "$mode" = "base" ]; then
 
 					conda activate msvan3t_carla
 
+					conda install -y python=3.7
+
 					# Installing following packages one by one for reliability 
 					conda install cudatoolkit=11.1 -c pytorch -c conda-forge
 					conda install pytorch==1.8.0 -c pytorch -c conda-forge
@@ -148,7 +176,7 @@ if [ "$mode" = "base" ]; then
 
 					echo "OpenCDA_HOME=$ns_3_dir/OpenCDA" >> "$config_file"
 					echo "Python_Interpreter=$interpreter_path" >> "$config_file"
-					echo "OpenCDA installation completed."	
+					echo "OpenCDA installation completed."
 
 	                ;;
 	            pip)
@@ -208,14 +236,19 @@ if [ "$mode" = "base" ]; then
 	fi
 
 	python3.7 adapt_files.py CARLA
-fi 
 
+	# Re-configure
+	./ns3 configure --build-profile=optimized --enable-examples --enable-tests --disable-python --disable-werror
+fi
 
 if [ "$mode" = "CARLA" ]; then
 	read -p "Current mode is 'CARLA', do you wish to switch to base ms-van3t? (WARNING: CARLA-OpenCDA capabilities are disabled in this mode)."
 
 	# Switch back to 'base'
 	python3.7 adapt_files.py BASE
+
+	# Re-configure
+	./ns3 configure --build-profile=optimized --enable-examples --enable-tests --disable-python --disable-werror
 fi
 
 

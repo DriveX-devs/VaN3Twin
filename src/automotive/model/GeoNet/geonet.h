@@ -207,7 +207,7 @@ namespace ns3
       std::function<void(GNDataIndication_t,Address)> m_ReceiveCallback;
 
 
-      bool enableSecurity;
+      bool enableSecurity = false; //! Flag to enable V2X security (when set to true); by default security is disabled
       int discard_packet;
       VDP* m_vdp; //! Pointer to the VDP object
       VRUdp* m_vrudp; //! Pointer to the VRUdp object

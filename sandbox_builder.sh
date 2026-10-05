@@ -241,6 +241,39 @@ cp src/automotive/model/SignalInfo/LTE/lte-ue-phy.cc src/lte/model/
 cp src/automotive/model/SignalInfo/LTE/lte-ue-phy.h src/lte/model/
 cp src/automotive/model/SignalInfo/LTE/CMakeLists.txt src/lte/
 
+if ! command -v lsb_release >/dev/null 2>&1; then
+    echo "WARNING: lsb_release not installed. Try to install to detect Ubuntu's version."
+    if [ -x "$(command -v apt-get)" ]; then
+        sudo apt-get update && sudo apt-get install -y lsb-release
+    else
+        echo "Packet manager not found. Please install 'lsb-release' manually."
+        exit 1
+    fi
+fi
+
+VERSION=$(lsb_release -rs)
+if [ -z "$VERSION" ]; then
+    echo "ERROR: Impossible to identify Ubuntu version."
+    exit 1
+fi
+if [ "$VERSION" == "24.04" ]; then
+    echo "You are using Ubuntu 24.04 (Noble Numbat)."
+    find src/automotive -type f -name "asn_system.h" -exec sed -i 's/#define SIZE_MAX.*/#define SIZE_MAX __SIZE_MAX__/g' {} +
+    find src -type f -not -path "*/proto/*" -exec sed -i 's/\bTYPE_DOUBLE\b/TRACI_TYPE_DOUBLE/g' {} +
+    find src -type f -not -path "*/proto/*" -exec sed -i 's/\bTYPE_STRING\b/TRACI_TYPE_STRING/g' {} +
+    find src -type f -not -path "*/proto/*" -exec sed -i 's/\bTYPE_FLOAT\b/TRACI_TYPE_FLOAT/g' {} +
+    find src -type f -not -path "*/proto/*" -exec sed -i 's/\bTYPE_BOOL\b/TRACI_TYPE_BOOL/g' {} +
+	sed -i 's/#include <vector>/#include <vector>\n#include <cstdint>/' ./src/wifi/model/block-ack-type.h
+	sed -i 's/#include <vector>/#include <vector>\n#include <cstdint>/' ./src/network/utils/bit-serializer.h
+	sed -i 's/#include <vector>/#include <vector>\n#include <cstdint>/' ./src/network/utils/bit-deserializer.h
+elif [ "$VERSION" == "22.04" ]; then
+    echo "You are using Ubuntu 22.04 (Jammy Jellyfish)."
+elif [ "$VERSION" == "20.04" ]; then
+    echo "You are using Ubuntu 20.04 (Focal Fossa)."
+else
+    echo "ERROR: the version $VERSION is not supported by VaN3Twin, please use this tool with Ubuntu 20.04, Ubuntu 22.04, or Ubuntu 24.04"
+fi
+
 cd ..
 set +v
 

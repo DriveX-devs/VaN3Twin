@@ -133,10 +133,17 @@ def uncomment_sections(file_path, section_names):
     with open(file_path, 'w') as file:
         file.write(content)
 
-def uncomment_section_examples(file_path):
+def uncomment_section_examples(file_path, exclude_sections=None):
+    # exclude_sections: list of example NAMEs that must be left commented out
+    # (e.g. blocks intentionally disabled by comment_sections). Without this,
+    # every block containing ${libcarla} gets uncommented, which silently
+    # reverses comment_sections() when those blocks also reference ${libcarla}
+    exclude_sections = exclude_sections or []
+
     inside_block = False
     block_lines = []
     libcarla_found = False
+    excluded = False
 
     with open(file_path, 'r') as file:
         lines = file.readlines()
@@ -149,6 +156,7 @@ def uncomment_section_examples(file_path):
             inside_block = True
             block_lines = [line]  # Start capturing the block
             libcarla_found = False  # Reset libcarla_found flag
+            excluded = False  # Reset exclusion flag
 
         elif inside_block:
             block_lines.append(line)
@@ -157,19 +165,27 @@ def uncomment_section_examples(file_path):
             if '${libcarla}' in line:
                 libcarla_found = True
 
+            # Detect if this block's NAME is in the exclusion list.
+            # Strip any leading comment marker so it matches whether the
+            # block is currently commented or not
+            stripped = line.lstrip('# ').rstrip()
+            for section in exclude_sections:
+                if re.match(rf'NAME\s+{re.escape(section)}$', stripped):
+                    excluded = True
+
             # Detect the end of the build_lib_example block
             if ')' in line:
                 inside_block = False
 
-                # If ${libcarla} was found, uncomment the whole block
-                if libcarla_found:
+                # If ${libcarla} was found and the block is not excluded, uncomment the whole block
+                if libcarla_found and not excluded:
                     block_lines = [l.lstrip('# ') for l in block_lines]
 
                 # Add the block (either uncommented or left as is) to the final lines
                 new_lines.extend(block_lines)
 
         else:
-            # If we're not inside a block, add the line as-is
+            # If we are not inside a block, add the line as-is
             new_lines.append(line)
 
     # Write the modified content back to the file
@@ -244,13 +260,16 @@ def switch_to_carla():
     sections_to_comment = [
         'v2x-emulator',
         'v2v-80211p-gps-tc-example',
-        'v2v-80211p-gps-tc-dcc',
-        'v2v-simple-cam-exchange-80211p'
+        'v2v-80211p-gps-tc-dcc'
     ]
-    comment_sections(FILE2, sections_to_comment)
-    
 
-    uncomment_section_examples(FILE2)
+    # Uncomment ${libcarla} blocks first, skipping the ones we intend to
+    # disable, then comment out the disabled sections last. Order matters:
+    # uncomment_section_examples() would otherwise re-enable any disabled
+    # block that references ${libcarla}.
+    uncomment_section_examples(FILE2, exclude_sections=sections_to_comment)
+
+    comment_sections(FILE2, sections_to_comment)
 
     # prepend_header_if_absent(FILE, header_content)
 
@@ -302,15 +321,34 @@ def switch_to_base():
     remove_after_pattern(FILE, '${libcarla}')
     """
     
+    sections_to_comment = [
+        'v2x-emulator',
+        'v2v-80211p-gps-tc-example',
+        'v2v-80211p-gps-tc-dcc'
+    ]
+    
+    os.chdir('src/automotive/')
+
+    uncomment_sections(FILE2, sections_to_comment)
+
+    comment_section_examples(FILE2)
+
+    # delete_header_if_present(FILE, header_content)
+
+    remove_after_pattern(FILE, '${libcarla}')
+
+    os.chdir(ns_3_dir)
     subprocess.run(["rm", "-rf", "src/"])
-    subprocess.run(["cp", "-r", "src-backup/", "src/"])
+    subprocess.run(["mv", "src-backup/src", "src"])
     subprocess.run(["rm", "-rf", "src-backup/"])
+    
+    os.chdir('src/automotive/')
 
     if os.path.exists("aux-files/current-mode.txt"):
         os.remove("aux-files/current-mode.txt")
 
     with open("aux-files/current-mode.txt", 'w') as f:
-        f.write("BASE\n")
+        f.write("base\n")
 
     os.chdir(ns_3_dir)
     os.chdir("src/carla/proto/")
