@@ -582,32 +582,34 @@ void VRUBasicService::checkVamConditions(){
 
     // Clean the TIP map from old data
     double now_ms = Simulator::Now().GetMilliSeconds();
-    cleanTIPMap(now_ms);
-    searchFirstEightTIPs();
-    if (m_tip_array.size() > 0) {
-      data_tip += "[TIP] TIPs found in the TIP map that require a VAM to be sent:\n";
-      if (!condition_verified && !vamredmit_verified) {
-        if (!redundancy_mitigation && (m_N_GenVam_red == 0 || m_N_GenVam_red == m_N_GenVam_max_red)) {
-          if (m_T_next_dcc == -1 || now - lastVamGen >= m_T_next_dcc) {
-            m_N_GenVam_red = 0;
+    if (m_use_tip) {
+      cleanTIPMap(now_ms);
+      searchFirstEightTIPs();
+      if (m_tip_array.size() > 0) {
+        data_tip += "[TIP] TIPs found in the TIP map that require a VAM to be sent:\n";
+        if (!condition_verified && !vamredmit_verified) {
+          if (!redundancy_mitigation && (m_N_GenVam_red == 0 || m_N_GenVam_red == m_N_GenVam_max_red)) {
+            if (m_T_next_dcc == -1 || now - lastVamGen >= m_T_next_dcc) {
+              m_N_GenVam_red = 0;
 
-            m_trigg_cond = TIP_TRIGGER;
-            vam_error = generateAndEncodeVam();
-            if (vam_error == VAM_NO_ERROR) {
-              condition_verified = true;
-              m_tip_sent++;
-            } else {
-              std::cerr << "Cannot generate VAM. Error code: " << std::to_string(vam_error) << std::endl;
+              m_trigg_cond = TIP_TRIGGER;
+              vam_error = generateAndEncodeVam();
+              if (vam_error == VAM_NO_ERROR) {
+                condition_verified = true;
+                m_tip_sent++;
+              } else {
+                std::cerr << "Cannot generate VAM. Error code: " << std::to_string(vam_error) << std::endl;
+              }
             }
+          } else {
+            m_N_GenVam_red++;
+            vamredmit_verified = true;
           }
-        } else {
-          m_N_GenVam_red++;
-          vamredmit_verified = true;
         }
+      } else {
+        // Create the data for the log print
+        data_tip += "[TIP] No TIPs found in the TIP map that require a VAM to be sent\n";
       }
-    } else {
-      // Create the data for the log print
-      data_tip += "[TIP] No TIPs found in the TIP map that require a VAM to be sent\n";
     }
 
   /* 2)
@@ -652,7 +654,7 @@ void VRUBasicService::checkVamConditions(){
     m_event_vamCheckConditions = Simulator::Schedule (MilliSeconds(m_T_CheckVamGen_ms), &VRUBasicService::checkVamConditions, this);
 }
 
-void VRUBasicService::computeLongAcceleration(){
+void VRUBasicService::computeLongAcceleration() {
   m_long_acceleration = m_VRUdp->getLongAcceleration ();
 
   m_event_computeLongAcceleration = Simulator::Schedule (Seconds(m_computationT_acc_ms), &VRUBasicService::computeLongAcceleration, this);
@@ -669,8 +671,7 @@ bool VRUBasicService::checkVamRedundancyMitigation(){
   ped_heading += (ped_heading>180.0) ? -360.0 : (ped_heading<-180.0) ? 360.0 : 0.0;
 
   if(now-lastVamGen < m_N_GenVam_max_red*5000){
-      if (m_LDM != nullptr)
-        {
+      if (m_LDM != nullptr) {
           m_LDM->rangeSelect (4,ped_pos.lat,ped_pos.lon,selectedStations);
         }
 
@@ -705,8 +706,7 @@ VRUBasicService_error_t VRUBasicService::generateAndEncodeVam(){
   /* Collect data for mandatory containers */
   auto vam = asn1cpp::makeSeq(VAM);
 
-  if(bool(vam)==false)
-    {
+  if(bool(vam)==false) {
       return VAM_ALLOC_ERROR;
     }
 
@@ -743,16 +743,16 @@ VRUBasicService_error_t VRUBasicService::generateAndEncodeVam(){
   asn1cpp::setField(vam->vam.vamParameters.vruHighFrequencyContainer.speed.speedValue, vam_mandatory_data.speed.getValue ());
   asn1cpp::setField(vam->vam.vamParameters.vruHighFrequencyContainer.speed.speedConfidence, vam_mandatory_data.speed.getConfidence ());
   if(m_computationT_acc_ms > 0){
-      asn1cpp::setField(vam->vam.vamParameters.vruHighFrequencyContainer.longitudinalAcceleration.longitudinalAccelerationValue,
-                        m_long_acceleration.getValue ());
-      asn1cpp::setField(vam->vam.vamParameters.vruHighFrequencyContainer.longitudinalAcceleration.longitudinalAccelerationConfidence,
-                        m_long_acceleration.getConfidence ());
-    } else{
-      asn1cpp::setField(vam->vam.vamParameters.vruHighFrequencyContainer.longitudinalAcceleration.longitudinalAccelerationValue,
-                        vam_mandatory_data.longAcceleration.getValue ());
-      asn1cpp::setField(vam->vam.vamParameters.vruHighFrequencyContainer.longitudinalAcceleration.longitudinalAccelerationConfidence,
-                        vam_mandatory_data.longAcceleration.getConfidence ());
-    }
+    asn1cpp::setField(vam->vam.vamParameters.vruHighFrequencyContainer.longitudinalAcceleration.longitudinalAccelerationValue,
+                      m_long_acceleration.getValue ());
+    asn1cpp::setField(vam->vam.vamParameters.vruHighFrequencyContainer.longitudinalAcceleration.longitudinalAccelerationConfidence,
+                      m_long_acceleration.getConfidence ());
+  } else {
+    asn1cpp::setField(vam->vam.vamParameters.vruHighFrequencyContainer.longitudinalAcceleration.longitudinalAccelerationValue,
+                      vam_mandatory_data.longAcceleration.getValue ());
+    asn1cpp::setField(vam->vam.vamParameters.vruHighFrequencyContainer.longitudinalAcceleration.longitudinalAccelerationConfidence,
+                      vam_mandatory_data.longAcceleration.getConfidence ());
+  }
 
   /* Fill the lowFrequencyContainer */
   now = computeTimestampUInt64 ()/NANO_TO_MILLI;
@@ -806,8 +806,7 @@ VRUBasicService_error_t VRUBasicService::generateAndEncodeVam(){
   /* VAM encoding */
   std::string encode_result = asn1cpp::uper::encode(vam);
 
-  if(encode_result.size()<1)
-  {
+  if(encode_result.size()<1) {
     return VAM_ASN1_UPER_ENC_ERROR;
   }
 
@@ -881,16 +880,13 @@ uint64_t VRUBasicService::terminateDissemination(){
   return m_vam_sent;
 }
 
-int64_t VRUBasicService::computeTimestampUInt64()
-{
+int64_t VRUBasicService::computeTimestampUInt64() {
   int64_t int_tstamp=0;
 
-  if (!m_real_time)
-    {
+  if (!m_real_time) {
       int_tstamp=Simulator::Now ().GetNanoSeconds ();
     }
-  else
-    {
+  else {
       struct timespec tv;
 
       clock_gettime (CLOCK_MONOTONIC, &tv);
@@ -902,14 +898,17 @@ int64_t VRUBasicService::computeTimestampUInt64()
 }
 
 void VRUBasicService::addNewTIPToMap(uint64_t id, double time, double tip) {
-  if (m_tip_map.find(id) == m_tip_map.end()) {
-    // Set the first previous TIP to 0
-    m_tip_map[id] = std::make_tuple(time, tip, 0);
-  } else {
-    // Preserve the previous sent tip and update with the new tip
-    double previous_sent_tip = std::get<2>(m_tip_map[id]);
-    m_tip_map[id] = std::make_tuple(time, tip, previous_sent_tip);
+  if (m_use_tip) {
+    if (m_tip_map.find(id) == m_tip_map.end()) {
+      // Set the first previous TIP to 0
+      m_tip_map[id] = std::make_tuple(time, tip, 0);
+    } else {
+      // Preserve the previous sent tip and update with the new tip
+      double previous_sent_tip = std::get<2>(m_tip_map[id]);
+      m_tip_map[id] = std::make_tuple(time, tip, previous_sent_tip);
+    }
   }
+  
 }
 
 void VRUBasicService::updatePreviousSentTIPOnMap(uint64_t id, double previous_sent_tip) {
@@ -955,6 +954,7 @@ void VRUBasicService::cleanTIPMap(double time) {
 }
 
 void VRUBasicService::VRUreceivedNewMessageForTIP(BTPDataIndication_t dataIndication, bool veh) {
+  if (!m_use_tip) return;
   uint8_t *buffer;
   buffer=(uint8_t *)malloc((dataIndication.data->GetSize ())*sizeof(uint8_t));
   dataIndication.data->CopyData (buffer, dataIndication.data->GetSize ());
@@ -999,7 +999,7 @@ void VRUBasicService::VRUreceivedNewMessageForTIP(BTPDataIndication_t dataIndica
       vehdata.speed_ms =
           static_cast<double>(decoded_vam->vam.vamParameters.vruHighFrequencyContainer.speed.speedValue) / static_cast<double>(CENTI);
   }
- auto [ttc, stc] = compute_ttc_stc(vehdata);
+  auto [ttc, stc] = compute_ttc_stc(vehdata);
   if (ttc > 0 && stc > 0) {
     // If the TTC is below the configured threshold, and the STC is below the configured threshold, then we can trigger a VAM
     if (ttc < m_TTC_max && stc < m_STC_min) {

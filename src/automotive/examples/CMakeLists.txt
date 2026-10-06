@@ -122,6 +122,16 @@ build_lib_example(
 )
 
 build_lib_example(
+        NAME v2p-TIP-80211p
+        SOURCE_FILES v2p-TIP-80211p.cc
+        LIBRARIES_TO_LINK
+        ${libcarla}
+        ${libautomotive}
+        ${libwave}
+        ${libtraci}
+)
+
+build_lib_example(
         NAME v2v-simple-cam-exchange-80211p
         SOURCE_FILES v2v-simple-cam-exchange-80211p.cc
         LIBRARIES_TO_LINK

@@ -125,6 +125,7 @@ public:
     
     void VRUreceivedNewMessageForTIP(BTPDataIndication_t dataIndication, bool veh);
     std::tuple<double, double> compute_ttc_stc(vehicleData_t vehdata);
+    void setUseTIP() {m_use_tip = true;};
 
 
 private:
@@ -233,6 +234,7 @@ private:
     std::unordered_map<uint64_t, std::tuple<double, double, double>> m_tip_map;
     uint8_t m_tip_map_size = 0;
     std::vector<std::tuple<uint64_t, double>> m_tip_array;
+    bool m_use_tip = false;
 };
 
 }
