@@ -54,6 +54,8 @@ set(source_files
     model/mgt-headers.cc
     model/mpdu-aggregator.cc
     model/msdu-aggregator.cc
+    model/ngv/ngv-phy.cc
+    model/ngv/ngv-ppdu.cc
     model/nist-error-rate-model.cc
     model/non-ht/dsss-error-rate-model.cc
     model/non-ht/dsss-parameter-set.cc
@@ -193,6 +195,9 @@ set(header_files
     model/mgt-headers.h
     model/mpdu-aggregator.h
     model/msdu-aggregator.h
+    model/ngv/ngv-calibration.h
+    model/ngv/ngv-phy.h
+    model/ngv/ngv-ppdu.h
     model/nist-error-rate-model.h
     model/non-ht/dsss-error-rate-model.h
     model/non-ht/dsss-parameter-set.h

@@ -71,6 +71,7 @@ public:
   void updateTgoAfterDeltaUpdate();
   void updateTgoAfterTransmission();
   std::string getModality() {return m_modality;}
+  float getTonPpMs() const {return m_Ton_pp;}
   void setBitRate(long bitrate) {m_bitrate_bps = bitrate;}
   void setSendCallback(std::function<void(const QueuePacket&)> cb);
   void setCBRGCallback(std::function<void()> cb);

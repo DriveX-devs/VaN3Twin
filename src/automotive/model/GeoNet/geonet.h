@@ -4,10 +4,13 @@
 #include "ns3/MetricSupervisor.h"
 #include "ns3/security.h"
 #include <stdint.h>
+#include <functional>
 #include <string>
 #include <map>
 #include <set>
 #include <mutex>
+#include <tuple>
+#include <vector>
 #include "ns3/vdpTraci.h"
 #include "ns3/asn_utils.h"
 #include "ns3/address.h"
@@ -50,6 +53,14 @@ namespace ns3
         std::vector<std::tuple<int64_t , double>> CBR_R0_Hop;
         std::vector<std::tuple<int64_t , double>> CBR_R1_Hop;
       } LocationTableExtension;
+
+      typedef struct GlobalCbrAggregation {
+        double cbrG;
+        double cbrL1Hop;
+        double cbrL2Hop;
+        uint64_t r0SampleCount;
+        uint64_t r1SampleCount;
+      } GlobalCbrAggregation;
 
       typedef struct _LocTableEntry {
         /**
@@ -162,6 +173,13 @@ namespace ns3
       void attachSendFromDCCQueue();
 
       void attachGlobalCBRCheck();
+
+      static GlobalCbrAggregation ComputeGlobalCbrAggregation (
+          std::vector<LocationTableExtension*> cbrExtensions,
+          int64_t nowMs,
+          int64_t cbrValidityMs,
+          double cbrTarget,
+          double cbrL0HopPrev);
 
   private:
       void LocTE_timeout(GNAddress entry_address);

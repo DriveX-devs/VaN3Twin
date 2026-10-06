@@ -132,6 +132,16 @@ build_lib_example(
 )
 
 build_lib_example(
+        NAME v2v-simple-cam-exchange-80211bd
+        SOURCE_FILES v2v-simple-cam-exchange-80211bd.cc
+        LIBRARIES_TO_LINK
+        ${libcarla}
+        ${libautomotive}
+        ${libwave}
+        ${libtraci}
+)
+
+build_lib_example(
         NAME v2v-foresee-mcm-80211p
         SOURCE_FILES v2v-foresee-mcm-80211p.cc
         LIBRARIES_TO_LINK
@@ -149,6 +159,72 @@ build_lib_example(
         ${libautomotive}
         ${libwave}
         ${libtraci}
+)
+
+build_lib_example(
+        NAME v2v-congestion-80211bd
+        SOURCE_FILES v2v-congestion-80211bd.cc
+        LIBRARIES_TO_LINK
+        ${libcarla}
+        ${libautomotive}
+        ${libwave}
+        ${libtraci}
+)
+
+build_lib_example(
+        NAME v2v-marginal-snr-80211bd
+        SOURCE_FILES v2v-marginal-snr-80211bd.cc
+        LIBRARIES_TO_LINK
+        ${libautomotive}
+        ${libwave}
+)
+
+build_lib_example(
+        NAME v2v-nss2-comparison-80211bd
+        SOURCE_FILES v2v-nss2-comparison-80211bd.cc
+        LIBRARIES_TO_LINK
+        ${libautomotive}
+        ${libwave}
+)
+
+build_lib_example(
+        NAME v2v-runtime-fallback-80211bd
+        SOURCE_FILES v2v-runtime-fallback-80211bd.cc
+        LIBRARIES_TO_LINK
+        ${libautomotive}
+        ${libwave}
+)
+
+build_lib_example(
+        NAME v2v-link-quality-fallback-80211bd
+        SOURCE_FILES v2v-link-quality-fallback-80211bd.cc
+        LIBRARIES_TO_LINK
+        ${libautomotive}
+        ${libwave}
+)
+
+build_lib_example(
+        NAME v2v-observed-fallback-80211bd
+        SOURCE_FILES v2v-observed-fallback-80211bd.cc
+        LIBRARIES_TO_LINK
+        ${libautomotive}
+        ${libwave}
+)
+
+build_lib_example(
+        NAME v2v-trace-observed-fallback-80211bd
+        SOURCE_FILES v2v-trace-observed-fallback-80211bd.cc
+        LIBRARIES_TO_LINK
+        ${libautomotive}
+        ${libwave}
+)
+
+build_lib_example(
+        NAME v2v-rate-control-80211bd
+        SOURCE_FILES v2v-rate-control-80211bd.cc
+        LIBRARIES_TO_LINK
+        ${libautomotive}
+        ${libwave}
 )
 
 #build_lib_example(
@@ -183,6 +259,13 @@ build_lib_example(
 build_lib_example(
        NAME v2v-coexistence-80211p-nrv2x
        SOURCE_FILES v2v-coexistence-80211p-nrv2x.cc
+       LIBRARIES_TO_LINK
+       ${libautomotive}
+)
+
+build_lib_example(
+       NAME v2v-coexistence-80211bd-nrv2x
+       SOURCE_FILES v2v-coexistence-80211bd-nrv2x.cc
        LIBRARIES_TO_LINK
        ${libautomotive}
 )
