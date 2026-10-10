@@ -1001,12 +1001,12 @@ void VRUBasicService::VRUreceivedNewMessageForTIP(BTPDataIndication_t dataIndica
   }
   auto [ttc, stc] = compute_ttc_stc(vehdata);
   if (ttc > 0 && stc > 0) {
-    // If the TTC is below the configured threshold, and the STC is below the configured threshold, then we can trigger a VAM
+    // If the TTC is below the configured threshold (i.e., the two objects are quite close in time), and the STC is below the configured threshold (i.e., at TTC the two objects will be close in space), then we can trigger a VAM
     if (ttc < m_TTC_max && stc < m_STC_min) {
       std::string tip_modality = m_tip_modality;
       double tip = -1;
       if (tip_modality == "exp") {
-        tip = tip_exponential(ttc, m_STC_min, m_TTC_k);
+        tip = tip_exponential(ttc, m_TTC_min, m_TTC_k);
       } else if (tip_modality == "gaus") {
         tip = tip_gaussian(ttc, m_TTC_sigma);
       } else {
