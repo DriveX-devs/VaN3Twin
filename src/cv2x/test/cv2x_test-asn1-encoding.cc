@@ -1144,5 +1144,5 @@ cv2x_Asn1EncodingSuite::cv2x_Asn1EncodingSuite ()
   AddTestCase (new cv2x_MeasurementReportTestCase (), TestCase::QUICK);
 }
 
-cv2x_Asn1EncodingSuite asn1EncodingSuite;
+cv2x_Asn1EncodingSuite cv2x_asn1EncodingSuite;
 

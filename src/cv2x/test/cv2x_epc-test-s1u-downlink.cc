@@ -268,7 +268,7 @@ class cv2x_EpcS1uDlTestSuite : public TestSuite
 public:
   cv2x_EpcS1uDlTestSuite ();
   
-} g_epcS1uDlTestSuiteInstance;
+} g_cv2x_epcS1uDlTestSuiteInstance;
 
 cv2x_EpcS1uDlTestSuite::cv2x_EpcS1uDlTestSuite ()
   : TestSuite ("epc-s1u-downlink", SYSTEM)

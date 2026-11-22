@@ -515,7 +515,7 @@ class cv2x_EpcS1uUlTestSuite : public TestSuite
 public:
   cv2x_EpcS1uUlTestSuite ();
   
-} g_epcS1uUlTestSuiteInstance;
+} g_cv2x_epcS1uUlTestSuiteInstance;
 
 cv2x_EpcS1uUlTestSuite::cv2x_EpcS1uUlTestSuite ()
   : TestSuite ("epc-s1u-uplink", SYSTEM)

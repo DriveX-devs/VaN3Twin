@@ -167,7 +167,7 @@ cv2x_LtePhyErrorModelTestSuite::cv2x_LtePhyErrorModelTestSuite ()
 { 
 
   LogComponentEnable("cv2x_LtePhyErrorModel", LOG_LEVEL_ALL);
-  LogComponentEnable("TestNistPhyErrorModel", LOG_LEVEL_ALL);
+  LogComponentEnable("cv2x_TestNistPhyErrorModel", LOG_LEVEL_ALL);
 
   cv2x_HarqProcessInfoList_t harqInfoList;
 

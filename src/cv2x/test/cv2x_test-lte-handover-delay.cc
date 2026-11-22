@@ -47,7 +47,7 @@
 
 using namespace ns3;
 
-NS_LOG_COMPONENT_DEFINE("LteHandoverDelayTest");
+NS_LOG_COMPONENT_DEFINE("cv2x_LteHandoverDelayTest");
 
 /**
  * \ingroup lte-test
@@ -273,15 +273,15 @@ cv2x_LteHandoverDelayTestCase::EnbHandoverEndOkCallback (std::string context,
  * \brief Lte Handover Delay Test Suite
  */
 
-static class LteHandoverDelayTestSuite : public TestSuite
+static class cv2x_LteHandoverDelayTestSuite : public TestSuite
 {
 public:
-  LteHandoverDelayTestSuite ()
-      : TestSuite ("lte-handover-delay", TestSuite::SYSTEM)
+  cv2x_LteHandoverDelayTestSuite ()
+      : TestSuite ("cv2x-lte-handover-delay", TestSuite::SYSTEM)
   {
-    //LogComponentEnable ("LteHandoverDelayTest", LOG_PREFIX_TIME);
-    //LogComponentEnable ("LteHandoverDelayTest", LOG_DEBUG);
-    //LogComponentEnable ("LteHandoverDelayTest", LOG_INFO);
+    //LogComponentEnable ("cv2x_LteHandoverDelayTest", LOG_PREFIX_TIME);
+    //LogComponentEnable ("cv2x_LteHandoverDelayTest", LOG_DEBUG);
+    //LogComponentEnable ("cv2x_LteHandoverDelayTest", LOG_INFO);
 
     // HANDOVER DELAY TEST CASES WITH IDEAL RRC (THRESHOLD = 0.005 sec)
 
@@ -305,4 +305,4 @@ public:
                 Seconds (0.200)), TestCase::QUICK);
       }
   }
-} g_lteHandoverDelayTestSuite; ///< the test suite
+} g_cv2x_lteHandoverDelayTestSuite; ///< the test suite

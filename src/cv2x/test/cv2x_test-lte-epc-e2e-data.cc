@@ -379,7 +379,7 @@ class cv2x_LteEpcE2eDataTestSuite : public TestSuite
 public:
   cv2x_LteEpcE2eDataTestSuite ();
   
-} g_lteEpcE2eDataTestSuite; ///< the test suite
+} g_cv2x_lteEpcE2eDataTestSuite; ///< the test suite
 
 cv2x_LteEpcE2eDataTestSuite::cv2x_LteEpcE2eDataTestSuite ()
   : TestSuite ("lte-epc-e2e-data", SYSTEM)

@@ -198,7 +198,7 @@ class cv2x_LteRlcHeaderTestSuite : public TestSuite
 {
 public:
   cv2x_LteRlcHeaderTestSuite ();
-} staticLteRlcHeaderTestSuiteInstance ; ///< the test suite
+} staticCv2xLteRlcHeaderTestSuiteInstance ; ///< the test suite
 
 cv2x_LteRlcHeaderTestSuite::cv2x_LteRlcHeaderTestSuite ()
   : TestSuite ("lte-rlc-header", UNIT)
