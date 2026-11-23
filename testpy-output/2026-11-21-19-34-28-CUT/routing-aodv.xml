@@ -1,0 +1,55 @@
+<Test>
+  <Name>routing-aodv</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Neighbor</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>AODV TypeHeader</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>AODV RREQ</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>AODV RREP</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>AODV RREP-ACK</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>AODV RERR</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>QueueEntry</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Rqueue</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>RtableEntry</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Rtable</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

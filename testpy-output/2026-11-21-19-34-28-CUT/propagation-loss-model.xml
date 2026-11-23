@@ -1,0 +1,30 @@
+<Test>
+  <Name>propagation-loss-model</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Check to see that the ns-3 Friis propagation loss model provides correct received power</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Check to see that the ns-3 TwoRayGround propagation loss model provides correct received power</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Check to see that the ns-3 Log Distance propagation loss model provides correct received power</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test MatrixPropagationLossModel</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test RangePropagationLossModel</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

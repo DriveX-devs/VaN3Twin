@@ -1,0 +1,25 @@
+<Test>
+  <Name>lr-wpan-ack</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Test the 802.15.4 ACK handling</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test the 802.15.4 ACK handling</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test the 802.15.4 ACK handling</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test the 802.15.4 ACK handling</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

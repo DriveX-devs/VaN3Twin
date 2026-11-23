@@ -1,0 +1,25 @@
+<Test>
+  <Name>mobility</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Test behavior when LazyNotify is false</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test behavior when LazyNotify is true</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test behavior of Waypoint InitialPositionIsWaypoint</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test behavior using MobilityHelper and PositionAllocator</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

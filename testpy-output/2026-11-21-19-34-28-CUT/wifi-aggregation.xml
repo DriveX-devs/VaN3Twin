@@ -1,0 +1,25 @@
+<Test>
+  <Name>wifi-aggregation</Name>
+  <Result>PASS</Result>
+  <Time real="0.030" user="0.030" system="0.000"/>
+  <Test>
+    <Name>Check the correctness of MPDU aggregation operations</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Check the correctness of two-level aggregation operations</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Check the correctness of 802.11ax aggregation operations</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test case to check that the Wifi Mac forwards up the same packets received at sender side.</Name>
+    <Result>PASS</Result>
+    <Time real="0.020" user="0.030" system="0.000"/>
+  </Test>
+</Test>

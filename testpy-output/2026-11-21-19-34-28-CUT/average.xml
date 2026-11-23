@@ -1,0 +1,20 @@
+<Test>
+  <Name>average</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Average Object Test using One Integer</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Average Object Test using Five Integers</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Average Object Test using Five Double Values</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

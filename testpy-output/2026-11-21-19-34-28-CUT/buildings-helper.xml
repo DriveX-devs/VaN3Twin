@@ -1,0 +1,85 @@
+<Test>
+  <Name>buildings-helper</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.000" system="0.000"/>
+  <Test>
+    <Name>pos=1.5:1.5:0.5, bid=0, rx=1, ry=1, fn=1</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=1.5:0.5:0.5, outdoor</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=1.5:2.5:0.5, outdoor</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=1.5:1.5:5, outdoor</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=2.5:1.6:3.5, bid=0, rx=1, ry=1, fn=1</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=0.9999:1.5:1.5, outdoor</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=3.0001:1.5:2.5, outdoor</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=1.001:1.001:-0.01, outdoor</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=1.5:1.5:4.001, outdoor</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=-0.7:-1.1:1.2, bid=1, rx=1, ry=2, fn=3</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=0.2:0.3:0.2, bid=1, rx=3, ry=5, fn=1</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=0.6:-1.75:1.5, outdoor</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=-1.01:0.3:1.99, outdoor</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=-0.8:0.7:0.01, outdoor</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=0.2:0.3:-0.2, outdoor</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>pos=0.2:0.3:2.001, outdoor</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

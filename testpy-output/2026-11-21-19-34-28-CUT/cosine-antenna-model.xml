@@ -1,0 +1,390 @@
+<Test>
+  <Name>cosine-antenna-model</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>theta=1.5708 , phi=0, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.523599, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.523599, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.5708, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.5708, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.74533, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.61799, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-3.14159, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.74533, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.61799, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-3.14159, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.0472, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.5708, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.523599, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.523599, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.61799, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.79253, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.61799, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.0944, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.698132, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.5708, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.0944, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.61799, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.74533, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.79253, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.567773, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.61497, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.523599, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.0472, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.5708, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.523599, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.61799, beamdwidth=150deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.35619, beamdwidth=150deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.309, beamdwidth=150deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.48475, beamdwidth=150deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.437554, beamdwidth=150deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.0929039, beamdwidth=150deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.954294, beamdwidth=150deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.523599, beamdwidth=150deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.349066, beamdwidth=150deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0, beamdwidth=360deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-3.14159, beamdwidth=360deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-3.14159, beamdwidth=360deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=0 , phi=0, beamdwidth=360deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=3.14159 , phi=0, beamdwidth=360deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0, beamdwidth=60deg, orientation=0, maxGain=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.523599, beamdwidth=60deg, orientation=0, maxGain=22 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.523599, beamdwidth=60deg, orientation=0, maxGain=-4 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.5708, beamdwidth=60deg, orientation=0, maxGain=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.5708, beamdwidth=60deg, orientation=0, maxGain=-20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.74533, beamdwidth=60deg, orientation=0, maxGain=40 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.61799, beamdwidth=100deg, orientation=-150, maxGain=2 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.74533, beamdwidth=100deg, orientation=-150, maxGain=4 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.79253, beamdwidth=100deg, orientation=-150, maxGain=-1 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.0472 , phi=0, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.0472 , phi=0.523599, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.0472 , phi=-0.523599, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.0472 , phi=-1.5708, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.0472 , phi=-3.14159, beamdwidth=60deg, orientation=0, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=2.0944 , phi=1.0472, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=2.0944 , phi=1.5708, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=2.0944 , phi=0.523599, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=2.0944 , phi=-2.0944, beamdwidth=60deg, orientation=60, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=2.44346 , phi=-2.61799, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=2.44346 , phi=-1.74533, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=2.44346 , phi=2.79253, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=2.44346 , phi=-0.523599, beamdwidth=100deg, orientation=-150, maxGain=0 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.0472 , phi=0, beamdwidth=60deg, orientation=0, maxGain=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.0472 , phi=0.523599, beamdwidth=60deg, orientation=0, maxGain=22 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.0472 , phi=-0.523599, beamdwidth=60deg, orientation=0, maxGain=-4 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.0472 , phi=-1.5708, beamdwidth=60deg, orientation=0, maxGain=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.0472 , phi=1.5708, beamdwidth=60deg, orientation=0, maxGain=-20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.0472 , phi=1.74533, beamdwidth=60deg, orientation=0, maxGain=40 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=0.698132 , phi=-2.61799, beamdwidth=100deg, orientation=-150, maxGain=2 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=0.698132 , phi=-1.74533, beamdwidth=100deg, orientation=-150, maxGain=4 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=0.698132 , phi=2.79253, beamdwidth=100deg, orientation=-150, maxGain=-1 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

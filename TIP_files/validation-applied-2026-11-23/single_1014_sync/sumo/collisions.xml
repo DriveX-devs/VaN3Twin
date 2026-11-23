@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-11-23T11:30:27.114749+01:00 by Eclipse SUMO sumo 1.28.0
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="src/automotive/examples/sumo_files_v2p_tip/v2p_map_t2c.net.xml"/>
+        <route-files value="src/automotive/examples/sumo_files_v2p_tip/pedestrians.rou.xml,src/automotive/examples/sumo_files_v2p_tip/vehicles.rou.xml"/>
+    </input>
+
+    <output>
+        <fcd-output value="/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/validation-applied-2026-11-23/single_1014_sync/sumo/fcd.xml"/>
+        <tripinfo-output value="/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/validation-applied-2026-11-23/single_1014_sync/sumo/tripinfo.xml"/>
+        <collision-output value="/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/validation-applied-2026-11-23/single_1014_sync/sumo/collisions.xml"/>
+    </output>
+
+    <time>
+        <begin value="0"/>
+        <end value="60.000000"/>
+        <step-length value="0.010000"/>
+    </time>
+
+    <processing>
+        <intermodal-collision.action value="warn"/>
+        <collision.check-junctions value="true"/>
+        <collision.mingap-factor value="0"/>
+    </processing>
+
+    <report>
+        <no-warnings value="true"/>
+        <error-log value="/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/validation-applied-2026-11-23/single_1014_sync/sumo/errorLog.log"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <fcd_device>
+        <device.fcd.period value="0.1"/>
+    </fcd_device>
+
+    <traci_server>
+        <remote-port value="3400"/>
+    </traci_server>
+
+    <random_number>
+        <seed value="10"/>
+    </random_number>
+
+    <gui_only>
+        <quit-on-end value="true"/>
+        <start value="true"/>
+    </gui_only>
+
+</sumoConfiguration>
+-->
+
+<collisions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/collision_file.xsd">
+</collisions>

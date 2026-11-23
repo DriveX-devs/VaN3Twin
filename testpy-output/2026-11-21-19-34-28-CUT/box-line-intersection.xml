@@ -1,0 +1,25 @@
+<Test>
+  <Name>box-line-intersection</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Box line intersection test : checking pos1 index 3 and pos2 index 6 intersection with the box (890, 990, 840, 870, 0, 6). The expected intersection flag = 0  </Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Box line intersection test : checking pos1 index 1 and pos2 index 2 intersection with the box (890, 990, 840, 870, 0, 6). The expected intersection flag = 1  </Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Box line intersection test : checking pos1 index 3 and pos2 index 1 intersection with the box (890, 990, 840, 870, 0, 6). The expected intersection flag = 1  </Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Box line intersection test : checking pos1 index 4 and pos2 index 5 intersection with the box (890, 990, 840, 870, 0, 6). The expected intersection flag = 1  </Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

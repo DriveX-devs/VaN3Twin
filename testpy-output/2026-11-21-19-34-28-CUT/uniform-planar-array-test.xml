@@ -1,0 +1,85 @@
+<Test>
+  <Name>uniform-planar-array-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.000" system="0.000"/>
+  <Test>
+    <Name>UPA=1x1, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=0 deg, tilting=0 deg, element=ns3::IsotropicAntennaModel, direction=(0, 1.5708) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=1x1, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=0 deg, tilting=0 deg, element=ns3::ThreeGppAntennaModel, direction=(0, 1.5708) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=1x1, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=90 deg, tilting=0 deg, element=ns3::ThreeGppAntennaModel, direction=(1.5708, 1.5708) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=1x1, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=-90 deg, tilting=0 deg, element=ns3::ThreeGppAntennaModel, direction=(-1.5708, 1.5708) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=1x1, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=180 deg, tilting=0 deg, element=ns3::ThreeGppAntennaModel, direction=(-3.14159, 1.5708) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=1x1, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=-180 deg, tilting=0 deg, element=ns3::ThreeGppAntennaModel, direction=(-3.14159, 1.5708) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=1x1, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=0 deg, tilting=45 deg, element=ns3::ThreeGppAntennaModel, direction=(0, 2.35619) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=1x1, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=0 deg, tilting=-45 deg, element=ns3::ThreeGppAntennaModel, direction=(0, 0.785398) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=1x1, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=0 deg, tilting=90 deg, element=ns3::ThreeGppAntennaModel, direction=(0, 3.14159) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=1x1, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=0 deg, tilting=-90 deg, element=ns3::ThreeGppAntennaModel, direction=(0, 0) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=10x1, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=0 deg, tilting=0 deg, element=ns3::ThreeGppAntennaModel, direction=(0, 1.5708) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=10x1, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=90 deg, tilting=0 deg, element=ns3::ThreeGppAntennaModel, direction=(1.5708, 1.5708) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=10x1, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=0 deg, tilting=45 deg, element=ns3::ThreeGppAntennaModel, direction=(0, 2.35619) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=10x10, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=0 deg, tilting=0 deg, element=ns3::ThreeGppAntennaModel, direction=(0, 1.5708) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=10x10, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=90 deg, tilting=0 deg, element=ns3::ThreeGppAntennaModel, direction=(1.5708, 1.5708) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>UPA=10x10, row spacing=0.5*lambda, col spacing=0.5*lambda, bearing=0 deg, tilting=45 deg, element=ns3::ThreeGppAntennaModel, direction=(0, 2.35619) rad</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

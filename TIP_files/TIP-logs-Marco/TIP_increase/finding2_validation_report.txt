@@ -1,0 +1,668 @@
+TIP reporting-history correction and DCC validation
+
+The accepted patch is installed in five production files. Four fresh 100-second scenarios completed.
+TIP_current remains unchanged. The saved baseline source matches the pre-task source exactly.
+
+Corrected behavior:
+1. Every VAM construction refreshes the eligible TIP selection, including VAMs triggered by motion checks
+   that occur before the TIP-trigger branch. Previously these VAMs could use an older cached selection.
+2. The last-reported probability is the encoded integer divided by 50, rather than the full-precision estimate.
+   Example: estimate 0.409 is encoded as 20 and recorded as 0.40. The current estimate remains 0.409.
+3. A packet-specific callback crosses BTP and GeoNetworking, is copied through DCC queues, and runs only
+   after Socket::Send succeeds. Queueing, queue drops, expiry and encoding/socket errors do not commit history.
+4. Deferred callbacks retain the TIP values and trigger of their own packet. A newer prediction cannot be
+   mistakenly recorded as the payload of an older queued VAM. Weak session tokens prevent use after termination
+   or service destruction. An expired map entry can retain confirmed history with current TIP unavailable (-1).
+5. Generation timestamps and motion snapshots initialize pacing after successful encoding, independently of
+   later transmission. Transmission counters, trigger counters, CSV metrics and transmission time advance only
+   on confirmation. This also initializes the previously uninitialized TIP counter.
+6. GeoNetworking returns the identity of the dequeued packet. The new request is queued only after that send
+   and DCC timing updates, preventing synchronous enqueue/checkQueue reentry from sending twice in one gate.
+   DCC last-transmit/AoI/adaptive updates follow successful sends, using the selected packet and updated airtime.
+7. MetricSupervisor accounting occurs once in each shared SHB/GBC sender, after successful socket submission.
+   The duplicate queue-wrapper accounting and its leaked allocation are removed.
+
+Changed production files:
+- src/automotive/model/Facilities/VRUBasicService.cc: fresh selection, immutable encoded snapshots, guarded
+  completion handling, separated generation pacing and confirmed transmission accounting/history.
+- src/automotive/model/Facilities/VRUBasicService.h: initialized TIP counter, weak-session token ownership,
+  and an actual-transmission timestamp for CSV intervals.
+- src/automotive/model/BTP/btpdatarequest.h: optional local onTxSuccess callback in BTP and GN request structures.
+- src/automotive/model/BTP/btp.cc: forwards the callback without changing the encoded packet format.
+- src/automotive/model/GeoNet/geonet.cc: packet-specific confirmation in shared senders, correct dequeued
+  message identity, queue insertion order and DCC timing/accounting.
+
+Validation:
+The v2p-TIP-80211p target rebuilt successfully. Existing ASN_DEBUG unused-function warnings remain.
+The focused DCC harness uses real 802.11p packet sockets, the real DCC queues and native ASN.1 decoding.
+It sets gate timings directly for deterministic coverage; it does not replace queue/sender implementations.
+Both reactive and adaptive DCC cover snapshots, disabled/full queues, expiry, termination, service destruction,
+expired current predictions, initial-generation pacing, packet substitution/gate spacing and queued GBC sends.
+Immediate sends, fresh motion-triggered payloads, encoding failure and socket failure are also checked.
+DCC currently increments dropped-full only when queuing is disabled, not on an already full queue. The full
+queue check therefore inspects retained queue occupancy and which packet is actually transmitted.
+These focused checks are separate from the four standard scenario runs, which retain their original configuration.
+tip_dcc_checks: 69/69 checks passed; failed=0.
+finding4_boundary: 288/288 checks passed; failed=0.
+heading_boundary: 30/30 checks passed; failed=0.
+stc_boundary: 36/36 checks passed; failed=0.
+
+Total: 423/423 checks passed.
+Expected failure injection: a deliberately closed packet socket logs
+'Error! GeoNetworking could not send any packet.' The check verifies that history/counts remain unchanged.
+The invalid latitude fixture deliberately causes ASN.1 encoding failure and verifies unchanged history.
+All four full simulations exit successfully, reach 99.9 seconds in the mobility trace, and retain the same
+mobility and collision records as TIP_current. Each case includes all 25 VRUs and 70,000 CBR records.
+Recorded simulator: Eclipse SUMO sumo 1.26.0
+Changed summary metrics: 28/44; unchanged: 16/44.
+Identical parsed raw CSV datasets: 3/15.
+The no-TIP raw CSV results are identical.
+
+Scenario | Triggered VAMs: baseline -> new | TIP-triggered VAMs: baseline -> new
+No TIP | 653 -> 653 | 0 -> 0
+TIP on ped1003 | 659 -> 657 | 7 -> 6
+TIP on ped1014 | 669 -> 667 | 20 -> 18
+TIP on all VRUs | 787 -> 775 | 166 -> 152
+
+Counts above exclude the initial dissemination-start VAM from each of the 25 pedestrians.
+Maps include initial VAMs. Numerical changes reflect the combined reporting-reference and selection fixes;
+these runs do not isolate the individual contribution of each subchange.
+
+Native trace validation: all captured VAMs decode using the project ASN.1 definitions; integer TIP values
+are in [0,50] and each list contains at most eight entries. Unique generated-message counts match VAM CSVs.
+0_no_TIP: generated 678 -> 678; with TIP 0 -> 0; changed TIP fields on common identities=0; removed/added identities=0/0.
+1_TIP_ped1003: generated 684 -> 682; with TIP 7 -> 7; changed TIP fields on common identities=1; removed/added identities=10/8.
+2_TIP_ped1014: generated 694 -> 692; with TIP 21 -> 20; changed TIP fields on common identities=3; removed/added identities=8/6.
+3_TIP_all_VRUs: generated 812 -> 800; with TIP 179 -> 168; changed TIP fields on common identities=25; removed/added identities=66/54.
+Raw packet equality also depends on existing wall-clock GeoNetworking timestamps. The semantic comparison
+covers TIP fields and generation identity; it is not a complete comparison of every payload field.
+
+Scope and interpretation:
+Confirmation means successful socket submission, not guaranteed PHY transmission or reception by a peer.
+Existing DCC packet lifetimes and queue cancellation policy remain in force. A queued packet may still be
+sent after the corresponding prediction changes; history then records the values that packet actually carries.
+Callbacks from a terminated session do not update its service history or counters.
+The existing one-sided DELTA_TIP comparison is unchanged. This patch does not claim complete ETSI compliance.
+The accepted STC>=0 boundary, heading handling, prediction invalidation and ideal-positioning model remain.
+
+All 777 baseline files retain their original hashes. Exactly five production files changed in this task.
+The five simulation/plot scripts were copied byte-for-byte. The complete task diff is finding2.patch.
+The full accumulated local diff relative to Git HEAD is source-changes.patch.
+Validated figures: 49. All requested pedestrian maps and comparison panel positions are retained.
+No synchronization or simulator-version wording appears in figure titles.
+
+Artifacts:
+comparison/TIP_current_comparison.png: visual comparison of VAM counts, TIP counts, mean CBR and PRR.
+comparison/TIP_current_metrics_comparison.csv: all 44 summary values and numerical changes.
+comparison/TIP_current_raw_csv_comparison.csv: all 15 raw CSV pairs, row counts and parsed equality.
+comparison/TIP_current_per_station_VAM_comparison.csv: every pedestrian, including initial/triggered counts.
+comparison/TIP_current_native_TIP_comparison.csv: native decoded packet TIP comparisons.
+comparison/TIP_current_trace_comparison.csv/json: trace hashes and semantic comparison details.
+comparison/TIP_current_comparison.json: complete validation/comparison metadata.
+validation/test-summary.json: all focused checks; associated test sources and build commands are saved.
+run_metadata.json: exact commands/settings, source hash, run durations, mobility hashes and collisions.
+
+Results: /home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/TIP-logs-Marco/TIP_finding2_addressed
+Baseline: /home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/TIP-logs-Marco/TIP_current
+
+Regenerate plots: /home/marco/anaconda3/bin/python /home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/TIP-logs-Marco/TIP_finding2_addressed/scripts/plot_all.py
+Compare traces: /usr/bin/python3 /home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/TIP-logs-Marco/TIP_finding2_addressed/scripts/compare_traces.py
+Regenerate report: /home/marco/anaconda3/bin/python /home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/TIP-logs-Marco/TIP_finding2_addressed/scripts/compare_current.py
+
+Complete source differences introduced by this task:
+--- a/src/automotive/model/BTP/btpdatarequest.h
++++ b/src/automotive/model/BTP/btpdatarequest.h
+@@ -1,6 +1,7 @@
+ #ifndef BTPDATAREQUEST_H
+ #define BTPDATAREQUEST_H
+ #include <stdint.h>
++#include <functional>
+ #include "ns3/packet.h"
+ #include "ns3/gn-address.h"
+ #include "ns3/longpositionvector.h"
+@@ -75,6 +76,9 @@
+     uint32_t lenght; // Payload size
+     Ptr<Packet> data; // Payload
+ 
++    // Local notification for this specific packet; never serialized.
++    std::function<void()> onTxSuccess{};
++
+   } BTPDataRequest_t;
+ 
+   typedef struct _dataIndication {
+@@ -123,6 +127,9 @@
+     uint32_t lenght; // Payload size
+     Ptr<Packet> data; // Payload
+ 
++    // Copied with the request through DCC queues.
++    std::function<void()> onTxSuccess{};
++
+     int16_t _messagePort; //BTP port for PRR supervisor (used for internal computation, not specified in the standard)
+ 
+     bool operator <( const _gndataRequest &rhs ) const
+--- a/src/automotive/model/BTP/btp.cc
++++ b/src/automotive/model/BTP/btp.cc
+@@ -95,6 +95,7 @@
+     GnDataRequest.GNTraClass = dataRequest.GNTraClass;
+     GnDataRequest.data = dataRequest.data;
+     GnDataRequest.lenght = dataRequest.lenght + 4;
++    GnDataRequest.onTxSuccess = dataRequest.onTxSuccess;
+ 
+     std::tuple<GNDataConfirm_t, MessageId_t> status = m_geonet->sendGN(GnDataRequest, priority, message_id);
+     dataConfirm = std::get<0>(status);
+--- a/src/automotive/model/GeoNet/geonet.cc
++++ b/src/automotive/model/GeoNet/geonet.cc
+@@ -333,54 +333,33 @@
+     longPV.heading = (uint16_t) (m_egoPV.H_EPV*10);// [degrees] to [0.1 degrees]
+ 
+     float now = static_cast<float>(Simulator::Now().GetMilliSeconds());
+-    bool gate_open = false;
+     QueuePacket pkt = {now, priority, basicHeader, commonHeader, longPV, dataRequest, message_id};
+-    bool check_message_id = (message_id == MessageId_cam || message_id == MessageId_vam || message_id == MessageId_cpm);
+-    if (m_dcc != nullptr && check_message_id)
+-      {
+-        gate_open = m_dcc->checkGateOpen(now);
+-        if (gate_open == false)
++    const bool dcc_managed = m_dcc != nullptr &&
++        (message_id == MessageId_cam || message_id == MessageId_vam || message_id == MessageId_cpm);
++    bool enqueue_after_send = false;
++    int transmitted_priority = priority;
++    float aoi = 0.0;
++    if (dcc_managed)
++      {
++        if (!m_dcc->checkGateOpen(now))
+           {
+-            // Gate is closed
+             m_dcc->enqueue(priority, pkt);
+-            // std::cout << "[ENQUEUE]" << std::endl;
+-            return std::tuple<GNDataConfirm_t, MessageId_t>(BLOCKED_BY_GK, message_id);
++            return {BLOCKED_BY_GK, message_id};
+           }
+-        else
++        auto value = m_dcc->dequeue(priority);
++        if (std::get<0>(value))
+           {
+-            // Gate is opened
+-            std::tuple<bool, QueuePacket> value = m_dcc->dequeue(priority);
+-            float aoi;
+-            if (std::get<0>(value) == true)
+-              {
+-                // Found a packet in queue with higher priority
+-                m_dcc->enqueue(priority, pkt);
+-                QueuePacket pkt_to_send = std::get<1>(value);
+-                basicHeader = pkt_to_send.bh;
+-                commonHeader = pkt_to_send.ch;
+-                longPV = pkt_to_send.long_PV;
+-                dataRequest = pkt_to_send.dataRequest;
+-                message_id = pkt.message_id;
+-                aoi = now - pkt_to_send.time;
+-                // std::cout << "[DEQUEUE]" << std::endl;
+-              }
+-            else
+-              {
+-                // std::cout << "[ORIGINAL]" << std::endl;
+-                aoi = 0;
+-              }
+-            m_dcc->updateAoI (priority, aoi);
+-            m_dcc->setLastTx(now);
++            const QueuePacket& pkt_to_send = std::get<1>(value);
++            basicHeader = pkt_to_send.bh;
++            commonHeader = pkt_to_send.ch;
++            longPV = pkt_to_send.long_PV;
++            dataRequest = pkt_to_send.dataRequest;
++            message_id = pkt_to_send.message_id;
++            transmitted_priority = pkt_to_send.priority;
++            aoi = now - pkt_to_send.time;
++            // enqueue() may synchronously drain a queue. Defer it until this send finishes.
++            enqueue_after_send = true;
+           }
+-      }
+-    else
+-      {
+-        // std::cout << "[ORIGINAL NO DCC]" << std::endl;
+-      }
+-
+-    if (m_dcc != nullptr && m_dcc->getModality() == "adaptive")
+-      {
+-        m_dcc->updateTgoAfterTransmission();
+       }
+ 
+     switch(dataRequest.GNType)
+@@ -398,6 +377,15 @@
+       NS_LOG_ERROR("GeoNet packet not supported");
+       dataConfirm = UNSPECIFIED_ERROR;
+     }
++    if (dcc_managed && dataConfirm == ACCEPTED)
++      {
++        m_dcc->setLastTx(now);
++        m_dcc->updateAoI(transmitted_priority, aoi);
++        if (m_dcc->getModality() == "adaptive")
++          m_dcc->updateTgoAfterTransmission();
++      }
++    if (enqueue_after_send)
++      m_dcc->enqueue(priority, pkt);
+     return {dataConfirm, message_id};
+   }
+ 
+@@ -414,20 +402,7 @@
+       GNDataConfirm_t dataConfirm = GNDataConfirm_t::CONFIRM_UNKNOWN;
+ 
+       float now = static_cast<float>(Simulator::Now().GetMilliSeconds());
+-      m_dcc->setLastTx(now);
+-      float aoi = now - pkt.time;
+-      std::string use_dcc;
+-      if (m_dcc != nullptr) use_dcc = m_dcc->getModality();
+-      else use_dcc = "";
+-
+-      if (use_dcc == "adaptive")
+-        {
+-          m_dcc->updateTgoAfterTransmission();
+-        }
+-
+-      m_dcc->updateAoI(pkt.priority, aoi);
+-
+-      // set last tx etc. is handled by DCC; here we just call the appropriate send
++      // Shared send functions perform packet-specific notification and metric accounting.
+       switch(dataRequest.GNType)
+         {
+         case GBC:
+@@ -441,10 +416,10 @@
+         }
+       if (dataConfirm == ACCEPTED)
+         {
+-          uint8_t *buffer = new uint8_t[dataRequest.data->GetSize ()];
+-          dataRequest.data->CopyData (buffer,dataRequest.data->GetSize ());
+-          int messagetype = get_messageID_from_BTP_port (dataRequest._messagePort);
+-          m_metric_supervisor_ptr->signalSentPacket (MetricSupervisor::bufToString (buffer, dataRequest.data->GetSize ()),m_egoPV.POS_EPV.lat,m_egoPV.POS_EPV.lon,m_station_id, static_cast<MetricSupervisor::messageType_e>(messagetype));
++          m_dcc->setLastTx(now);
++          m_dcc->updateAoI(pkt.priority, now - pkt.time);
++          if (m_dcc->getModality() == "adaptive")
++            m_dcc->updateTgoAfterTransmission();
+         }
+     });
+   }
+@@ -493,18 +468,7 @@
+       return UNSPECIFIED_ERROR;
+     }
+ 
+-    if(m_metric_supervisor_ptr!=nullptr)
+-    {
+-      uint8_t *buffer = new uint8_t[dataRequest.data->GetSize ()];
+-
+-      dataRequest.data->CopyData (buffer,dataRequest.data->GetSize ());
+-
+-      int messagetype = get_messageID_from_BTP_port (dataRequest._messagePort);
+-
+-      m_metric_supervisor_ptr->signalSentPacket (MetricSupervisor::bufToString (buffer,dataRequest.data->GetSize ()),m_egoPV.POS_EPV.lat,m_egoPV.POS_EPV.lon,m_station_id, static_cast<MetricSupervisor::messageType_e>(messagetype));
+-
+-      delete[] buffer;
+-    }
++    Ptr<Packet> metrics_packet = m_metric_supervisor_ptr != nullptr ? dataRequest.data->Copy() : nullptr;
+ 
+     if(m_socket_tx->Send (dataRequest.data)==-1)
+       {
+@@ -518,6 +482,21 @@
+     m_event_Beacon.Cancel ();
+     double T_beacon = m_GnBeaconServiceRetransmitTimer + (rand()% m_GnBeaconServiceMaxJItter);
+     m_event_Beacon = Simulator::Schedule(MilliSeconds(T_beacon),&GeoNet::setBeacon,this);
++    if(m_metric_supervisor_ptr!=nullptr)
++    {
++      uint8_t *buffer = new uint8_t[metrics_packet->GetSize ()];
++
++      metrics_packet->CopyData (buffer,metrics_packet->GetSize ());
++
++      int messagetype = get_messageID_from_BTP_port (dataRequest._messagePort);
++
++      m_metric_supervisor_ptr->signalSentPacket (MetricSupervisor::bufToString (buffer,metrics_packet->GetSize ()),m_egoPV.POS_EPV.lat,m_egoPV.POS_EPV.lon,m_station_id, static_cast<MetricSupervisor::messageType_e>(messagetype));
++
++      delete[] buffer;
++    }
++
++    if (dataRequest.onTxSuccess)
++      dataRequest.onTxSuccess();
+     return ACCEPTED;
+   }
+ 
+@@ -567,18 +546,7 @@
+       return UNSPECIFIED_ERROR;
+     }
+ 
+-    if(m_metric_supervisor_ptr!=nullptr)
+-    {
+-      uint8_t *buffer = new uint8_t[dataRequest.data->GetSize ()];
+-
+-      dataRequest.data->CopyData (buffer,dataRequest.data->GetSize ());
+-
+-      int messagetype = get_messageID_from_BTP_port (dataRequest._messagePort);
+-
+-      m_metric_supervisor_ptr->signalSentPacket (MetricSupervisor::bufToString (buffer,dataRequest.data->GetSize ()),m_egoPV.POS_EPV.lat,m_egoPV.POS_EPV.lon,m_station_id, static_cast<MetricSupervisor::messageType_e>(messagetype));
+-
+-      delete[] buffer;
+-    }
++    Ptr<Packet> metrics_packet = m_metric_supervisor_ptr != nullptr ? dataRequest.data->Copy() : nullptr;
+ 
+     if(m_socket_tx->Send (dataRequest.data)==-1)
+     {
+@@ -595,6 +563,21 @@
+     if (m_dcc != nullptr) m_dcc->updateTonpp(pktSize);
+     //Update sequence number
+     m_seqNumber = (m_seqNumber+1)% SN_MAX;
++    if(m_metric_supervisor_ptr!=nullptr)
++    {
++      uint8_t *buffer = new uint8_t[metrics_packet->GetSize ()];
++
++      metrics_packet->CopyData (buffer,metrics_packet->GetSize ());
++
++      int messagetype = get_messageID_from_BTP_port (dataRequest._messagePort);
++
++      m_metric_supervisor_ptr->signalSentPacket (MetricSupervisor::bufToString (buffer,metrics_packet->GetSize ()),m_egoPV.POS_EPV.lat,m_egoPV.POS_EPV.lon,m_station_id, static_cast<MetricSupervisor::messageType_e>(messagetype));
++
++      delete[] buffer;
++    }
++
++    if (dataRequest.onTxSuccess)
++      dataRequest.onTxSuccess();
+     return ACCEPTED;
+   }
+ 
+--- a/src/automotive/model/Facilities/VRUBasicService.h
++++ b/src/automotive/model/Facilities/VRUBasicService.h
+@@ -15,6 +15,7 @@
+ #include "ns3/Seq.hpp"
+ #include "ns3/Getter.hpp"
+ #include "ns3/LDM.h"
++#include <memory>
+ 
+ extern "C" {
+   #include "ns3/VAM.h"
+@@ -229,7 +230,7 @@
+     uint64_t m_head_sent = 0;
+     uint64_t m_safedist_sent = 0;
+     uint64_t m_time_sent = 0;
+-    uint64_t m_tip_sent;
++    uint64_t m_tip_sent = 0;
+ 
+     long m_T_next_dcc = -1;
+ 
+@@ -237,6 +238,9 @@
+     uint8_t m_tip_map_size = 0;
+     std::vector<std::tuple<uint64_t, double>> m_tip_array;
+     bool m_use_tip = false;
++    // Weak callbacks must not outlive this dissemination session.
++    std::shared_ptr<int> m_tip_tx_lifetime = std::make_shared<int>(0);
++    int64_t m_last_vam_tx_ms = -1;
+     std::string m_tip_log_filename = "";
+ };
+ 
+--- a/src/automotive/model/Facilities/VRUBasicService.cc
++++ b/src/automotive/model/Facilities/VRUBasicService.cc
+@@ -37,6 +37,7 @@
+ }
+ 
+ VRUBasicService::~VRUBasicService(){
++    m_tip_tx_lifetime.reset();
+     //NS_LOG_INFO("VRUBasicService object destroyed.");
+ }
+ 
+@@ -273,6 +274,7 @@
+ }
+ 
+ void VRUBasicService::startVamDissemination(){
++  if (!m_tip_tx_lifetime) m_tip_tx_lifetime = std::make_shared<int>(0);
+   if(m_VRU_clust_state==VRU_IDLE && m_VRU_role==VRU_ROLE_ON){
+     m_event_vamDisseminationStart = Simulator::Schedule (Seconds(0), &VRUBasicService::initDissemination, this);
+     m_VRU_clust_state = VRU_ACTIVE_STANDALONE;
+@@ -280,6 +282,7 @@
+ }
+ 
+ void VRUBasicService::startVamDissemination(double desync_s){
++  if (!m_tip_tx_lifetime) m_tip_tx_lifetime = std::make_shared<int>(0);
+   if(m_VRU_clust_state==VRU_IDLE && m_VRU_role==VRU_ROLE_ON){
+     m_event_vamDisseminationStart = Simulator::Schedule (Seconds(desync_s), &VRUBasicService::initDissemination, this);
+     m_VRU_clust_state = VRU_ACTIVE_STANDALONE;
+@@ -427,7 +430,6 @@
+           if(vam_error==VAM_NO_ERROR)
+             {
+               condition_verified = true;
+-              m_head_sent++;
+             } else {
+               NS_LOG_ERROR("Cannot generate VAM. Error code: "<<vam_error);
+             }
+@@ -467,7 +469,6 @@
+           if(vam_error==VAM_NO_ERROR)
+             {
+               condition_verified = true;
+-              m_pos_sent++;
+             } else {
+               NS_LOG_ERROR("Cannot generate VAM. Error code: "<<vam_error);
+             }
+@@ -504,7 +505,6 @@
+           if(vam_error==VAM_NO_ERROR)
+             {
+               condition_verified = true;
+-              m_speed_sent++;
+             } else {
+               NS_LOG_ERROR("Cannot generate VAM. Error code: "<<vam_error);
+             }
+@@ -553,7 +553,6 @@
+         {
+           condition_verified = true;
+           vamredmit_verified = false;
+-          m_safedist_sent++;
+         } else {
+           NS_LOG_ERROR("Cannot generate VAM. Error code: "<<vam_error);
+         }
+@@ -569,7 +568,6 @@
+               if(vam_error==VAM_NO_ERROR)
+                 {
+                   condition_verified = true;
+-                  m_safedist_sent++;
+                 } else {
+                   NS_LOG_ERROR("Cannot generate VAM. Error code: "<<vam_error);
+                 }
+@@ -601,7 +599,6 @@
+               vam_error = generateAndEncodeVam();
+               if (vam_error == VAM_NO_ERROR) {
+                 condition_verified = true;
+-                m_tip_sent++;
+               } else {
+                 std::cerr << "Cannot generate VAM. Error code: " << std::to_string(vam_error) << std::endl;
+               }
+@@ -633,7 +630,6 @@
+           if(vam_error==VAM_NO_ERROR)
+             {
+               condition_verified = true;
+-              m_time_sent++;
+             } else {
+               NS_LOG_ERROR("Cannot generate VAM. Error code: "<<vam_error);
+             }
+@@ -703,6 +699,10 @@
+ }
+ 
+ VRUBasicService_error_t VRUBasicService::generateAndEncodeVam(){
++  if (m_use_tip) {
++    cleanTIPMap(Simulator::Now().GetMilliSeconds());
++    searchFirstEightTIPs();
++  }
+   VRUBasicService_error_t errval = VAM_NO_ERROR;
+   VAM_mandatory_data_t vam_mandatory_data;
+ 
+@@ -765,7 +765,8 @@
+ 
+   /* Fill the lowFrequencyContainer */
+   now = computeTimestampUInt64 ()/NANO_TO_MILLI;
+-  if(m_last_vam_gen_LF == -1 || now - m_last_vam_gen_LF >= m_T_GenVamLFMin_ms) {
++  const bool include_lf = m_last_vam_gen_LF == -1 || now - m_last_vam_gen_LF >= m_T_GenVamLFMin_ms;
++  if(include_lf) {
+       auto lowFreqContainer = asn1cpp::makeSeq(VruLowFrequencyContainer);
+       if (m_stationtype == StationType_cyclist) {
+           asn1cpp::setField(lowFreqContainer->profileAndSubprofile.present, VruProfileAndSubprofile_PR_bicyclistAndLightVruVehicle);
+@@ -776,10 +777,10 @@
+       // We do not set the exteriorLights field, as it is not used in the current implementation with pedestrians and cyclists.
+       // If needed, it can be set here using the following line: asn1cpp::setField(vam->vam.vamParameters.vruLowFrequencyContainer->exteriorLights);
+       asn1cpp::setField(vam->vam.vamParameters.vruLowFrequencyContainer, lowFreqContainer);
+-      // Store the time in which the last VAM LF has been generated and successfully sent
+-      m_last_vam_gen_LF = now;
+-  }
+-
++
++  }
++
++  std::vector<std::tuple<uint64_t, double>> reported_tips;
+   long numberOfTIPs = 0;
+   if (m_tip_array.size() > 0) {
+     numberOfTIPs = m_tip_array.size();
+@@ -794,24 +795,12 @@
+       asn1cpp::setField(TIP->trajectoryInterceptionProbability, tip_scaled);
+       asn1cpp::setField(TIP->trajectoryInterceptionConfidence, TrajectoryInterceptionConfidence_above90Percent);
+       asn1cpp::sequenceof::pushList(*TIPs, TIP);
++      reported_tips.emplace_back(stationId, static_cast<double>(tip_scaled) / 50.0);
+     }
+     // Set the TIPs in the motionPredictionContainer
+     asn1cpp::setField(TIP_container->trajectoryInterceptionIndication, TIPs);
+     // Set the motionPredictionContainer in the VAM
+     asn1cpp::setField(vam->vam.vamParameters.vruMotionPredictionContainer, TIP_container);
+-  }
+-
+-  // Store all the "previous" values used in checkVamConditions()
+-  m_prev_position = m_VRUdp->getPedPositionValue ();
+-  m_prev_lat = m_VRUdp->getPedPosition().lat;
+-  m_prev_lon = m_VRUdp->getPedPosition().lon;
+-  m_prev_speed = m_VRUdp->getPedSpeedValue ();
+-  m_prev_heading = m_VRUdp->getPedHeadingValue ();
+-  // Previous TIPs are updated in the map when a VAM is sent, so no need to update them here
+-  for (const auto& entry : m_tip_array) {
+-    uint64_t id = std::get<0>(entry);
+-    double tip = std::get<1>(entry);
+-    updatePreviousSentTIPOnMap(id, tip);
+   }
+ 
+   /* VAM encoding */
+@@ -835,55 +824,66 @@
+   dataRequest.GNTraClass = 0x02; // Store carry foward: no - Channel offload: no - Traffic Class ID: 2
+   dataRequest.lenght = packet->GetSize ();
+   dataRequest.data = packet;
+-  std::tuple<GNDataConfirm_t, MessageId_t> status = m_btp->sendBTP(dataRequest, 0, MessageId_vam);
+-  GNDataConfirm_t dataConfirm = std::get<0>(status);
+-  MessageId_t message_id = std::get<1>(status);
+-  /* Update the VAM statistics */
+-  if(dataConfirm == ACCEPTED) {
+-      if (message_id == MessageId_vam) m_vam_sent++;
+-    }
+-
+-  // Estimation of the transmission time
+-  m_last_transmission = (double) Simulator::Now().GetMilliSeconds();
+-
+-  // Compute the time in which the VAM has been sent
++  // Generation pacing is independent of DCC's eventual socket submission.
+   now = computeTimestampUInt64 ()/NANO_TO_MILLI;
+-
+-  // Store the time elapsed since last VAM generation
+-  long time_elapsed = -1;
+-  if(lastVamGen == -1)
+-    time_elapsed = now;
+-  else
+-    time_elapsed = now - lastVamGen;
+-
+-  // Store the time in which the last VAM (i.e. this one) has been generated and successfully sent
+   lastVamGen = now;
+-
+-  // Get the position of the pedestrian who sent the VAM in terms of latitude and longitude
+-  VRUdp_position_latlon_t pos_ped = m_VRUdp->getPedPosition ();
+-
+-  // Store the data of interest in the .csv file
+-  std::ofstream csv_VAM_ofstream;
+-  if(m_VAM_metrics && m_csv_file_name != ""){
+-      csv_VAM_ofstream.open(m_csv_file_name,std::ofstream::out | std::ofstream::app);
+-      csv_VAM_ofstream << m_station_id << "," << now << "," << time_elapsed << "," << m_trigg_cond << ",";
+-      if(m_trigg_cond == SAFE_DISTANCES){
+-          if(m_min_dist[0].safe_dist)
+-            csv_VAM_ofstream << m_min_dist[0].ID;
+-          else
+-            csv_VAM_ofstream << m_min_dist[1].ID;
+-      } else {
+-        csv_VAM_ofstream << -1;
+-      }
+-      csv_VAM_ofstream << "," << std::setprecision (12) << pos_ped.lat << "," << std::setprecision (12) << pos_ped.lon << "," <<
+-                       ( (double) vam_mandatory_data.speed.getValue())/CENTI << std::endl;
+-      csv_VAM_ofstream.close ();
+-  }
++  if (include_lf) m_last_vam_gen_LF = now;
++  m_prev_position = m_VRUdp->getPedPositionValue ();
++  m_prev_lat = m_VRUdp->getPedPosition().lat;
++  m_prev_lon = m_VRUdp->getPedPosition().lon;
++  m_prev_speed = m_VRUdp->getPedSpeedValue ();
++  m_prev_heading = m_VRUdp->getPedHeadingValue ();
++
++  const auto trigger = m_trigg_cond;
++  const auto station_id = m_station_id;
++  const double latitude = m_prev_lat;
++  const double longitude = m_prev_lon;
++  const double encoded_speed = static_cast<double>(vam_mandatory_data.speed.getValue()) / CENTI;
++  int64_t safe_station = -1;
++  if (trigger == SAFE_DISTANCES && !m_min_dist.empty())
++    safe_station = m_min_dist[0].safe_dist ? m_min_dist[0].ID : m_min_dist[1].ID;
++  const auto csv_file = m_csv_file_name;
++  const bool collect_metrics = m_VAM_metrics;
++  const std::weak_ptr<int> lifetime = m_tip_tx_lifetime;
++  dataRequest.onTxSuccess = [this, lifetime, reported_tips, trigger, station_id,
++                            latitude, longitude, encoded_speed, safe_station,
++                            csv_file, collect_metrics]() {
++    const auto guard = lifetime.lock();
++    if (!guard) return;
++    for (const auto& entry : reported_tips)
++      updatePreviousSentTIPOnMap(std::get<0>(entry), std::get<1>(entry));
++    ++m_vam_sent;
++    switch (trigger) {
++      case HEADING_CHANGE: ++m_head_sent; break;
++      case POSITION_CHANGE: ++m_pos_sent; break;
++      case SPEED_CHANGE: ++m_speed_sent; break;
++      case SAFE_DISTANCES: ++m_safedist_sent; break;
++      case TIP_TRIGGER: ++m_tip_sent; break;
++      case MAX_TIME_ELAPSED: ++m_time_sent; break;
++      default: break;
++    }
++    m_last_transmission = Simulator::Now().GetMilliSeconds();
++    const int64_t transmitted_ms = computeTimestampUInt64 ()/NANO_TO_MILLI;
++    const int64_t elapsed_ms = m_last_vam_tx_ms < 0 ? transmitted_ms : transmitted_ms - m_last_vam_tx_ms;
++    m_last_vam_tx_ms = transmitted_ms;
++    if (collect_metrics && !csv_file.empty()) {
++      std::ofstream csv(csv_file, std::ofstream::out | std::ofstream::app);
++      csv << station_id << "," << transmitted_ms << "," << elapsed_ms << "," << trigger
++          << "," << safe_station << "," << std::setprecision(12) << latitude
++          << "," << std::setprecision(12) << longitude << "," << encoded_speed << std::endl;
++    }
++  };
++  const auto status = m_btp->sendBTP(dataRequest, 0, MessageId_vam);
++  const auto dataConfirm = std::get<0>(status);
++  // A blocked gate can mean queued or dropped; neither is a confirmed transmission.
++  if (dataConfirm != ACCEPTED && dataConfirm != BLOCKED_BY_GK)
++    return VAM_CANNOT_SEND;
+ 
+   return errval;
+ }
+ 
+ uint64_t VRUBasicService::terminateDissemination(){
++  m_tip_tx_lifetime.reset();
+   Simulator::Remove(m_event_vamCheckConditions);
+   Simulator::Remove(m_event_vamDisseminationStart);
+   Simulator::Remove(m_event_computeLongAcceleration);
+@@ -923,10 +923,13 @@
+ }
+ 
+ void VRUBasicService::updatePreviousSentTIPOnMap(uint64_t id, double previous_sent_tip) {
+-  // Preserve the information about the last computed TIP
+-  double time = std::get<0>(m_tip_map[id]);
+-  double tip = std::get<1>(m_tip_map[id]);
+-  m_tip_map[id] = std::make_tuple(time, tip, previous_sent_tip);
++  auto it = m_tip_map.find(id);
++  if (it == m_tip_map.end()) {
++    // A delayed VAM can be submitted after its current prediction has expired.
++    m_tip_map.emplace(id, std::make_tuple(Simulator::Now().GetMilliSeconds(), -1.0, previous_sent_tip));
++  } else {
++    std::get<2>(it->second) = previous_sent_tip;
++  }
+ }
+ 
+ void VRUBasicService::searchFirstEightTIPs() {
+

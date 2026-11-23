@@ -1,0 +1,10 @@
+<Test>
+  <Name>lr-wpan-ifs-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.010" system="0.000"/>
+  <Test>
+    <Name>Lrwpan: IFS tests</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+</Test>

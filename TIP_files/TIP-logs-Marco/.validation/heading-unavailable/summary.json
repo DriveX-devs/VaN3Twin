@@ -1,0 +1,20 @@
+{
+  "before": {
+    "total": 30,
+    "passed": 11,
+    "failed": 19,
+    "returncode": 1
+  },
+  "after": {
+    "total": 30,
+    "passed": 30,
+    "failed": 0,
+    "returncode": 0
+  },
+  "stc_regression_passed": 36,
+  "production_files_changed": [
+    "src/automotive/model/Facilities/VRUBasicService.cc"
+  ],
+  "production_build": "PASS",
+  "patch": "heading-unavailable.patch"
+}

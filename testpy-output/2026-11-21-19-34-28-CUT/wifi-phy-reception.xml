@@ -1,0 +1,35 @@
+<Test>
+  <Name>wifi-phy-reception</Name>
+  <Result>PASS</Result>
+  <Time real="0.090" user="0.090" system="0.010"/>
+  <Test>
+    <Name>Threshold preamble detection model test when no frame capture model is applied</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Threshold preamble detection model test when simple frame capture model is applied</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Simple frame capture model test</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>PHY headers reception test</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>A-MPDU reception test</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Check correct behavior when a STA is receiving a transmission using an unsupported modulation</Name>
+    <Result>PASS</Result>
+    <Time real="0.080" user="0.070" system="0.010"/>
+  </Test>
+</Test>

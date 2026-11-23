@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-11-23T11:30:27.114134+01:00 by Eclipse SUMO sumo 1.28.0
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="src/automotive/examples/sumo_files_v2p_tip/v2p_map_t2c.net.xml"/>
+        <route-files value="src/automotive/examples/sumo_files_v2p_tip/pedestrians.rou.xml,src/automotive/examples/sumo_files_v2p_tip/vehicles.rou.xml"/>
+    </input>
+
+    <output>
+        <fcd-output value="/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/validation-applied-2026-11-23/single_1014_sync/sumo/fcd.xml"/>
+        <tripinfo-output value="/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/validation-applied-2026-11-23/single_1014_sync/sumo/tripinfo.xml"/>
+        <collision-output value="/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/validation-applied-2026-11-23/single_1014_sync/sumo/collisions.xml"/>
+    </output>
+
+    <time>
+        <begin value="0"/>
+        <end value="60.000000"/>
+        <step-length value="0.010000"/>
+    </time>
+
+    <processing>
+        <intermodal-collision.action value="warn"/>
+        <collision.check-junctions value="true"/>
+        <collision.mingap-factor value="0"/>
+    </processing>
+
+    <report>
+        <no-warnings value="true"/>
+        <error-log value="/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/validation-applied-2026-11-23/single_1014_sync/sumo/errorLog.log"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <fcd_device>
+        <device.fcd.period value="0.1"/>
+    </fcd_device>
+
+    <traci_server>
+        <remote-port value="3400"/>
+    </traci_server>
+
+    <random_number>
+        <seed value="10"/>
+    </random_number>
+
+    <gui_only>
+        <quit-on-end value="true"/>
+        <start value="true"/>
+    </gui_only>
+
+</sumoConfiguration>
+-->
+
+<tripinfos xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tripinfo_file.xsd">
+    <tripinfo id="veh0" depart="0.00" departLane="dx_n_3_0" departPos="5.10" departSpeed="8.30" departDelay="0.00" arrival="38.76" arrivalLane="dx_n_11_0" arrivalPos="63.05" arrivalSpeed="9.99" duration="38.76" routeLength="376.03" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="1.15" rerouteNo="0" devices="tripinfo_veh0 fcd_veh0" vType="AggressiveCar" speedFactor="1.20" vaporized=""/>
+    <tripinfo id="veh2" depart="3.00" departLane="cen_n_0_0" departPos="5.10" departSpeed="13.89" departDelay="0.00" arrival="40.27" arrivalLane="cen_n_12_0" arrivalPos="13.93" arrivalSpeed="14.79" duration="37.27" routeLength="550.94" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="0.03" rerouteNo="0" devices="tripinfo_veh2 fcd_veh2" vType="DEFAULT_VEHTYPE" speedFactor="1.06" vaporized=""/>
+    <tripinfo id="veh6" depart="11.00" departLane="cen_n_0_0" departPos="5.10" departSpeed="13.89" departDelay="0.00" arrival="49.68" arrivalLane="cen_n_12_0" arrivalPos="13.93" arrivalSpeed="14.24" duration="38.68" routeLength="550.94" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="0.02" rerouteNo="0" devices="tripinfo_veh6 fcd_veh6" vType="DEFAULT_VEHTYPE" speedFactor="1.03" vaporized=""/>
+    <tripinfo id="veh5" depart="8.00" departLane="cen_s_0_0" departPos="5.10" departSpeed="11.58" departDelay="0.00" arrival="55.93" arrivalLane="cen_s_15_0" arrivalPos="8.35" arrivalSpeed="11.57" duration="47.93" routeLength="554.70" waitingTime="0.00" waitingCount="0" stopTime="0.00" timeLoss="0.03" rerouteNo="0" devices="tripinfo_veh5 fcd_veh5" vType="DEFAULT_VEHTYPE" speedFactor="0.83" vaporized=""/>
+</tripinfos>

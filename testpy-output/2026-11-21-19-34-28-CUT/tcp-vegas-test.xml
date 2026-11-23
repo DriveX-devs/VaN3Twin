@@ -1,0 +1,30 @@
+<Test>
+  <Name>tcp-vegas-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Vegas test on cWnd and ssThresh when in slow start and diff &gt; gamma</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Vegas test on cWnd and ssThresh when in slow start and diff &lt; gamma</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Vegas test on cWnd and ssThresh when diff &gt; beta</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Vegas test on cWnd and ssThresh when diff &lt; alpha</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Vegas test on cWnd and ssThresh when alpha &lt;= diff &lt;= beta</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

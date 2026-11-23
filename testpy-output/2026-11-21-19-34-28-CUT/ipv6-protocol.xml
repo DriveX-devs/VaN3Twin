@@ -1,0 +1,10 @@
+<Test>
+  <Name>ipv6-protocol</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.010"/>
+  <Test>
+    <Name>Verify the IPv6 layer 3 protocol</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.010"/>
+  </Test>
+</Test>

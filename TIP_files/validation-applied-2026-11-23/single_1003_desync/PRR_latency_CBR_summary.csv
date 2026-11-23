@@ -1,0 +1,2 @@
+current_txpower_dBm,datarate,num_vehicles,num_pedestrians,avg_PRR_overall,avg_PRR_ped1000,avg_latency_ms_overall,avg_latency_ms_ped1000,num_received_CAMs_veh,num_received_CAMs_ped,num_received_VAMs_veh,num_received_VAMs_ped,avg_last_CBR_MetricSupervisor
+23,12,45,25,0.592527,0.3,0.181787,0.178154,330,197,22,31,0.00192667

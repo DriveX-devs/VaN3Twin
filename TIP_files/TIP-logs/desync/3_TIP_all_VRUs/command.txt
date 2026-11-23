@@ -1,0 +1,2 @@
+v2p-TIP-80211p --sumo-gui=false --sim-time=100 --met-sup=true --desync=true --tip-mode=all --tip-ped=1003 --log-dir=/mnt/evo/VaN3Twin/ns-3-dev/TIP-logs/desync/3_TIP_all_VRUs --csv-log=/mnt/evo/VaN3Twin/ns-3-dev/TIP-logs/desync/3_TIP_all_VRUs/VAM_metrics --csv-log-cumulative=/mnt/evo/VaN3Twin/ns-3-dev/TIP-logs/desync/3_TIP_all_VRUs/PRR_latency_CBR_summary
+exit_code=0 wall_clock_s=31

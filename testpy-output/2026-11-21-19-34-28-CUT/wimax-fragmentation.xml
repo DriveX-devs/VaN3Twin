@@ -1,0 +1,10 @@
+<Test>
+  <Name>wimax-fragmentation</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Test the packet fragmentation and defragmentation.</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+</Test>

@@ -1,0 +1,55 @@
+<Test>
+  <Name>phy-error-model</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>PSSCH, AWGN, tx mode=0, mcs=10, newSinr=0.794328 W (-1 dB), harqHistory size=0</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>PSSCH, AWGN, tx mode=0, mcs=10, newSinr=1.58489 W (2 dB), harqHistory size=0</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>PSSCH, AWGN, tx mode=0, mcs=10, newSinr=2.0893 W (3.2 dB), harqHistory size=0</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>PSSCH, AWGN, tx mode=0, mcs=10, newSinr=1.77828 W (2.5 dB), harqHistory size=0</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>PSSCH, AWGN, tx mode=0, mcs=10, newSinr=0.630957 W (-2 dB), harqHistory size=1, last HarqSinr0.630957 W (-2 dB)</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>PSSCH, AWGN, tx mode=0, mcs=10, newSinr=0.794328 W (-1 dB), harqHistory size=1, last HarqSinr0.630957 W (-2 dB)</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>PSSCH, AWGN, tx mode=0, mcs=10, newSinr=0.630957 W (-2 dB), harqHistory size=1, last HarqSinr0.794328 W (-1 dB)</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>PSSCH, AWGN, tx mode=0, mcs=10, newSinr=0.501187 W (-3 dB), harqHistory size=1, last HarqSinr0.398107 W (-4 dB)</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>PSCCH, AWGN, tx mode=0, mcs=0, newSinr=0.199526 W (-7 dB), harqHistory size=0</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>PSCCH, AWGN, tx mode=0, mcs=0, newSinr=1.58489 W (2 dB), harqHistory size=0</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

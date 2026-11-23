@@ -1,0 +1,10 @@
+<Test>
+  <Name>propagation-channel-condition-model</Name>
+  <Result>PASS</Result>
+  <Time real="9.650" user="9.620" system="0.020"/>
+  <Test>
+    <Name>Test case for the child classes of ThreeGppChannelConditionModel</Name>
+    <Result>PASS</Result>
+    <Time real="9.650" user="9.620" system="0.020"/>
+  </Test>
+</Test>

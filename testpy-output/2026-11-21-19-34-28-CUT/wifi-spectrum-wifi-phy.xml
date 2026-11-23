@@ -1,0 +1,20 @@
+<Test>
+  <Name>wifi-spectrum-wifi-phy</Name>
+  <Result>PASS</Result>
+  <Time real="0.400" user="0.380" system="0.000"/>
+  <Test>
+    <Name>SpectrumWifiPhy test case receives one packet</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>SpectrumWifiPhy test operation of WifiPhyListener</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>SpectrumWifiPhy test RX filters</Name>
+    <Result>PASS</Result>
+    <Time real="0.400" user="0.380" system="0.000"/>
+  </Test>
+</Test>

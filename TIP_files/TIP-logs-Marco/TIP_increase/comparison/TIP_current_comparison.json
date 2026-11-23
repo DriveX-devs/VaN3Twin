@@ -1,0 +1,692 @@
+{
+  "baseline": "/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/TIP-logs-Marco/TIP_current",
+  "current": "/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/TIP-logs-Marco/TIP_finding2_addressed",
+  "summary_metrics_tested": 44,
+  "summary_metrics_unchanged": 16,
+  "summary_metrics_changed": 28,
+  "raw_csv_comparisons": [
+    {
+      "case": "0_no_TIP",
+      "file": "VAM_metrics.csv",
+      "baseline_rows": 678,
+      "current_rows": 678,
+      "same_headers": true,
+      "exact_parsed_match": true
+    },
+    {
+      "case": "0_no_TIP",
+      "file": "CBR.csv",
+      "baseline_rows": 70000,
+      "current_rows": 70000,
+      "same_headers": true,
+      "exact_parsed_match": true
+    },
+    {
+      "case": "0_no_TIP",
+      "file": "PRR_latency_CBR_summary.csv",
+      "baseline_rows": 1,
+      "current_rows": 1,
+      "same_headers": true,
+      "exact_parsed_match": true
+    },
+    {
+      "case": "1_TIP_ped1003",
+      "file": "VAM_metrics.csv",
+      "baseline_rows": 684,
+      "current_rows": 682,
+      "same_headers": true,
+      "exact_parsed_match": false
+    },
+    {
+      "case": "1_TIP_ped1003",
+      "file": "TIP_metrics.csv",
+      "baseline_rows": 695,
+      "current_rows": 695,
+      "same_headers": true,
+      "exact_parsed_match": false
+    },
+    {
+      "case": "1_TIP_ped1003",
+      "file": "CBR.csv",
+      "baseline_rows": 70000,
+      "current_rows": 70000,
+      "same_headers": true,
+      "exact_parsed_match": false
+    },
+    {
+      "case": "1_TIP_ped1003",
+      "file": "PRR_latency_CBR_summary.csv",
+      "baseline_rows": 1,
+      "current_rows": 1,
+      "same_headers": true,
+      "exact_parsed_match": false
+    },
+    {
+      "case": "2_TIP_ped1014",
+      "file": "VAM_metrics.csv",
+      "baseline_rows": 694,
+      "current_rows": 692,
+      "same_headers": true,
+      "exact_parsed_match": false
+    },
+    {
+      "case": "2_TIP_ped1014",
+      "file": "TIP_metrics.csv",
+      "baseline_rows": 1145,
+      "current_rows": 1144,
+      "same_headers": true,
+      "exact_parsed_match": false
+    },
+    {
+      "case": "2_TIP_ped1014",
+      "file": "CBR.csv",
+      "baseline_rows": 70000,
+      "current_rows": 70000,
+      "same_headers": true,
+      "exact_parsed_match": false
+    },
+    {
+      "case": "2_TIP_ped1014",
+      "file": "PRR_latency_CBR_summary.csv",
+      "baseline_rows": 1,
+      "current_rows": 1,
+      "same_headers": true,
+      "exact_parsed_match": false
+    },
+    {
+      "case": "3_TIP_all_VRUs",
+      "file": "VAM_metrics.csv",
+      "baseline_rows": 812,
+      "current_rows": 800,
+      "same_headers": true,
+      "exact_parsed_match": false
+    },
+    {
+      "case": "3_TIP_all_VRUs",
+      "file": "TIP_metrics.csv",
+      "baseline_rows": 18692,
+      "current_rows": 18644,
+      "same_headers": true,
+      "exact_parsed_match": false
+    },
+    {
+      "case": "3_TIP_all_VRUs",
+      "file": "CBR.csv",
+      "baseline_rows": 70000,
+      "current_rows": 70000,
+      "same_headers": true,
+      "exact_parsed_match": false
+    },
+    {
+      "case": "3_TIP_all_VRUs",
+      "file": "PRR_latency_CBR_summary.csv",
+      "baseline_rows": 1,
+      "current_rows": 1,
+      "same_headers": true,
+      "exact_parsed_match": false
+    }
+  ],
+  "mobility": [
+    {
+      "case": "0_no_TIP",
+      "identical": true
+    },
+    {
+      "case": "1_TIP_ped1003",
+      "identical": true
+    },
+    {
+      "case": "2_TIP_ped1014",
+      "identical": true
+    },
+    {
+      "case": "3_TIP_all_VRUs",
+      "identical": true
+    }
+  ],
+  "collisions": [
+    {
+      "case": "0_no_TIP",
+      "identical": true,
+      "baseline": [
+        {
+          "time": "49.64",
+          "type": "crossing",
+          "lane": ":2498888370_0_0",
+          "pos": "1.61",
+          "collider": "veh12",
+          "victim": "ped1014",
+          "colliderType": "AggressiveCar",
+          "victimType": "DEFAULT_PEDTYPE",
+          "colliderSpeed": "8.88",
+          "victimSpeed": "0.00",
+          "colliderFront": "785.55,1590.78",
+          "colliderBack": "787.89,1595.13",
+          "victimFront": "785.52,1590.59",
+          "victimBack": "785.52,1590.59"
+        }
+      ],
+      "current": [
+        {
+          "time": "49.64",
+          "type": "crossing",
+          "lane": ":2498888370_0_0",
+          "pos": "1.61",
+          "collider": "veh12",
+          "victim": "ped1014",
+          "colliderType": "AggressiveCar",
+          "victimType": "DEFAULT_PEDTYPE",
+          "colliderSpeed": "8.88",
+          "victimSpeed": "0.00",
+          "colliderFront": "785.55,1590.78",
+          "colliderBack": "787.89,1595.13",
+          "victimFront": "785.52,1590.59",
+          "victimBack": "785.52,1590.59"
+        }
+      ]
+    },
+    {
+      "case": "1_TIP_ped1003",
+      "identical": true,
+      "baseline": [
+        {
+          "time": "49.64",
+          "type": "crossing",
+          "lane": ":2498888370_0_0",
+          "pos": "1.61",
+          "collider": "veh12",
+          "victim": "ped1014",
+          "colliderType": "AggressiveCar",
+          "victimType": "DEFAULT_PEDTYPE",
+          "colliderSpeed": "8.88",
+          "victimSpeed": "0.00",
+          "colliderFront": "785.55,1590.78",
+          "colliderBack": "787.89,1595.13",
+          "victimFront": "785.52,1590.59",
+          "victimBack": "785.52,1590.59"
+        }
+      ],
+      "current": [
+        {
+          "time": "49.64",
+          "type": "crossing",
+          "lane": ":2498888370_0_0",
+          "pos": "1.61",
+          "collider": "veh12",
+          "victim": "ped1014",
+          "colliderType": "AggressiveCar",
+          "victimType": "DEFAULT_PEDTYPE",
+          "colliderSpeed": "8.88",
+          "victimSpeed": "0.00",
+          "colliderFront": "785.55,1590.78",
+          "colliderBack": "787.89,1595.13",
+          "victimFront": "785.52,1590.59",
+          "victimBack": "785.52,1590.59"
+        }
+      ]
+    },
+    {
+      "case": "2_TIP_ped1014",
+      "identical": true,
+      "baseline": [
+        {
+          "time": "49.64",
+          "type": "crossing",
+          "lane": ":2498888370_0_0",
+          "pos": "1.61",
+          "collider": "veh12",
+          "victim": "ped1014",
+          "colliderType": "AggressiveCar",
+          "victimType": "DEFAULT_PEDTYPE",
+          "colliderSpeed": "8.88",
+          "victimSpeed": "0.00",
+          "colliderFront": "785.55,1590.78",
+          "colliderBack": "787.89,1595.13",
+          "victimFront": "785.52,1590.59",
+          "victimBack": "785.52,1590.59"
+        }
+      ],
+      "current": [
+        {
+          "time": "49.64",
+          "type": "crossing",
+          "lane": ":2498888370_0_0",
+          "pos": "1.61",
+          "collider": "veh12",
+          "victim": "ped1014",
+          "colliderType": "AggressiveCar",
+          "victimType": "DEFAULT_PEDTYPE",
+          "colliderSpeed": "8.88",
+          "victimSpeed": "0.00",
+          "colliderFront": "785.55,1590.78",
+          "colliderBack": "787.89,1595.13",
+          "victimFront": "785.52,1590.59",
+          "victimBack": "785.52,1590.59"
+        }
+      ]
+    },
+    {
+      "case": "3_TIP_all_VRUs",
+      "identical": true,
+      "baseline": [
+        {
+          "time": "49.64",
+          "type": "crossing",
+          "lane": ":2498888370_0_0",
+          "pos": "1.61",
+          "collider": "veh12",
+          "victim": "ped1014",
+          "colliderType": "AggressiveCar",
+          "victimType": "DEFAULT_PEDTYPE",
+          "colliderSpeed": "8.88",
+          "victimSpeed": "0.00",
+          "colliderFront": "785.55,1590.78",
+          "colliderBack": "787.89,1595.13",
+          "victimFront": "785.52,1590.59",
+          "victimBack": "785.52,1590.59"
+        }
+      ],
+      "current": [
+        {
+          "time": "49.64",
+          "type": "crossing",
+          "lane": ":2498888370_0_0",
+          "pos": "1.61",
+          "collider": "veh12",
+          "victim": "ped1014",
+          "colliderType": "AggressiveCar",
+          "victimType": "DEFAULT_PEDTYPE",
+          "colliderSpeed": "8.88",
+          "victimSpeed": "0.00",
+          "colliderFront": "785.55,1590.78",
+          "colliderBack": "787.89,1595.13",
+          "victimFront": "785.52,1590.59",
+          "victimBack": "785.52,1590.59"
+        }
+      ]
+    }
+  ],
+  "prediction_transitions": [
+    {
+      "dataset": "TIP_current",
+      "case": "0_no_TIP",
+      "evaluations": 0,
+      "valid_evaluations": 0,
+      "valid_to_invalid_transitions": 0
+    },
+    {
+      "dataset": "TIP_finding2_addressed",
+      "case": "0_no_TIP",
+      "evaluations": 0,
+      "valid_evaluations": 0,
+      "valid_to_invalid_transitions": 0
+    },
+    {
+      "dataset": "TIP_current",
+      "case": "1_TIP_ped1003",
+      "evaluations": 695,
+      "valid_evaluations": 14,
+      "valid_to_invalid_transitions": 4
+    },
+    {
+      "dataset": "TIP_finding2_addressed",
+      "case": "1_TIP_ped1003",
+      "evaluations": 695,
+      "valid_evaluations": 14,
+      "valid_to_invalid_transitions": 4
+    },
+    {
+      "dataset": "TIP_current",
+      "case": "2_TIP_ped1014",
+      "evaluations": 1145,
+      "valid_evaluations": 68,
+      "valid_to_invalid_transitions": 8
+    },
+    {
+      "dataset": "TIP_finding2_addressed",
+      "case": "2_TIP_ped1014",
+      "evaluations": 1144,
+      "valid_evaluations": 68,
+      "valid_to_invalid_transitions": 8
+    },
+    {
+      "dataset": "TIP_current",
+      "case": "3_TIP_all_VRUs",
+      "evaluations": 18692,
+      "valid_evaluations": 424,
+      "valid_to_invalid_transitions": 69
+    },
+    {
+      "dataset": "TIP_finding2_addressed",
+      "case": "3_TIP_all_VRUs",
+      "evaluations": 18644,
+      "valid_evaluations": 412,
+      "valid_to_invalid_transitions": 68
+    }
+  ],
+  "tests": {
+    "tip_dcc_checks": {
+      "checks": 69,
+      "passed": 69,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "finding4_boundary": {
+      "checks": 288,
+      "passed": 288,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "heading_boundary": {
+      "checks": 30,
+      "passed": 30,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "stc_boundary": {
+      "checks": 36,
+      "passed": 36,
+      "failed": 0,
+      "exit_code": 0
+    }
+  },
+  "production_files_changed": [
+    "src/automotive/model/BTP/btp.cc",
+    "src/automotive/model/BTP/btpdatarequest.h",
+    "src/automotive/model/Facilities/VRUBasicService.cc",
+    "src/automotive/model/Facilities/VRUBasicService.h",
+    "src/automotive/model/GeoNet/geonet.cc"
+  ],
+  "baseline_files_preserved": 777,
+  "validated_figures": 49,
+  "source_provenance_note": "The pre-task source diff hash matches TIP_current. finding2.patch is the complete source difference from that baseline; source-changes.patch includes all prior local changes relative to Git HEAD.",
+  "trace_comparison": {
+    "file_summary": {
+      "pcap": {
+        "files": 280,
+        "exact_matches": 60
+      },
+      "VAM_triggering": {
+        "files": 100,
+        "exact_matches": 64
+      },
+      "CAM_triggering": {
+        "files": 120,
+        "exact_matches": 120
+      }
+    },
+    "native_project_decoder": {
+      "comparisons": [
+        {
+          "case": "0_no_TIP",
+          "baseline_generated_VAMs": 678,
+          "current_generated_VAMs": 678,
+          "baseline_VAMs_with_TIP": 0,
+          "current_VAMs_with_TIP": 0,
+          "common_generation_identities": 678,
+          "changed_TIP_messages_on_common_identities": 0,
+          "removed_generation_identities": 0,
+          "added_generation_identities": 0,
+          "identical_TIP_messages": true,
+          "identical_decoded_observations": true
+        },
+        {
+          "case": "1_TIP_ped1003",
+          "baseline_generated_VAMs": 684,
+          "current_generated_VAMs": 682,
+          "baseline_VAMs_with_TIP": 7,
+          "current_VAMs_with_TIP": 7,
+          "common_generation_identities": 674,
+          "changed_TIP_messages_on_common_identities": 1,
+          "removed_generation_identities": 10,
+          "added_generation_identities": 8,
+          "identical_TIP_messages": false,
+          "identical_decoded_observations": false
+        },
+        {
+          "case": "2_TIP_ped1014",
+          "baseline_generated_VAMs": 694,
+          "current_generated_VAMs": 692,
+          "baseline_VAMs_with_TIP": 21,
+          "current_VAMs_with_TIP": 20,
+          "common_generation_identities": 686,
+          "changed_TIP_messages_on_common_identities": 3,
+          "removed_generation_identities": 8,
+          "added_generation_identities": 6,
+          "identical_TIP_messages": false,
+          "identical_decoded_observations": false
+        },
+        {
+          "case": "3_TIP_all_VRUs",
+          "baseline_generated_VAMs": 812,
+          "current_generated_VAMs": 800,
+          "baseline_VAMs_with_TIP": 179,
+          "current_VAMs_with_TIP": 168,
+          "common_generation_identities": 746,
+          "changed_TIP_messages_on_common_identities": 25,
+          "removed_generation_identities": 66,
+          "added_generation_identities": 54,
+          "identical_TIP_messages": false,
+          "identical_decoded_observations": false
+        }
+      ],
+      "decode_failures": 0,
+      "baseline_generated_VAMs": 2868,
+      "current_generated_VAMs": 2852,
+      "deduplicated_capture_observations": 12070,
+      "changed_TIP_examples": [
+        {
+          "case": "1_TIP_ped1003",
+          "station": 1003,
+          "generation_ms": 47636,
+          "baseline": [
+            "",
+            "",
+            ""
+          ],
+          "current": [
+            "1022",
+            "33",
+            "3"
+          ]
+        },
+        {
+          "case": "2_TIP_ped1014",
+          "station": 1014,
+          "generation_ms": 51271,
+          "baseline": [
+            "",
+            "",
+            ""
+          ],
+          "current": [
+            "1006",
+            "35",
+            "3"
+          ]
+        },
+        {
+          "case": "2_TIP_ped1014",
+          "station": 1014,
+          "generation_ms": 59471,
+          "baseline": [
+            "",
+            "",
+            ""
+          ],
+          "current": [
+            "14",
+            "47",
+            "3"
+          ]
+        },
+        {
+          "case": "2_TIP_ped1014",
+          "station": 1014,
+          "generation_ms": 70771,
+          "baseline": [
+            "1022",
+            "31",
+            "3"
+          ],
+          "current": [
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "case": "3_TIP_all_VRUs",
+          "station": 1003,
+          "generation_ms": 29636,
+          "baseline": [
+            "0",
+            "25",
+            "3"
+          ],
+          "current": [
+            "1006",
+            "50",
+            "3"
+          ]
+        },
+        {
+          "case": "3_TIP_all_VRUs",
+          "station": 1003,
+          "generation_ms": 47636,
+          "baseline": [
+            "1022",
+            "31",
+            "3"
+          ],
+          "current": [
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "case": "3_TIP_all_VRUs",
+          "station": 1004,
+          "generation_ms": 99879,
+          "baseline": [
+            "",
+            "",
+            ""
+          ],
+          "current": [
+            "1005",
+            "32",
+            "3"
+          ]
+        },
+        {
+          "case": "3_TIP_all_VRUs",
+          "station": 1005,
+          "generation_ms": 43817,
+          "baseline": [
+            "",
+            "",
+            ""
+          ],
+          "current": [
+            "16",
+            "39",
+            "3"
+          ]
+        },
+        {
+          "case": "3_TIP_all_VRUs",
+          "station": 1005,
+          "generation_ms": 47417,
+          "baseline": [
+            "",
+            "",
+            ""
+          ],
+          "current": [
+            "1015",
+            "41",
+            "3"
+          ]
+        },
+        {
+          "case": "3_TIP_all_VRUs",
+          "station": 1006,
+          "generation_ms": 44402,
+          "baseline": [
+            "",
+            "",
+            ""
+          ],
+          "current": [
+            "1007",
+            "50",
+            "3"
+          ]
+        },
+        {
+          "case": "3_TIP_all_VRUs",
+          "station": 1006,
+          "generation_ms": 51102,
+          "baseline": [
+            "13",
+            "22",
+            "3"
+          ],
+          "current": [
+            "1014",
+            "33",
+            "3"
+          ]
+        },
+        {
+          "case": "3_TIP_all_VRUs",
+          "station": 1006,
+          "generation_ms": 52702,
+          "baseline": [
+            "13",
+            "35",
+            "3"
+          ],
+          "current": [
+            "",
+            "",
+            ""
+          ]
+        },
+        {
+          "case": "3_TIP_all_VRUs",
+          "station": 1007,
+          "generation_ms": 44376,
+          "baseline": [
+            "",
+            "",
+            ""
+          ],
+          "current": [
+            "1006",
+            "50",
+            "3"
+          ]
+        },
+        {
+          "case": "3_TIP_all_VRUs",
+          "station": 1007,
+          "generation_ms": 63076,
+          "baseline": [
+            "",
+            "",
+            ""
+          ],
+          "current": [
+            "1022",
+            "41",
+            "3"
+          ]
+        }
+      ]
+    },
+    "note": "Native ASN.1 decoding covers TIP subject/probability/confidence, station, generation time and capture time. It is not a complete payload comparison. Raw GeoNetworking timestamps also depend on wall-clock time. Duplicate observations at the same capture time and payload are removed before decoding."
+  }
+}

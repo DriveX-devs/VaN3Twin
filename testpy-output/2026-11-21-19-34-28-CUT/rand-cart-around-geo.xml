@@ -1,0 +1,725 @@
+<Test>
+  <Name>rand-cart-around-geo</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.000" system="0.000"/>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 0 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 0 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 0 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 0 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 72 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 72 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 72 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 72 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 144 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 144 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 144 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 144 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 216 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 216 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 216 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 216 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 288 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 288 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 288 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 288 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 360 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 360 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 360 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -89.9 degrees, origin longitude = 360 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 0 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 0 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 0 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 0 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 72 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 72 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 72 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 72 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 144 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 144 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 144 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 144 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 216 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 216 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 216 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 216 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 288 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 288 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 288 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 288 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 360 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 360 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 360 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -53.94 degrees, origin longitude = 360 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 0 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 0 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 0 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 0 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 72 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 72 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 72 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 72 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 144 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 144 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 144 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 144 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 216 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 216 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 216 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 216 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 288 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 288 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 288 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 288 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 360 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 360 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 360 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = -17.98 degrees, origin longitude = 360 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 0 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 0 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 0 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 0 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 72 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 72 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 72 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 72 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 144 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 144 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 144 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 144 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 216 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 216 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 216 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 216 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 288 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 288 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 288 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 288 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 360 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 360 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 360 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 17.98 degrees, origin longitude = 360 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 0 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 0 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 0 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 0 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 72 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 72 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 72 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 72 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 144 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 144 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 144 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 144 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 216 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 216 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 216 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 216 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 288 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 288 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 288 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 288 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 360 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 360 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 360 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 53.94 degrees, origin longitude = 360 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 0 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 0 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 0 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 0 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 72 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 72 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 72 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 72 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 144 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 144 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 144 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 144 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 216 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 216 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 216 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 216 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 288 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 288 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 288 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 288 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 360 degrees, max distance from origin = 1000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 360 degrees, max distance from origin = 10000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 360 degrees, max distance from origin = 100000</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>origin latitude = 89.9 degrees, origin longitude = 360 degrees, max distance from origin = 1e+06</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

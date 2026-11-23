@@ -1,0 +1,10 @@
+<Test>
+  <Name>wave-80211p-ocb</Name>
+  <Result>PASS</Result>
+  <Time real="0.060" user="0.060" system="0.000"/>
+  <Test>
+    <Name>Association time: Ap+Sta mode vs Adhoc mode vs Ocb mode</Name>
+    <Result>PASS</Result>
+    <Time real="0.060" user="0.060" system="0.000"/>
+  </Test>
+</Test>

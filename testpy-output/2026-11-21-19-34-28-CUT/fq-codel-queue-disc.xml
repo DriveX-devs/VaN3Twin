@@ -1,0 +1,45 @@
+<Test>
+  <Name>fq-codel-queue-disc</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.010" system="0.000"/>
+  <Test>
+    <Name>Test packets that are not classified by any filter</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test IP flows separation and packet limit</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test credits and flows status</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test TCP flows separation</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test UDP flows separation</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test ECN marking</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test credits and flows status</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test L4S mode</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+</Test>

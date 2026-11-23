@@ -333,54 +333,33 @@ namespace ns3 {
     longPV.heading = (uint16_t) (m_egoPV.H_EPV*10);// [degrees] to [0.1 degrees]
 
     float now = static_cast<float>(Simulator::Now().GetMilliSeconds());
-    bool gate_open = false;
     QueuePacket pkt = {now, priority, basicHeader, commonHeader, longPV, dataRequest, message_id};
-    bool check_message_id = (message_id == MessageId_cam || message_id == MessageId_vam || message_id == MessageId_cpm);
-    if (m_dcc != nullptr && check_message_id)
+    const bool dcc_managed = m_dcc != nullptr &&
+        (message_id == MessageId_cam || message_id == MessageId_vam || message_id == MessageId_cpm);
+    bool enqueue_after_send = false;
+    int transmitted_priority = priority;
+    float aoi = 0.0;
+    if (dcc_managed)
       {
-        gate_open = m_dcc->checkGateOpen(now);
-        if (gate_open == false)
+        if (!m_dcc->checkGateOpen(now))
           {
-            // Gate is closed
             m_dcc->enqueue(priority, pkt);
-            // std::cout << "[ENQUEUE]" << std::endl;
-            return std::tuple<GNDataConfirm_t, MessageId_t>(BLOCKED_BY_GK, message_id);
+            return {BLOCKED_BY_GK, message_id};
           }
-        else
+        auto value = m_dcc->dequeue(priority);
+        if (std::get<0>(value))
           {
-            // Gate is opened
-            std::tuple<bool, QueuePacket> value = m_dcc->dequeue(priority);
-            float aoi;
-            if (std::get<0>(value) == true)
-              {
-                // Found a packet in queue with higher priority
-                m_dcc->enqueue(priority, pkt);
-                QueuePacket pkt_to_send = std::get<1>(value);
-                basicHeader = pkt_to_send.bh;
-                commonHeader = pkt_to_send.ch;
-                longPV = pkt_to_send.long_PV;
-                dataRequest = pkt_to_send.dataRequest;
-                message_id = pkt.message_id;
-                aoi = now - pkt_to_send.time;
-                // std::cout << "[DEQUEUE]" << std::endl;
-              }
-            else
-              {
-                // std::cout << "[ORIGINAL]" << std::endl;
-                aoi = 0;
-              }
-            m_dcc->updateAoI (priority, aoi);
-            m_dcc->setLastTx(now);
+            const QueuePacket& pkt_to_send = std::get<1>(value);
+            basicHeader = pkt_to_send.bh;
+            commonHeader = pkt_to_send.ch;
+            longPV = pkt_to_send.long_PV;
+            dataRequest = pkt_to_send.dataRequest;
+            message_id = pkt_to_send.message_id;
+            transmitted_priority = pkt_to_send.priority;
+            aoi = now - pkt_to_send.time;
+            // enqueue() may synchronously drain a queue. Defer it until this send finishes.
+            enqueue_after_send = true;
           }
-      }
-    else
-      {
-        // std::cout << "[ORIGINAL NO DCC]" << std::endl;
-      }
-
-    if (m_dcc != nullptr && m_dcc->getModality() == "adaptive")
-      {
-        m_dcc->updateTgoAfterTransmission();
       }
 
     switch(dataRequest.GNType)
@@ -398,6 +377,15 @@ namespace ns3 {
       NS_LOG_ERROR("GeoNet packet not supported");
       dataConfirm = UNSPECIFIED_ERROR;
     }
+    if (dcc_managed && dataConfirm == ACCEPTED)
+      {
+        m_dcc->setLastTx(now);
+        m_dcc->updateAoI(transmitted_priority, aoi);
+        if (m_dcc->getModality() == "adaptive")
+          m_dcc->updateTgoAfterTransmission();
+      }
+    if (enqueue_after_send)
+      m_dcc->enqueue(priority, pkt);
     return {dataConfirm, message_id};
   }
 
@@ -414,20 +402,7 @@ namespace ns3 {
       GNDataConfirm_t dataConfirm = GNDataConfirm_t::CONFIRM_UNKNOWN;
 
       float now = static_cast<float>(Simulator::Now().GetMilliSeconds());
-      m_dcc->setLastTx(now);
-      float aoi = now - pkt.time;
-      std::string use_dcc;
-      if (m_dcc != nullptr) use_dcc = m_dcc->getModality();
-      else use_dcc = "";
-
-      if (use_dcc == "adaptive")
-        {
-          m_dcc->updateTgoAfterTransmission();
-        }
-
-      m_dcc->updateAoI(pkt.priority, aoi);
-
-      // set last tx etc. is handled by DCC; here we just call the appropriate send
+      // Shared send functions perform packet-specific notification and metric accounting.
       switch(dataRequest.GNType)
         {
         case GBC:
@@ -441,10 +416,10 @@ namespace ns3 {
         }
       if (dataConfirm == ACCEPTED)
         {
-          uint8_t *buffer = new uint8_t[dataRequest.data->GetSize ()];
-          dataRequest.data->CopyData (buffer,dataRequest.data->GetSize ());
-          int messagetype = get_messageID_from_BTP_port (dataRequest._messagePort);
-          m_metric_supervisor_ptr->signalSentPacket (MetricSupervisor::bufToString (buffer, dataRequest.data->GetSize ()),m_egoPV.POS_EPV.lat,m_egoPV.POS_EPV.lon,m_station_id, static_cast<MetricSupervisor::messageType_e>(messagetype));
+          m_dcc->setLastTx(now);
+          m_dcc->updateAoI(pkt.priority, now - pkt.time);
+          if (m_dcc->getModality() == "adaptive")
+            m_dcc->updateTgoAfterTransmission();
         }
     });
   }
@@ -493,18 +468,7 @@ namespace ns3 {
       return UNSPECIFIED_ERROR;
     }
 
-    if(m_metric_supervisor_ptr!=nullptr)
-    {
-      uint8_t *buffer = new uint8_t[dataRequest.data->GetSize ()];
-
-      dataRequest.data->CopyData (buffer,dataRequest.data->GetSize ());
-
-      int messagetype = get_messageID_from_BTP_port (dataRequest._messagePort);
-
-      m_metric_supervisor_ptr->signalSentPacket (MetricSupervisor::bufToString (buffer,dataRequest.data->GetSize ()),m_egoPV.POS_EPV.lat,m_egoPV.POS_EPV.lon,m_station_id, static_cast<MetricSupervisor::messageType_e>(messagetype));
-
-      delete[] buffer;
-    }
+    Ptr<Packet> metrics_packet = m_metric_supervisor_ptr != nullptr ? dataRequest.data->Copy() : nullptr;
 
     if(m_socket_tx->Send (dataRequest.data)==-1)
       {
@@ -518,6 +482,21 @@ namespace ns3 {
     m_event_Beacon.Cancel ();
     double T_beacon = m_GnBeaconServiceRetransmitTimer + (rand()% m_GnBeaconServiceMaxJItter);
     m_event_Beacon = Simulator::Schedule(MilliSeconds(T_beacon),&GeoNet::setBeacon,this);
+    if(m_metric_supervisor_ptr!=nullptr)
+    {
+      uint8_t *buffer = new uint8_t[metrics_packet->GetSize ()];
+
+      metrics_packet->CopyData (buffer,metrics_packet->GetSize ());
+
+      int messagetype = get_messageID_from_BTP_port (dataRequest._messagePort);
+
+      m_metric_supervisor_ptr->signalSentPacket (MetricSupervisor::bufToString (buffer,metrics_packet->GetSize ()),m_egoPV.POS_EPV.lat,m_egoPV.POS_EPV.lon,m_station_id, static_cast<MetricSupervisor::messageType_e>(messagetype));
+
+      delete[] buffer;
+    }
+
+    if (dataRequest.onTxSuccess)
+      dataRequest.onTxSuccess();
     return ACCEPTED;
   }
 
@@ -567,18 +546,7 @@ namespace ns3 {
       return UNSPECIFIED_ERROR;
     }
 
-    if(m_metric_supervisor_ptr!=nullptr)
-    {
-      uint8_t *buffer = new uint8_t[dataRequest.data->GetSize ()];
-
-      dataRequest.data->CopyData (buffer,dataRequest.data->GetSize ());
-
-      int messagetype = get_messageID_from_BTP_port (dataRequest._messagePort);
-
-      m_metric_supervisor_ptr->signalSentPacket (MetricSupervisor::bufToString (buffer,dataRequest.data->GetSize ()),m_egoPV.POS_EPV.lat,m_egoPV.POS_EPV.lon,m_station_id, static_cast<MetricSupervisor::messageType_e>(messagetype));
-
-      delete[] buffer;
-    }
+    Ptr<Packet> metrics_packet = m_metric_supervisor_ptr != nullptr ? dataRequest.data->Copy() : nullptr;
 
     if(m_socket_tx->Send (dataRequest.data)==-1)
     {
@@ -595,6 +563,21 @@ namespace ns3 {
     if (m_dcc != nullptr) m_dcc->updateTonpp(pktSize);
     //Update sequence number
     m_seqNumber = (m_seqNumber+1)% SN_MAX;
+    if(m_metric_supervisor_ptr!=nullptr)
+    {
+      uint8_t *buffer = new uint8_t[metrics_packet->GetSize ()];
+
+      metrics_packet->CopyData (buffer,metrics_packet->GetSize ());
+
+      int messagetype = get_messageID_from_BTP_port (dataRequest._messagePort);
+
+      m_metric_supervisor_ptr->signalSentPacket (MetricSupervisor::bufToString (buffer,metrics_packet->GetSize ()),m_egoPV.POS_EPV.lat,m_egoPV.POS_EPV.lon,m_station_id, static_cast<MetricSupervisor::messageType_e>(messagetype));
+
+      delete[] buffer;
+    }
+
+    if (dataRequest.onTxSuccess)
+      dataRequest.onTxSuccess();
     return ACCEPTED;
   }
 

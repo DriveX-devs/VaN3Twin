@@ -1,0 +1,15 @@
+<Test>
+  <Name>tcp-syn-connection-failed-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.000" system="0.000"/>
+  <Test>
+    <Name>TCP SYN connection failed test no ECN</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>TCP SYN connection failed test with ECN</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+</Test>

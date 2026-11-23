@@ -1,0 +1,5 @@
+scenario,total_VAMs,TIP_VAMs,mean_CBR_all_stations_percent,mean_CBR_pedestrians_percent,mean_CBR_vehicles_percent,peak_CBR_100ms_window_percent,mean_CBR_ped1003_percent,mean_CBR_ped1014_percent,avg_PRR_150m_baseline,received_CAMs_by_pedestrians,received_VAMs_by_vehicles
+No TIP,653,0,0.14428,0.12048,0.17622,0.84000,0.14388,0.19967,0.45489,16225,2125
+TIP on ped1003,657,6,0.14469,0.12090,0.17660,0.84000,0.14484,0.20006,0.45495,16225,2141
+TIP on ped1014,667,18,0.14498,0.12109,0.17704,0.92400,0.14630,0.20335,0.45511,16225,2222
+TIP on all VRUs,775,152,0.14874,0.12442,0.18138,0.84000,0.15244,0.20774,0.45505,16224,2737

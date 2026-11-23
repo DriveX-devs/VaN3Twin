@@ -1,0 +1,40 @@
+<Test>
+  <Name>three-gpp-propagation-loss-model</Name>
+  <Result>PASS</Result>
+  <Time real="0.450" user="0.450" system="0.000"/>
+  <Test>
+    <Name>Test for the ThreeGppRmaPropagationLossModel class</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test for the ThreeGppUmaPropagationLossModel class</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test for the ThreeGppUmiPropagationLossModel class</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test for the ThreeGppIndoorOfficePropagationLossModel class</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test for the ThreeGppV2vUrbanPropagationLossModel class.</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test for the ThreeGppV2vHighwayPropagationLossModel</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test to check if the shadow fading is correctly computed</Name>
+    <Result>PASS</Result>
+    <Time real="0.450" user="0.450" system="0.000"/>
+  </Test>
+</Test>

@@ -23,7 +23,7 @@ namespace ns3 {
     double getPedSpeedValue() override {return m_gps_trace_client->getSpeedms ();}
     double getPedHeadingValue() override {return m_gps_trace_client->getHeadingdeg ();}
 
-    std::vector<distance_t> get_min_distance(Ptr<LDM> LDM) override {return std::vector<distance_t>();}
+    std::vector<distance_t> get_min_distance(Ptr<LDM> LDM, uint64_t ego_station_id, double long_safe_d, double lat_safe_d, double vert_safe_d) override {return std::vector<distance_t>();}
 
     // Added for GeoNet functionalities
     VRUdp_position_latlon_t getPedPosition() override;

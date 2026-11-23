@@ -1,0 +1,10 @@
+<Test>
+  <Name>adaptive-red-queue-disc</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.010" system="0.000"/>
+  <Test>
+    <Name>Sanity check on the functionality of Adaptive RED</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.010" system="0.000"/>
+  </Test>
+</Test>

@@ -1,0 +1,35 @@
+<Test>
+  <Name>tcp-bbr-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>BBR must keep pacing feature on</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>BBR must turn on pacing feature</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>BBR should enter to STARTUP phase and set cwnd and pacing gain accordingly</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>BBR should enter to DRAIN phase and set cwnd and pacing gain accordingly</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>BBR should enter to BBR_PROBE_BW phase and set cwnd and pacing gain accordingly</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>BBR should enter to BBR_PROBE_RTT phase and set cwnd and pacing gain accordingly</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

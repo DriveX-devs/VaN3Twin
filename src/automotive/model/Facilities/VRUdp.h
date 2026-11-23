@@ -5,6 +5,7 @@
 #include "vdp.h"
 #include "ns3/asn_utils.h"
 #include <float.h>
+#include <set>
 #include "ns3/Seq.hpp"
 #include "ns3/Getter.hpp"
 #include "ns3/Setter.hpp"
@@ -82,7 +83,10 @@ namespace ns3
 
     VRUdpValueConfidence<> getLongAcceleration();
 
-    virtual std::vector<distance_t> get_min_distance(Ptr<LDM> LDM);
+    virtual std::vector<distance_t> get_min_distance(Ptr<LDM> LDM, uint64_t ego_station_id, double long_safe_d, double lat_safe_d, double vert_safe_d);
+
+    // To be called when a VAM is transmitted: the stations which are now inside the safe distances will not be "new" anymore
+    void setSafeDistStationsReported() {m_safe_dist_reported = m_safe_dist_inside;}
 
     virtual /**
      * @brief This function converts the pedestrian's position in lat/lon coordinates to cartesian coordinates.
@@ -106,6 +110,10 @@ namespace ns3
     bool m_init_gen_time;
 
     bool m_compute_acceleration;
+
+    // Stations inside the safe distances at the last call of get_min_distance() and when the last VAM was transmitted
+    std::set<uint64_t> m_safe_dist_inside;
+    std::set<uint64_t> m_safe_dist_reported;
   };
 }
 

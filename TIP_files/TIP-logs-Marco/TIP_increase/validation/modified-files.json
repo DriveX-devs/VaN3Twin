@@ -1,0 +1,7 @@
+[
+  "src/automotive/model/BTP/btpdatarequest.h",
+  "src/automotive/model/BTP/btp.cc",
+  "src/automotive/model/GeoNet/geonet.cc",
+  "src/automotive/model/Facilities/VRUBasicService.h",
+  "src/automotive/model/Facilities/VRUBasicService.cc"
+]

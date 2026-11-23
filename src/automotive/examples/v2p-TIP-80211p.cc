@@ -27,6 +27,36 @@ static int received_VAMs_veh = 0;
 static int received_VAMs_ped = 0;
 
 BSMap basicServices;
+
+// Per-node, per-window channel busy time [ns], used to compute the Channel Busy Ratio (CBR) of each node
+// The CBR of a window is the fraction of the window during which the PHY of the node is not idle (i.e., it is in TX, RX or CCA_BUSY state)
+static std::vector<std::vector<double>> busy_time_ns;
+static double cbr_window_ns = 0;
+
+void phyStateTrace(std::string context, Time start, Time duration, WifiPhyState state)
+{
+  if (state == WifiPhyState::IDLE || state == WifiPhyState::SLEEP || cbr_window_ns <= 0)
+    {
+      return;
+    }
+
+  std::size_t first = context.find ("/NodeList/") + 10; // 10 is the length of "/NodeList/"
+  std::size_t last = context.find ("/", first);
+  unsigned long node = std::stoul (context.substr (first, last - first));
+  if (node >= busy_time_ns.size ())
+    {
+      return;
+    }
+
+  // Split the busy interval over all the CBR windows it overlaps with
+  double busy_start = start.GetNanoSeconds ();
+  double busy_end = busy_start + duration.GetNanoSeconds ();
+  std::vector<double> &node_busy = busy_time_ns[node];
+  for (unsigned long w = (unsigned long) (busy_start / cbr_window_ns); w < node_busy.size () && w * cbr_window_ns < busy_end; w++)
+    {
+      node_busy[w] += std::min (busy_end, (w + 1) * cbr_window_ns) - std::max (busy_start, w * cbr_window_ns);
+    }
+}
 // ******************************************************************************************************************************************************************
 
 void receiveCAM_veh(asn1cpp::Seq<CAM> cam, Address from, StationID_t my_stationID, StationType_t my_StationType)
@@ -83,6 +113,20 @@ int main (int argc, char *argv[])
 
   double simTime = 250;
 
+  // TIP (Trajectory Interception Probability) configuration
+  // "none": TIP disabled for all the VRUs; "single": TIP enabled only for the VRU specified with --tip-ped; "all": TIP enabled for all the VRUs
+  std::string tip_mode = "single";
+  unsigned long tip_ped = 1003;
+
+  // If true, the CAM/VAM dissemination of each station starts after a random time between 0 and 1 s (as in the other examples),
+  // to avoid that all the stations check their triggering conditions (and thus transmit) at the very same instants
+  bool desync_enabled = true;
+
+  // Directory in which all the logs and the PCAP traces are saved (if empty, the current working directory is used and only the default logs are generated)
+  std::string log_dir = "";
+  // CBR computation window [ms] (used only when the Metric Supervisor is enabled)
+  double cbr_window = 100;
+
   int numberOfNodes_veh;
   int numberOfNodes_ped;
     
@@ -113,6 +157,13 @@ int main (int argc, char *argv[])
 
   cmd.AddValue("sim-time", "Total duration of the simulation [s]", simTime);
 
+  /* Cmd Line options for TIP and logging */
+  cmd.AddValue("tip-mode", "TIP-based VAM triggering: 'none' (disabled), 'single' (only for the VRU set with --tip-ped), 'all' (all the VRUs)", tip_mode);
+  cmd.AddValue("tip-ped", "Station ID of the VRU for which TIP is enabled when --tip-mode=single", tip_ped);
+  cmd.AddValue("desync", "Start the CAM/VAM dissemination of each station after a random time between 0 and 1 s, to desynchronize the transmissions", desync_enabled);
+  cmd.AddValue("log-dir", "Directory where all the logs and PCAP traces are stored (it must already exist, with the VAM_triggering, CAM_triggering, pcap and sumo subfolders)", log_dir);
+  cmd.AddValue("cbr-window", "CBR computation window [ms]", cbr_window);
+
   cmd.Parse (argc, argv);
 
   if(std::find(rate_admitted_values.begin(), rate_admitted_values.end(), datarate) == rate_admitted_values.end())
@@ -129,6 +180,17 @@ int main (int argc, char *argv[])
         {
           datarate_config = "OfdmRate" + std::to_string((int)datarate) + "MbpsBW10MHz";
         }
+    }
+
+  if(tip_mode != "none" && tip_mode != "single" && tip_mode != "all")
+    {
+      NS_FATAL_ERROR("Fatal error: invalid TIP mode '" << tip_mode << "'. Valid modes are: none, single, all.");
+    }
+
+  bool extended_logs = (log_dir != "");
+  if(extended_logs && log_dir.back() != '/')
+    {
+      log_dir += "/";
     }
 
   if (verbose)
@@ -224,7 +286,15 @@ int main (int argc, char *argv[])
   NetDeviceContainer netDevices = wifi80211p.Install (wifiPhy, wifi80211pMac, Nodes);
 
   // Enable saving to Wireshark PCAP traces
-  wifiPhy.EnablePcap ("v2p-vam-80211p", netDevices);
+  wifiPhy.EnablePcap (extended_logs ? log_dir + "pcap/v2p-vam-80211p" : "v2p-vam-80211p", netDevices);
+
+  // Measure the Channel Busy Ratio (CBR) of every node, by tracing the state of its PHY
+  if(extended_logs)
+    {
+      cbr_window_ns = cbr_window * 1e6;
+      busy_time_ns.assign (Nodes.GetN (), std::vector<double> ((unsigned long) std::ceil (simTime * 1e9 / cbr_window_ns), 0.0));
+      Config::Connect ("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/State/State", MakeCallback (&phyStateTrace));
+    }
 
   /*** 4. Give packet socket powers to nodes (otherwise, if the app tries to create a PacketSocket, CreateSocket will end up with a segmentation fault) */
   PacketSocketHelper packetSocket;
@@ -247,6 +317,16 @@ int main (int argc, char *argv[])
   sumoClient->SetAttribute ("SumoStepLog", BooleanValue (false));
   sumoClient->SetAttribute ("SumoSeed", IntegerValue (10));
   sumoClient->SetAttribute ("SumoWaitForSocket", TimeValue (Seconds (1.0)));
+  if(extended_logs)
+    {
+      // Save also the SUMO-side logs (mobility traces every 100 ms, collisions, trip information and errors) inside the log directory
+      sumoClient->SetAttribute ("SumoAdditionalCmdOptions", StringValue ("--fcd-output " + log_dir + "sumo/fcd.xml --device.fcd.period 0.1"
+                                                                         " --collision-output " + log_dir + "sumo/collisions.xml"
+                                                                         " --tripinfo-output " + log_dir + "sumo/tripinfo.xml"
+                                                                         " --error-log " + log_dir + "sumo/errorLog.log"
+                                                                         // The SUMO configuration file ends at 55 s: let SUMO run for the whole simulation time
+                                                                         " --end " + std::to_string(simTime)));
+    }
 
   /* Create and setup the web-based vehicle visualizer of ms-van3t */
   vehicleVisualizer vehicleVisObj;
@@ -264,6 +344,19 @@ int main (int argc, char *argv[])
     {
       metSup = &metSupObj;
       metSup->setTraCIClient(sumoClient);
+
+      // Channel Busy Ratio (CBR) measurement for all the nodes (vehicles and pedestrians)
+      // No exponential moving average is applied (alpha = 0), so that the raw CBR of each window is logged
+      metSup->setChannelTechnology("80211p");
+      metSup->setCBRWindowValue(cbr_window);
+      metSup->setCBRAlphaValue(0.0);
+      metSup->setSimulationTimeValue(simTime);
+      metSup->setNodeContainer(Nodes);
+      if(extended_logs)
+        {
+          metSup->writeCBRtoCSV(log_dir + "CBR_MetricSupervisor.csv");
+        }
+      metSup->startCheckCBR();
     }
 
   // Creation of the file where VAM metrics will be stored
@@ -275,6 +368,17 @@ int main (int argc, char *argv[])
           csv_VAM_ofstream << "station_ID,timestamp,time_elapsed_since_last_gen,triggering_condition,stationID_safe_dist,latitude,longitude,speed" << std::endl;
           csv_VAM_ofstream.close ();
         }
+    }
+
+  // Creation of the file where all the computed TIP values will be stored (only when the extended logs are enabled)
+  std::string full_csv_TIP_name = "";
+  if(extended_logs && tip_mode != "none")
+    {
+      full_csv_TIP_name = log_dir + "TIP_metrics.csv";
+      std::ofstream csv_TIP_ofstream;
+      csv_TIP_ofstream.open(full_csv_TIP_name, std::ofstream::out | std::ofstream::trunc);
+      csv_TIP_ofstream << "timestamp_ms,station_ID,remote_station_ID,remote_is_vehicle,ttc_s,stc_m,tip" << std::endl;
+      csv_TIP_ofstream.close ();
     }
 
   /*Ptr<WifiNetDevice> wifiAPdevice = DynamicCast<WifiNetDevice> (netDevices.Get(1)); // Getting the PHY of the first (and only, in this case, AP)
@@ -337,20 +441,37 @@ int main (int argc, char *argv[])
       // retrieve the right BSContainer given a vehicle ID
       basicServices.add(bs_container);
 
-      std::srand(Simulator::Now().GetNanoSeconds ()*2); // Seed based on the simulation time to give each vehicle a different random seed
-      double desync = ((double)std::rand()/RAND_MAX);
+      // We randomize the instant in time in which the CAM/VAM dissemination is going to start
+      // This simulates different startup times for the different stations, and reduces the risk of multiple
+      // stations trying to send CAMs/VAMs at the same time (causing more collisions);
+      // "desync" is a value between 0 and 1 (seconds) after which the CAM/VAM dissemination should start
+      // The seed is based on the simulation time and on the station ID, to give each station a different random seed
+      // (even when more stations enter the simulation at the same instant)
+      std::srand(Simulator::Now().GetNanoSeconds ()*2 + nodeID);
+      double desync = desync_enabled ? ((double)std::rand()/RAND_MAX) : 0.0;
 
       // Start transmitting CAMs (only vehicles) and VAMs (only pedestrians)
       if(!station_type_ID.compare("veh")) {
           bs_container->getCABasicService ()->setStationType (station_type);
-          bs_container->getCABasicService ()->startCamDissemination ();
+          if(extended_logs)
+            {
+              bs_container->getCABasicService ()->SetLogTriggering (true, log_dir + "CAM_triggering/" + stationID + ".log");
+            }
+          bs_container->getCABasicService ()->startCamDissemination (desync);
         }
         else {
           bs_container->getVRUBasicService ()->setStationType (station_type);
           bs_container->getVRUBasicService ()->startAccelerationComputation (computationT_acc);
-          if (nodeID == 1003)
+          // Store the VAM metrics of all the VRUs in the .csv file
+          bs_container->getVRUBasicService ()->setVAMmetricsfile (full_csv_VAM_name, m_VAM_metrics);
+          if(extended_logs)
             {
-              bs_container->getVRUBasicService ()->setUseTIP(); // Activate TIP mechanism only for ped1003
+              bs_container->getVRUBasicService ()->SetLogTriggering (true, log_dir + "VAM_triggering/" + stationID + ".log");
+            }
+          if (tip_mode == "all" || (tip_mode == "single" && nodeID == tip_ped))
+            {
+              bs_container->getVRUBasicService ()->setUseTIP(); // Activate TIP mechanism (for all the VRUs or only for the selected one)
+              bs_container->getVRUBasicService ()->setTIPLogFile (full_csv_TIP_name);
               bs_container->getVRUBasicService ()->setTTCMax (4.0);
               bs_container->getVRUBasicService ()->setTTCMin (1.0);
               bs_container->getVRUBasicService () ->setK (0.27);
@@ -360,7 +481,7 @@ int main (int argc, char *argv[])
               bs_container->getVRUBasicService () ->setModality ("exp");
             }
 
-          bs_container->getVRUBasicService ()->startVamDissemination ();
+          bs_container->getVRUBasicService ()->startVamDissemination (desync);
         }
 
       return includedNode;
@@ -389,6 +510,23 @@ int main (int argc, char *argv[])
   Simulator::Run ();
   Simulator::Destroy ();
 
+  // Store the CBR of each node, for each window, in a .csv file
+  if(extended_logs)
+    {
+      std::ofstream csv_CBR_ofstream;
+      csv_CBR_ofstream.open(log_dir + "CBR.csv", std::ofstream::out | std::ofstream::trunc);
+      csv_CBR_ofstream << "window_start_ms,window_end_ms,node_id,station_ID,CBR" << std::endl;
+      for(unsigned long node = 0; node < busy_time_ns.size (); node++)
+        {
+          std::string station = node < (unsigned long) numberOfNodes_veh ? "veh" + std::to_string (node) : "ped" + std::to_string (1000 + node - numberOfNodes_veh);
+          for(unsigned long w = 0; w < busy_time_ns[node].size (); w++)
+            {
+              csv_CBR_ofstream << w * cbr_window << "," << (w + 1) * cbr_window << "," << node << "," << station << "," << busy_time_ns[node][w] / cbr_window_ns << std::endl;
+            }
+        }
+      csv_CBR_ofstream.close ();
+    }
+
   if(m_metric_sup)
     {
       if(csv_name_cumulative != "")
@@ -405,10 +543,9 @@ int main (int argc, char *argv[])
         {
           // The file does not exist yet
           csv_cum_ofstream.open(full_csv_name);
-          csv_cum_ofstream << "current_txpower_dBm,datarate,num_vehicles,num_pedestrians,avg_PRR_vehicles,"
-                              "avg_PRR_pedestrians,avg_PRR_individual_pedestrian,avg_latency_ms_vehicles,"
-                              "avg_latency_ms_pedestrians,avg_latency_ms_individual_pedestrian,num_received_CAMs_veh,"
-                              "num_received_CAMs_ped,num_received_VAMs_veh,num_received_VAMs_ped" << std::endl;
+          csv_cum_ofstream << "current_txpower_dBm,datarate,num_vehicles,num_pedestrians,avg_PRR_overall,"
+                              "avg_PRR_ped1000,avg_latency_ms_overall,avg_latency_ms_ped1000,num_received_CAMs_veh,"
+                              "num_received_CAMs_ped,num_received_VAMs_veh,num_received_VAMs_ped,avg_last_CBR_MetricSupervisor" << std::endl;
         }
 
         csv_cum_ofstream << txPower << "," << datarate << "," << numberOfNodes_veh << "," << numberOfNodes_ped << "," <<
@@ -416,8 +553,12 @@ int main (int argc, char *argv[])
                             metSup->getAveragePRR_pedestrian (1000) << "," << metSup->getAverageLatency_overall () <<
                             "," <<  metSup->getAverageLatency_pedestrian (1000) <<
                             "," << received_CAMs_veh << "," << received_CAMs_ped << "," << received_VAMs_veh << "," <<
-                            received_VAMs_ped << std::endl;
+                            received_VAMs_ped << "," << metSup->getAverageCBROverall() << std::endl;
       }
+
+      std::cout << "Average PRR (overall) = " << metSup->getAveragePRR_overall() << std::endl;
+      std::cout << "Average latency (overall) [ms] = " << metSup->getAverageLatency_overall() << std::endl;
+      std::cout << "Average of the last CBR values of all the nodes (Metric Supervisor) = " << metSup->getAverageCBROverall() << std::endl;
     }
     
   // Print the number of CAMs received by vehicles and pedestrians

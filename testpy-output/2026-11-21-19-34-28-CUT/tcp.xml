@@ -1,0 +1,35 @@
+<Test>
+  <Name>tcp</Name>
+  <Result>PASS</Result>
+  <Time real="0.070" user="0.070" system="0.000"/>
+  <Test>
+    <Name>Send string data from client to server and back total=13 sourceWrite=200 sourceRead=200 serverRead=200 serverWrite=200 useIpv6=0</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Send string data from client to server and back total=13 sourceWrite=1 sourceRead=1 serverRead=1 serverWrite=1 useIpv6=0</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Send string data from client to server and back total=100000 sourceWrite=100 sourceRead=50 serverRead=20 serverWrite=100 useIpv6=0</Name>
+    <Result>PASS</Result>
+    <Time real="0.030" user="0.030" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Send string data from client to server and back total=13 sourceWrite=200 sourceRead=200 serverRead=200 serverWrite=200 useIpv6=1</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Send string data from client to server and back total=13 sourceWrite=1 sourceRead=1 serverRead=1 serverWrite=1 useIpv6=1</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Send string data from client to server and back total=100000 sourceWrite=100 sourceRead=50 serverRead=20 serverWrite=100 useIpv6=1</Name>
+    <Result>PASS</Result>
+    <Time real="0.040" user="0.030" system="0.000"/>
+  </Test>
+</Test>

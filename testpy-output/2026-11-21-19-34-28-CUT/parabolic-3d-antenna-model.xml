@@ -1,0 +1,245 @@
+<Test>
+  <Name>parabolic-3d-antenna-model</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>theta=1.5708 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.523599, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.523599, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.5708, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.5708, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.74533, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.61799, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-3.14159, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.74533, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.61799, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-3.14159, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.0472, horizontal beamdwidth=60 deg, orientation=60, horizontal maxAttenuation=15 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.5708, horizontal beamdwidth=60 deg, orientation=60, horizontal maxAttenuation=15 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.523599, horizontal beamdwidth=60 deg, orientation=60, horizontal maxAttenuation=15 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.523599, horizontal beamdwidth=60 deg, orientation=60, horizontal maxAttenuation=15 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.61799, horizontal beamdwidth=60 deg, orientation=60, horizontal maxAttenuation=15 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.79253, horizontal beamdwidth=60 deg, orientation=60, horizontal maxAttenuation=15 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.61799, horizontal beamdwidth=60 deg, orientation=60, horizontal maxAttenuation=15 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.0944, horizontal beamdwidth=60 deg, orientation=60, horizontal maxAttenuation=15 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.698132, horizontal beamdwidth=60 deg, orientation=60, horizontal maxAttenuation=15 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.5708, horizontal beamdwidth=60 deg, orientation=60, horizontal maxAttenuation=15 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.0944, horizontal beamdwidth=60 deg, orientation=60, horizontal maxAttenuation=15 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.61799, horizontal beamdwidth=80 deg, orientation=-150, horizontal maxAttenuation=10 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.91986, horizontal beamdwidth=80 deg, orientation=-150, horizontal maxAttenuation=10 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.96706, horizontal beamdwidth=80 deg, orientation=-150, horizontal maxAttenuation=10 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.22173, horizontal beamdwidth=80 deg, orientation=-150, horizontal maxAttenuation=10 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.6057, horizontal beamdwidth=80 deg, orientation=-150, horizontal maxAttenuation=10 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.523599, horizontal beamdwidth=80 deg, orientation=-150, horizontal maxAttenuation=10 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0, horizontal beamdwidth=80 deg, orientation=-150, horizontal maxAttenuation=10 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.0472, horizontal beamdwidth=80 deg, orientation=-150, horizontal maxAttenuation=10 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.5708, horizontal beamdwidth=80 deg, orientation=-150, horizontal maxAttenuation=10 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.5708, horizontal beamdwidth=80 deg, orientation=-150, horizontal maxAttenuation=10 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.523599, horizontal beamdwidth=80 deg, orientation=-150, horizontal maxAttenuation=10 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.48353 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.65806 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=0 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=3.14159 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.65806 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 5 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.65806 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 5 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 5 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 5 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.74533 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 5 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.74533 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 5 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=0 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 5 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=0 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 5 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=3.14159 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 5 deg, mechanical tilt= 0 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=3.14159 , phi=0, horizontal beamdwidth=60 deg, orientation=0, horizontal maxAttenuation=25 dB, vertical beamwidth=10 deg, electrical tilt= 0 deg, mechanical tilt= 5 deg, vertical maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

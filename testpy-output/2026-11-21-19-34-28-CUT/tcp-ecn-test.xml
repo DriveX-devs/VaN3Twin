@@ -1,0 +1,35 @@
+<Test>
+  <Name>tcp-ecn-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.010" system="0.000"/>
+  <Test>
+    <Name>ECN Negotiation Test : ECN incapable sender and ECN incapable receiver</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>ECN Negotiation Test : ECN capable sender and ECN incapable receiver</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>ECN Negotiation Test : ECN incapable sender and ECN capable receiver</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>ECN Negotiation Test : ECN capable sender and ECN capable receiver</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>ECE and CWR Functionality Test: ECN capable sender and ECN capable receiver</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Congestion Window Reduction Test :ECN capable sender and ECN capable receiver</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

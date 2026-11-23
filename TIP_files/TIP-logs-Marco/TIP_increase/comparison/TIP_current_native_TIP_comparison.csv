@@ -1,0 +1,5 @@
+case,baseline_generated_VAMs,current_generated_VAMs,baseline_VAMs_with_TIP,current_VAMs_with_TIP,common_generation_identities,changed_TIP_messages_on_common_identities,removed_generation_identities,added_generation_identities,identical_TIP_messages,identical_decoded_observations
+0_no_TIP,678,678,0,0,678,0,0,0,True,True
+1_TIP_ped1003,684,682,7,7,674,1,10,8,False,False
+2_TIP_ped1014,694,692,21,20,686,3,8,6,False,False
+3_TIP_all_VRUs,812,800,179,168,746,25,66,54,False,False

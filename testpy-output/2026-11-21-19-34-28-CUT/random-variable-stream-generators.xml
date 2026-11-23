@@ -1,0 +1,125 @@
+<Test>
+  <Name>random-variable-stream-generators</Name>
+  <Result>PASS</Result>
+  <Time real="11.020" user="10.900" system="0.020"/>
+  <Test>
+    <Name>Uniform Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.060" user="0.060" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Antithetic Uniform Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.200" user="0.200" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Constant Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Sequential Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Normal Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.440" user="0.430" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Antithetic Normal Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.420" user="0.430" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Exponential Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.830" user="0.820" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Antithetic Exponential Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.850" user="0.860" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Pareto Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.910" user="0.900" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Antithetic Pareto Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.910" user="0.910" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Weibull Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.650" user="0.650" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Antithetic Weibull Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.670" user="0.660" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Log-Normal Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="1.230" user="1.220" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Gamma Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="1.130" user="1.120" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Erlang Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="1.010" user="0.980" system="0.010"/>
+  </Test>
+  <Test>
+    <Name>Antithetic Erlang Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="1.020" user="1.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Zipf Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.070" user="0.060" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Antithetic Zipf Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.080" user="0.080" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Zeta Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.130" user="0.130" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Antithetic Zeta Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.210" user="0.170" system="0.010"/>
+  </Test>
+  <Test>
+    <Name>Deterministic Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Empirical Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.100" user="0.100" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>EmpiricalAntithetic Random Variable Stream Generator</Name>
+    <Result>PASS</Result>
+    <Time real="0.100" user="0.100" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>NormalRandomVariable caching of parameters</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

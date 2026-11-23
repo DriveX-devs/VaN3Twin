@@ -1,0 +1,270 @@
+<Test>
+  <Name>parabolic-antenna-model</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>theta=1.5708 , phi=0, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.523599, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.523599, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.5708, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.5708, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.74533, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.61799, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-3.14159, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.74533, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.61799, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-3.14159, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.0472, beamdwidth=60deg, orientation=60, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.5708, beamdwidth=60deg, orientation=60, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.523599, beamdwidth=60deg, orientation=60, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.523599, beamdwidth=60deg, orientation=60, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.61799, beamdwidth=60deg, orientation=60, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.79253, beamdwidth=60deg, orientation=60, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.61799, beamdwidth=60deg, orientation=60, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.0944, beamdwidth=60deg, orientation=60, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.698132, beamdwidth=60deg, orientation=60, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.5708, beamdwidth=60deg, orientation=60, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.0944, beamdwidth=60deg, orientation=60, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-2.61799, beamdwidth=80deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.91986, beamdwidth=80deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=2.96706, beamdwidth=80deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-1.22173, beamdwidth=80deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.6057, beamdwidth=80deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=-0.523599, beamdwidth=80deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0, beamdwidth=80deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.0472, beamdwidth=80deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=1.5708, beamdwidth=80deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.5708 , phi=0.523599, beamdwidth=80deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.53589 , phi=0, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.53589 , phi=0.523599, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.53589 , phi=-0.523599, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.53589 , phi=-1.5708, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.53589 , phi=-3.14159, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.62316 , phi=1.0472, beamdwidth=60deg, orientation=60, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.62316 , phi=1.5708, beamdwidth=60deg, orientation=60, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.62316 , phi=0.523599, beamdwidth=60deg, orientation=60, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.62316 , phi=-2.0944, beamdwidth=60deg, orientation=60, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.62316 , phi=-2.61799, beamdwidth=100deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.62316 , phi=-1.74533, beamdwidth=100deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.62316 , phi=2.79253, beamdwidth=100deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.62316 , phi=-0.523599, beamdwidth=100deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.40499 , phi=1.5708, beamdwidth=100deg, orientation=-150, maxAttenuation=10 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.40499 , phi=0, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.40499 , phi=0.523599, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.40499 , phi=-0.523599, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.40499 , phi=1.74533, beamdwidth=60deg, orientation=0, maxAttenuation=20 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.40499 , phi=-2.61799, beamdwidth=100deg, orientation=-150, maxAttenuation=30 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.40499 , phi=-1.74533, beamdwidth=100deg, orientation=-150, maxAttenuation=30 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>theta=1.40499 , phi=2.79253, beamdwidth=100deg, orientation=-150, maxAttenuation=30 dB</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

@@ -1,0 +1,10 @@
+<Test>
+  <Name>outdoor-random-walk-model</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.020" system="0.000"/>
+  <Test>
+    <Name>Test case for the BuildingsChannelConditionModel</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.020" system="0.000"/>
+  </Test>
+</Test>

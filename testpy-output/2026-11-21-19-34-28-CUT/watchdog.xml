@@ -1,0 +1,10 @@
+<Test>
+  <Name>watchdog</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Check that we can keepalive a watchdog</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+</Test>

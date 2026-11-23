@@ -1,0 +1,2 @@
+v2p-TIP-80211p --sumo-gui=false --sim-time=100 --met-sup=true --desync=true --tip-mode=single --tip-ped=1014 --log-dir=/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/TIP-logs-Marco/TIP_finding2_addressed/2_TIP_ped1014 --csv-log=/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/TIP-logs-Marco/TIP_finding2_addressed/2_TIP_ped1014/VAM_metrics --csv-log-cumulative=/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/TIP-logs-Marco/TIP_finding2_addressed/2_TIP_ped1014/PRR_latency_CBR_summary
+exit_code=0 wall_clock_s=41.101

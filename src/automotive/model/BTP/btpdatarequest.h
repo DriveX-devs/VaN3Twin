@@ -1,6 +1,7 @@
 #ifndef BTPDATAREQUEST_H
 #define BTPDATAREQUEST_H
 #include <stdint.h>
+#include <functional>
 #include "ns3/packet.h"
 #include "ns3/gn-address.h"
 #include "ns3/longpositionvector.h"
@@ -75,6 +76,9 @@ namespace ns3 {
     uint32_t lenght; // Payload size
     Ptr<Packet> data; // Payload
 
+    // Local notification for this specific packet; never serialized.
+    std::function<void()> onTxSuccess{};
+
   } BTPDataRequest_t;
 
   typedef struct _dataIndication {
@@ -122,6 +126,9 @@ namespace ns3 {
 
     uint32_t lenght; // Payload size
     Ptr<Packet> data; // Payload
+
+    // Copied with the request through DCC queues.
+    std::function<void()> onTxSuccess{};
 
     int16_t _messagePort; //BTP port for PRR supervisor (used for internal computation, not specified in the standard)
 

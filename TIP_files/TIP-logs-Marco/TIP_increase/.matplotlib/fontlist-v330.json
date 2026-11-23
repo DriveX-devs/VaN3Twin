@@ -1,0 +1,6844 @@
+{
+  "_version": 330,
+  "_FontManager__default_weight": "normal",
+  "default_size": null,
+  "defaultFamily": {
+    "ttf": "DejaVu Sans",
+    "afm": "Helvetica"
+  },
+  "afmlist": [
+    {
+      "fname": "fonts/afm/phvlo8a.afm",
+      "name": "Helvetica",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "light",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/ZapfDingbats.afm",
+      "name": "ZapfDingbats",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/putr8a.afm",
+      "name": "Utopia",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pzcmi8a.afm",
+      "name": "ITC Zapf Chancery",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/ptmri8a.afm",
+      "name": "Times",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/Times-Roman.afm",
+      "name": "Times",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "roman",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/Symbol.afm",
+      "name": "Symbol",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pncb8a.afm",
+      "name": "New Century Schoolbook",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pncr8a.afm",
+      "name": "New Century Schoolbook",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "roman",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/phvbo8a.afm",
+      "name": "Helvetica",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/phvb8a.afm",
+      "name": "Helvetica",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/phvr8a.afm",
+      "name": "Helvetica",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/psyr.afm",
+      "name": "Symbol",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/cmex10.afm",
+      "name": "Computer Modern",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/phvr8an.afm",
+      "name": "Helvetica",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/putb8a.afm",
+      "name": "Utopia",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pplb8a.afm",
+      "name": "Palatino",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/Courier-Oblique.afm",
+      "name": "Courier",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pcrb8a.afm",
+      "name": "Courier",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/Helvetica-BoldOblique.afm",
+      "name": "Helvetica",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/phvbo8an.afm",
+      "name": "Helvetica",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pagdo8a.afm",
+      "name": "ITC Avant Garde Gothic",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/cmtt10.afm",
+      "name": "Computer Modern",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pagk8a.afm",
+      "name": "ITC Avant Garde Gothic",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "book",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pbkdi8a.afm",
+      "name": "ITC Bookman",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pzdr.afm",
+      "name": "ITC Zapf Dingbats",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/ptmb8a.afm",
+      "name": "Times",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/phvro8an.afm",
+      "name": "Helvetica",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/phvro8a.afm",
+      "name": "Helvetica",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pcrbo8a.afm",
+      "name": "Courier",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/cmsy10.afm",
+      "name": "Computer Modern",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pbkl8a.afm",
+      "name": "ITC Bookman",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "light",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/phvl8a.afm",
+      "name": "Helvetica",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "light",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/cmr10.afm",
+      "name": "Computer Modern",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/ptmbi8a.afm",
+      "name": "Times",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pagko8a.afm",
+      "name": "ITC Avant Garde Gothic",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "book",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/Courier.afm",
+      "name": "Courier",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/Times-Bold.afm",
+      "name": "Times",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/Helvetica-Bold.afm",
+      "name": "Helvetica",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pplbi8a.afm",
+      "name": "Palatino",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/Times-Italic.afm",
+      "name": "Times",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pbkd8a.afm",
+      "name": "ITC Bookman",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pagd8a.afm",
+      "name": "ITC Avant Garde Gothic",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/ptmr8a.afm",
+      "name": "Times",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "roman",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/Times-BoldItalic.afm",
+      "name": "Times",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/Courier-BoldOblique.afm",
+      "name": "Courier",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/putbi8a.afm",
+      "name": "Utopia",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/Helvetica-Oblique.afm",
+      "name": "Helvetica",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/putri8a.afm",
+      "name": "Utopia",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pcrro8a.afm",
+      "name": "Courier",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pncri8a.afm",
+      "name": "New Century Schoolbook",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/Courier-Bold.afm",
+      "name": "Courier",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/cmmi10.afm",
+      "name": "Computer Modern",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pcrr8a.afm",
+      "name": "Courier",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pncbi8a.afm",
+      "name": "New Century Schoolbook",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/phvb8an.afm",
+      "name": "Helvetica",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/pdfcorefonts/Helvetica.afm",
+      "name": "Helvetica",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pplri8a.afm",
+      "name": "Palatino",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pplr8a.afm",
+      "name": "Palatino",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "roman",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/afm/pbkli8a.afm",
+      "name": "ITC Bookman",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "light",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmtlo10.afm",
+      "name": "LMMonoLt10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "light",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qhvcb.afm",
+      "name": "TeXGyreHerosCondensed",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/a010035l.afm",
+      "name": "URW Gothic L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qplbi.afm",
+      "name": "TeXGyrePagella",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusRoman-Regular.afm",
+      "name": "Nimbus Roman",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusMonoPS-BoldItalic.afm",
+      "name": "Nimbus Mono PS",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qbkbi.afm",
+      "name": "TeXGyreBonum",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qplri.afm",
+      "name": "TeXGyrePagella",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qzcmi.afm",
+      "name": "TeXGyreChorus",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qtmbi.afm",
+      "name": "TeXGyreTermes",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmtto10.afm",
+      "name": "LMMonoSlant10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/p052004l.afm",
+      "name": "URW Palladio L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmss10.afm",
+      "name": "LMSans10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmro10.afm",
+      "name": "LMRomanSlant10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/a010013l.afm",
+      "name": "URW Gothic L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "book",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/C059-BdIta.afm",
+      "name": "C059",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qcrr.afm",
+      "name": "TeXGyreCursor",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/C059-Bold.afm",
+      "name": "C059",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qagb.afm",
+      "name": "TeXGyreAdventor",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmvtt10.afm",
+      "name": "LMMonoProp10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmcsc10.afm",
+      "name": "LMRomanCaps10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmtti10.afm",
+      "name": "LMMono10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmssdc10.afm",
+      "name": "LMSansDemiCond10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n022024l.afm",
+      "name": "Nimbus Mono L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/D050000L.afm",
+      "name": "D050000L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n021023l.afm",
+      "name": "Nimbus Roman No9 L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusRoman-BoldItalic.afm",
+      "name": "Nimbus Roman",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmbo10.afm",
+      "name": "LMRomanDemi10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmssqbo8.afm",
+      "name": "LMSansQuot8",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/P052-BoldItalic.afm",
+      "name": "P052",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/P052-Bold.afm",
+      "name": "P052",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmb10.afm",
+      "name": "LMRomanDemi10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmu10.afm",
+      "name": "LMRomanUnsl10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n019003l.afm",
+      "name": "Nimbus Sans L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/URWBookman-Light.afm",
+      "name": "URW Bookman",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "light",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/P052-Roman.afm",
+      "name": "P052",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "roman",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/C059-Italic.afm",
+      "name": "C059",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "roman",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusMonoPS-Bold.afm",
+      "name": "Nimbus Mono PS",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmsso10.afm",
+      "name": "LMSans10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qhvr.afm",
+      "name": "TeXGyreHeros",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmtlco10.afm",
+      "name": "LMMonoLtCond10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "light",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/Z003-MediumItalic.afm",
+      "name": "Z003",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n021003l.afm",
+      "name": "Nimbus Roman No9 L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/c0633bt_.afm",
+      "name": "Bitstream Charter",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmssqbx8.afm",
+      "name": "LMSansQuot8",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/c059016l.afm",
+      "name": "Century Schoolbook L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qcrbi.afm",
+      "name": "TeXGyreCursor",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qplr.afm",
+      "name": "TeXGyrePagella",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/texlive-fonts-recommended/pcrb8a.afm",
+      "name": "Courier",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/p052024l.afm",
+      "name": "URW Palladio L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/b018012l.afm",
+      "name": "URW Bookman L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n019063l.afm",
+      "name": "Nimbus Sans L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qcsb.afm",
+      "name": "TeXGyreSchola",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/c059033l.afm",
+      "name": "Century Schoolbook L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qhvcr.afm",
+      "name": "TeXGyreHerosCondensed",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/StandardSymbolsPS.afm",
+      "name": "Standard Symbols PS",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/P052-Italic.afm",
+      "name": "P052",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/URWGothic-BookOblique.afm",
+      "name": "URW Gothic",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "book",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusSans-BoldItalic.afm",
+      "name": "Nimbus Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/c0648bt_.afm",
+      "name": "Bitstream Charter",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n022003l.afm",
+      "name": "Nimbus Mono L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/b018035l.afm",
+      "name": "URW Bookman L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusSans-Regular.afm",
+      "name": "Nimbus Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qtmr.afm",
+      "name": "TeXGyreTermes",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qbkr.afm",
+      "name": "TeXGyreBonum",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/texlive-fonts-recommended/pcrro8a.afm",
+      "name": "Courier",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qagr.afm",
+      "name": "TeXGyreAdventor",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n019064l.afm",
+      "name": "Nimbus Sans L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qcrri.afm",
+      "name": "TeXGyreCursor",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n019024l.afm",
+      "name": "Nimbus Sans L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/URWGothic-Book.afm",
+      "name": "URW Gothic",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "book",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n021024l.afm",
+      "name": "Nimbus Roman No9 L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmssbo10.afm",
+      "name": "LMSans10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/c0649bt_.afm",
+      "name": "Bitstream Charter",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmbx10.afm",
+      "name": "LMRoman10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qcsr.afm",
+      "name": "TeXGyreSchola",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/a010015l.afm",
+      "name": "URW Gothic L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusSans-Bold.afm",
+      "name": "Nimbus Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qcrb.afm",
+      "name": "TeXGyreCursor",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/texlive-fonts-recommended/putri8a.afm",
+      "name": "Utopia",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/texlive-fonts-recommended/bchri8a.afm",
+      "name": "Bitstream Charter",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n019004l.afm",
+      "name": "Nimbus Sans L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusRoman-Italic.afm",
+      "name": "Nimbus Roman",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmssdo10.afm",
+      "name": "LMSansDemiCond10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/texlive-fonts-recommended/putb8a.afm",
+      "name": "Utopia",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qbkb.afm",
+      "name": "TeXGyreBonum",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/URWGothic-DemiOblique.afm",
+      "name": "URW Gothic",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/URWBookman-DemiItalic.afm",
+      "name": "URW Bookman",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmbxo10.afm",
+      "name": "LMRomanSlant10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmssq8.afm",
+      "name": "LMSansQuot8",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/texlive-fonts-recommended/pcrr8a.afm",
+      "name": "Courier",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmtlc10.afm",
+      "name": "LMMonoLtCond10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "light",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmvtto10.afm",
+      "name": "LMMonoProp10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusSansNarrow-Regular.afm",
+      "name": "Nimbus Sans Narrow",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qcsri.afm",
+      "name": "TeXGyreSchola",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qhvri.afm",
+      "name": "TeXGyreHeros",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qcsbi.afm",
+      "name": "TeXGyreSchola",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qagri.afm",
+      "name": "TeXGyreAdventor",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/c059013l.afm",
+      "name": "Century Schoolbook L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "roman",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/c0583bt_.afm",
+      "name": "Courier 10 Pitch",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/C059-Roman.afm",
+      "name": "C059",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "roman",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmvtlo10.afm",
+      "name": "LMMonoPropLt10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "light",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmtko10.afm",
+      "name": "LMMonoLt10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmvtko10.afm",
+      "name": "LMMonoPropLt10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qagbi.afm",
+      "name": "TeXGyreAdventor",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmtt10.afm",
+      "name": "LMMono10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmtl10.afm",
+      "name": "LMMonoLt10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "light",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qhvcbi.afm",
+      "name": "TeXGyreHerosCondensed",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmdunh10.afm",
+      "name": "LMRomanDunh10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmcsco10.afm",
+      "name": "LMRomanCaps10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmssqo8.afm",
+      "name": "LMSansQuot8",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmvtl10.afm",
+      "name": "LMMonoPropLt10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "light",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/d050000l.afm",
+      "name": "Dingbats",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmtcso10.afm",
+      "name": "LMMonoCaps10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/texlive-fonts-recommended/bchr8a.afm",
+      "name": "Bitstream Charter",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/texlive-fonts-recommended/bchbi8a.afm",
+      "name": "Bitstream Charter",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/c059036l.afm",
+      "name": "Century Schoolbook L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n022023l.afm",
+      "name": "Nimbus Mono L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/c0611bt_.afm",
+      "name": "Courier 10 Pitch",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/z003034l.afm",
+      "name": "URW Chancery L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "medium",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusSans-Italic.afm",
+      "name": "Nimbus Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n019043l.afm",
+      "name": "Nimbus Sans L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmbxi10.afm",
+      "name": "LMRoman10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/p052003l.afm",
+      "name": "URW Palladio L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "roman",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qtmb.afm",
+      "name": "TeXGyreTermes",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n019023l.afm",
+      "name": "Nimbus Sans L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/c0582bt_.afm",
+      "name": "Courier 10 Pitch",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/texlive-fonts-recommended/pcrbo8a.afm",
+      "name": "Courier",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/s050000l.afm",
+      "name": "Standard Symbols L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusSansNarrow-BoldOblique.afm",
+      "name": "Nimbus Sans Narrow",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/c0632bt_.afm",
+      "name": "Bitstream Charter",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmri10.afm",
+      "name": "LMRoman10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n022004l.afm",
+      "name": "Nimbus Mono L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qtmri.afm",
+      "name": "TeXGyreTermes",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n021004l.afm",
+      "name": "Nimbus Roman No9 L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/URWBookman-Demi.afm",
+      "name": "URW Bookman",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusMonoPS-Italic.afm",
+      "name": "Nimbus Mono PS",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/a010033l.afm",
+      "name": "URW Gothic L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "book",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/texlive-fonts-recommended/putbi8a.afm",
+      "name": "Utopia",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmr10.afm",
+      "name": "LMRoman10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qhvcri.afm",
+      "name": "TeXGyreHerosCondensed",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmtk10.afm",
+      "name": "LMMonoLt10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qplb.afm",
+      "name": "TeXGyrePagella",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qhvbi.afm",
+      "name": "TeXGyreHeros",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/URWGothic-Demi.afm",
+      "name": "URW Gothic",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "demi",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmduno10.afm",
+      "name": "LMRomanDunh10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/b018015l.afm",
+      "name": "URW Bookman L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/texlive-fonts-recommended/bchb8a.afm",
+      "name": "Bitstream Charter",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/texlive-fonts-recommended/putr8a.afm",
+      "name": "Utopia",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/p052023l.afm",
+      "name": "URW Palladio L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmtcsc10.afm",
+      "name": "LMMonoCaps10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/b018032l.afm",
+      "name": "URW Bookman L",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusRoman-Bold.afm",
+      "name": "Nimbus Roman",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusSansNarrow-Oblique.afm",
+      "name": "Nimbus Sans Narrow",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qhvb.afm",
+      "name": "TeXGyreHeros",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusSansNarrow-Bold.afm",
+      "name": "Nimbus Sans Narrow",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmvtk10.afm",
+      "name": "LMMonoPropLt10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/URWBookman-LightItalic.afm",
+      "name": "URW Bookman",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "light",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/qbkri.afm",
+      "name": "TeXGyreBonum",
+      "style": "italic",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/gsfonts/n019044l.afm",
+      "name": "Nimbus Sans L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/type1/urw-base35/NimbusMonoPS-Regular.afm",
+      "name": "Nimbus Mono PS",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "regular",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/lmssbx10.afm",
+      "name": "LMSans10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "bold",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/X11/Type1/c0419bt_.afm",
+      "name": "Courier 10 Pitch",
+      "style": "normal",
+      "variant": "normal",
+      "weight": "normal",
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    }
+  ],
+  "ttflist": [
+    {
+      "fname": "fonts/ttf/cmsy10.ttf",
+      "name": "cmsy10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSans-Bold.ttf",
+      "name": "DejaVu Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSerif-Bold.ttf",
+      "name": "DejaVu Serif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/cmss10.ttf",
+      "name": "cmss10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/cmmi10.ttf",
+      "name": "cmmi10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/cmb10.ttf",
+      "name": "cmb10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXGeneralItalic.ttf",
+      "name": "STIXGeneral",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXNonUniIta.ttf",
+      "name": "STIXNonUnicode",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXSizThreeSymReg.ttf",
+      "name": "STIXSizeThreeSym",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXSizTwoSymBol.ttf",
+      "name": "STIXSizeTwoSym",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXSizFourSymReg.ttf",
+      "name": "STIXSizeFourSym",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXNonUniBol.ttf",
+      "name": "STIXNonUnicode",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXSizFiveSymReg.ttf",
+      "name": "STIXSizeFiveSym",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSerif.ttf",
+      "name": "DejaVu Serif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/cmtt10.ttf",
+      "name": "cmtt10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSerifDisplay.ttf",
+      "name": "DejaVu Serif Display",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSerif-Italic.ttf",
+      "name": "DejaVu Serif",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSansMono-Oblique.ttf",
+      "name": "DejaVu Sans Mono",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXGeneralBol.ttf",
+      "name": "STIXGeneral",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXSizOneSymBol.ttf",
+      "name": "STIXSizeOneSym",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXSizFourSymBol.ttf",
+      "name": "STIXSizeFourSym",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXSizThreeSymBol.ttf",
+      "name": "STIXSizeThreeSym",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSansMono-Bold.ttf",
+      "name": "DejaVu Sans Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSans.ttf",
+      "name": "DejaVu Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXGeneral.ttf",
+      "name": "STIXGeneral",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSansMono.ttf",
+      "name": "DejaVu Sans Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXNonUni.ttf",
+      "name": "STIXNonUnicode",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXNonUniBolIta.ttf",
+      "name": "STIXNonUnicode",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSerif-BoldItalic.ttf",
+      "name": "DejaVu Serif",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXGeneralBolIta.ttf",
+      "name": "STIXGeneral",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSansMono-BoldOblique.ttf",
+      "name": "DejaVu Sans Mono",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSans-BoldOblique.ttf",
+      "name": "DejaVu Sans",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSansDisplay.ttf",
+      "name": "DejaVu Sans Display",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/cmex10.ttf",
+      "name": "cmex10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/cmr10.ttf",
+      "name": "cmr10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXSizOneSymReg.ttf",
+      "name": "STIXSizeOneSym",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/DejaVuSans-Oblique.ttf",
+      "name": "DejaVu Sans",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "fonts/ttf/STIXSizTwoSymReg.ttf",
+      "name": "STIXSizeTwoSym",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ttf-khmeros-core/KhmerOS.ttf",
+      "name": "Khmer OS",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/segoeuib.ttf",
+      "name": "Segoe UI",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Loma.ttf",
+      "name": "Loma",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-Heavy.ttf",
+      "name": "Lato",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 800,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Sawasdee-Oblique.ttf",
+      "name": "Sawasdee",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-Black.ttf",
+      "name": "Lato",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 900,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-orya-extra/utkal.ttf",
+      "name": "ori1Uni",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/Ubuntu-L.ttf",
+      "name": "Ubuntu",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Fraktur-Bold.otf",
+      "name": "MathJax_Fraktur",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Sawasdee-BoldOblique.ttf",
+      "name": "Sawasdee",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/sinhala/lklug.ttf",
+      "name": "LKLUG",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Waree.ttf",
+      "name": "Waree",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Kinnari-BoldOblique.ttf",
+      "name": "Kinnari",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Yrsa-LightItalic.ttf",
+      "name": "Yrsa",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-Medium.ttf",
+      "name": "Source Code Pro",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/samyak-fonts/Samyak-Tamil.ttf",
+      "name": "Samyak Tamil",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Rasa-Medium.ttf",
+      "name": "Rasa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tibetan-machine/TibetanMachineUni.ttf",
+      "name": "Tibetan Machine Uni",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-SemiboldItalic.ttf",
+      "name": "Lato",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/UbuntuMono-RI.ttf",
+      "name": "Ubuntu Mono",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/Sahadeva/sahadeva.ttf",
+      "name": "Sahadeva",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/open-sans/OpenSans-BoldItalic.ttf",
+      "name": "Open Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lyx/dsrom10.ttf",
+      "name": "dsrom10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationSerif-BoldItalic.ttf",
+      "name": "Liberation Serif",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Umpush-LightOblique.ttf",
+      "name": "Umpush",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/font-awesome/fontawesome-webfont.ttf",
+      "name": "FontAwesome",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/SyamalaRamana.ttf",
+      "name": "Syamala Ramana",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/UbuntuMono-R.ttf",
+      "name": "Ubuntu Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Rasa-Light.ttf",
+      "name": "Rasa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/malayalam/Rachana-Regular.ttf",
+      "name": "Rachana",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-Semibold.ttf",
+      "name": "Source Code Pro",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Yrsa-Regular.ttf",
+      "name": "Yrsa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationSansNarrow-Regular.ttf",
+      "name": "Liberation Sans Narrow",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusSansNarrow-Oblique.otf",
+      "name": "Nimbus Sans Narrow",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationSansNarrow-Italic.ttf",
+      "name": "Liberation Sans Narrow",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusRoman-Italic.otf",
+      "name": "Nimbus Roman",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Laksaman-Bold.ttf",
+      "name": "Laksaman",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/Gidugu.ttf",
+      "name": "Gidugu",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-ExtraLight.ttf",
+      "name": "Source Code Pro",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 200,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Waree-Oblique.ttf",
+      "name": "Waree",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationSerif-Italic.ttf",
+      "name": "Liberation Serif",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed.ttf",
+      "name": "DejaVu Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Script-Regular.otf",
+      "name": "MathJax_Script",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/freefont/FreeMonoOblique.ttf",
+      "name": "FreeMono",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation2/LiberationSerif-BoldItalic.ttf",
+      "name": "Liberation Serif",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-deva-extra/kalimati.ttf",
+      "name": "Kalimati",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/TimmanaRegular.ttf",
+      "name": "Timmana",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 900,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/abyssinica/AbyssinicaSIL-Regular.ttf",
+      "name": "Abyssinica SIL",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/segoeuiz.ttf",
+      "name": "Segoe UI",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-Regular.ttf",
+      "name": "Lato",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/Ponnala.ttf",
+      "name": "Ponnala",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/padauk/Padauk-Regular.ttf",
+      "name": "Padauk",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/suranna.ttf",
+      "name": "Suranna",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/samyak-fonts/Samyak-Malayalam.ttf",
+      "name": "Samyak Malayalam",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Fraktur-Regular.otf",
+      "name": "MathJax_Fraktur",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed-Bold.ttf",
+      "name": "DejaVu Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/seguibli.ttf",
+      "name": "Segoe UI",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 900,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Math-BoldItalic.otf",
+      "name": "MathJax_Math",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/malayalam/Gayathri-Thin.otf",
+      "name": "Gayathri",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 100,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation2/LiberationSans-BoldItalic.ttf",
+      "name": "Liberation Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Purisa-Bold.ttf",
+      "name": "Purisa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSerif-BoldItalic.ttf",
+      "name": "DejaVu Serif",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/C059-Bold.otf",
+      "name": "C059",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-Light.ttf",
+      "name": "Lato",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-Semibold.ttf",
+      "name": "Lato",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_WinChrome-Regular.otf",
+      "name": "MathJax_WinChrome",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/open-sans/OpenSans-CondLight.ttf",
+      "name": "Open Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-Black.ttf",
+      "name": "Source Code Pro",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 900,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/malayalam/RaghuMalayalamSans-Regular.ttf",
+      "name": "RaghuMalayalamSans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lohit-gujarati/Lohit-Gujarati.ttf",
+      "name": "Lohit Gujarati",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-It.ttf",
+      "name": "Source Code Pro",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgTypist-Oblique.ttf",
+      "name": "Tlwg Typist",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/NATS.ttf",
+      "name": "NATS",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/2segoeuii.ttf",
+      "name": "Segoe UI",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Yrsa-Bold.ttf",
+      "name": "Yrsa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/freefont/FreeSerifItalic.ttf",
+      "name": "FreeSerif",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf",
+      "name": "Liberation Serif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-HeavyItalic.ttf",
+      "name": "Lato",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 800,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lohit-tamil-classical/Lohit-Tamil-Classical.ttf",
+      "name": "Lohit Tamil Classical",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+      "name": "DejaVu Sans Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
+      "name": "DejaVu Serif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-LightIt.ttf",
+      "name": "Source Code Pro",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/Ubuntu-M.ttf",
+      "name": "Ubuntu",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst-one/KacstOne-Bold.ttf",
+      "name": "KacstOne",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/seguisli.ttf",
+      "name": "Segoe UI",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 350,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/noto/NotoSansMono-Bold.ttf",
+      "name": "Noto Sans Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/D050000L.otf",
+      "name": "D050000L",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/malayalam/Chilanka-Regular.otf",
+      "name": "Chilanka",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/seguihis.ttf",
+      "name": "Segoe UI Historic",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/Ubuntu-M.ttf",
+      "name": "Ubuntu",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+      "name": "Liberation Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/segoeprb.ttf",
+      "name": "Segoe Print",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Purisa-BoldOblique.ttf",
+      "name": "Purisa",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Umpush-Bold.ttf",
+      "name": "Umpush",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Norasi-BoldItalic.ttf",
+      "name": "Norasi",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-LightItalic.ttf",
+      "name": "Lato",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/dhurjati.ttf",
+      "name": "Dhurjati",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Caligraphic-Bold.otf",
+      "name": "MathJax_Caligraphic",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst-one/KacstOne.ttf",
+      "name": "KacstOne",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/open-sans/OpenSans-CondBold.ttf",
+      "name": "Open Sans Condensed",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/UbuntuMono-B.ttf",
+      "name": "Ubuntu Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/Ubuntu-L.ttf",
+      "name": "Ubuntu",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Math-Italic.otf",
+      "name": "MathJax_Math",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstScreen.ttf",
+      "name": "KacstScreen",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/segoesc.ttf",
+      "name": "Segoe Script",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusMonoPS-Regular.otf",
+      "name": "Nimbus Mono PS",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Yrsa-Italic.ttf",
+      "name": "Yrsa",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Garuda-BoldOblique.ttf",
+      "name": "Garuda",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/Ubuntu-Th.ttf",
+      "name": "Ubuntu",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 250,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Main-Regular.otf",
+      "name": "MathJax_Main",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-HairlineItalic.ttf",
+      "name": "Lato",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 100,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSerifCondensed.ttf",
+      "name": "DejaVu Serif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lyx/wasy10.ttf",
+      "name": "wasy10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/freefont/FreeSerifBold.ttf",
+      "name": "FreeSerif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/segoeuil.ttf",
+      "name": "Segoe UI",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/segoescb.ttf",
+      "name": "Segoe Script",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/open-sans/OpenSans-ExtraBoldItalic.ttf",
+      "name": "Open Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 800,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/glyphicons/glyphicons-halflings-regular.ttf",
+      "name": "GLYPHICONS Halflings",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-BlackIt.ttf",
+      "name": "Source Code Pro",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 900,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/mallanna.ttf",
+      "name": "Mallanna",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/NTR.ttf",
+      "name": "NTR",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Size3-Regular.otf",
+      "name": "MathJax_Size3",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-Hairline.ttf",
+      "name": "Lato",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 100,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Umpush-Oblique.ttf",
+      "name": "Umpush",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation2/LiberationSerif-Italic.ttf",
+      "name": "Liberation Serif",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-kalapi/Kalapi.ttf",
+      "name": "Kalapi",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Laksaman-Italic.ttf",
+      "name": "Laksaman",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/open-sans/OpenSans-ExtraBold.ttf",
+      "name": "Open Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 800,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-MediumItalic.ttf",
+      "name": "Lato",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgTypewriter-Oblique.ttf",
+      "name": "Tlwg Typewriter",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_SansSerif-Italic.otf",
+      "name": "MathJax_SansSerif",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgTypo-Bold.ttf",
+      "name": "Tlwg Typo",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-Bold.ttf",
+      "name": "Lato",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Main-Italic.otf",
+      "name": "MathJax_Main",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/1segoeuii.ttf",
+      "name": "Segoe UI",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/segoeuii.ttf",
+      "name": "Segoe UI",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/droid/DroidSansFallbackFull.ttf",
+      "name": "Droid Sans Fallback",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Vector-Bold.otf",
+      "name": "MathJax_Vector-Bold",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Laksaman.ttf",
+      "name": "Laksaman",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/Ubuntu-BI.ttf",
+      "name": "Ubuntu",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Oblique.ttf",
+      "name": "DejaVu Sans Mono",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed-BoldOblique.ttf",
+      "name": "DejaVu Sans",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/4segoeuii.ttf",
+      "name": "Segoe UI",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Umpush-BoldOblique.ttf",
+      "name": "Umpush",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusSans-Regular.otf",
+      "name": "Nimbus Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/C059-BdIta.otf",
+      "name": "C059",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgTypewriter.ttf",
+      "name": "Tlwg Typewriter",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/freefont/FreeMono.ttf",
+      "name": "FreeMono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Main-Bold.otf",
+      "name": "MathJax_Main",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-Light.ttf",
+      "name": "Source Code Pro",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/DejaVuSans.ttf",
+      "name": "DejaVu Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/LakkiReddy.ttf",
+      "name": "LakkiReddy",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lyx/rsfs10.ttf",
+      "name": "rsfs10",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-BoldOblique.ttf",
+      "name": "DejaVu Sans Mono",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf",
+      "name": "FreeMono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-guru-extra/Saab.ttf",
+      "name": "Saab",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationSans-Italic.ttf",
+      "name": "Liberation Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/malayalam/Karumbi-Regular.ttf",
+      "name": "Karumbi",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/Z003-MediumItalic.otf",
+      "name": "Z003",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/seguisym.ttf",
+      "name": "Segoe UI Symbol",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/padauk/PadaukBook-Regular.ttf",
+      "name": "Padauk Book",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Yrsa-Medium.ttf",
+      "name": "Yrsa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/noto/NotoSansMono-Regular.ttf",
+      "name": "Noto Sans Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf",
+      "name": "Liberation Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/UbuntuMono-BI.ttf",
+      "name": "Ubuntu Mono",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lao/Phetsarath_OT.ttf",
+      "name": "Phetsarath OT",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/Ubuntu-C.ttf",
+      "name": "Ubuntu Condensed",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusSans-Bold.otf",
+      "name": "Nimbus Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/padauk/PadaukBook-Bold.ttf",
+      "name": "Padauk Book",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Yrsa-Light.ttf",
+      "name": "Yrsa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-Bold.ttf",
+      "name": "Source Code Pro",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation2/LiberationMono-BoldItalic.ttf",
+      "name": "Liberation Mono",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgTypist-BoldOblique.ttf",
+      "name": "Tlwg Typist",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Math-Regular.otf",
+      "name": "MathJax_Math",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf",
+      "name": "Liberation Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/Ubuntu-B.ttf",
+      "name": "Ubuntu",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Purisa.ttf",
+      "name": "Purisa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstNaskh.ttf",
+      "name": "KacstNaskh",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lohit-devanagari/Lohit-Devanagari.ttf",
+      "name": "Lohit Devanagari",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Rasa-Bold.ttf",
+      "name": "Rasa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lyx/stmary10.ttf",
+      "name": "stmary10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstPoster.ttf",
+      "name": "KacstPoster",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstQurn.ttf",
+      "name": "KacstQurn",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lohit-bengali/Lohit-Bengali.ttf",
+      "name": "Lohit Bengali",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Yrsa-MediumItalic.ttf",
+      "name": "Yrsa",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/Inconsolata-Regular.ttf",
+      "name": "Inconsolata",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationMono-Bold.ttf",
+      "name": "Liberation Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/TenaliRamakrishna-Regular.ttf",
+      "name": "TenaliRamakrishna",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/UbuntuMono-B.ttf",
+      "name": "Ubuntu Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lohit-punjabi/Lohit-Gurmukhi.ttf",
+      "name": "Lohit Gurmukhi",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstDecorative.ttf",
+      "name": "KacstDecorative",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/Ubuntu-MI.ttf",
+      "name": "Ubuntu",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-telu-extra/vemana2000.ttf",
+      "name": "Vemana2000",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/open-sans/OpenSans-Regular.ttf",
+      "name": "Open Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/malayalam/Dyuthi-Regular.ttf",
+      "name": "Dyuthi",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/samyak/Samyak-Devanagari.ttf",
+      "name": "Samyak Devanagari",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_AMS-Regular.otf",
+      "name": "MathJax_AMS",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-beng-extra/Muktibold.ttf",
+      "name": "Mukti",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Loma-BoldOblique.ttf",
+      "name": "Loma",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/malayalam/Suruma.ttf",
+      "name": "Suruma",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation2/LiberationSerif-Regular.ttf",
+      "name": "Liberation Serif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Size4-Regular.otf",
+      "name": "MathJax_Size4",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Garuda.ttf",
+      "name": "Garuda",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/P052-Roman.otf",
+      "name": "P052",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/open-sans/OpenSans-Italic.ttf",
+      "name": "Open Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-gujr-extra/padmaa-Medium-0.5.ttf",
+      "name": "padmaa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lyx/msam10.ttf",
+      "name": "msam10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgTypo.ttf",
+      "name": "Tlwg Typo",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSans-BoldOblique.ttf",
+      "name": "DejaVu Sans",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Yrsa-BoldItalic.ttf",
+      "name": "Yrsa",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-ExtraLightIt.ttf",
+      "name": "Source Code Pro",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 200,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgMono.ttf",
+      "name": "Tlwg Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-beng-extra/Ani.ttf",
+      "name": "Ani",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc",
+      "name": "Noto Serif CJK JP",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/open-sans/OpenSans-Light.ttf",
+      "name": "Open Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+      "name": "DejaVu Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/open-sans/OpenSans-Semibold.ttf",
+      "name": "Open Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lohit-oriya/Lohit-Odia.ttf",
+      "name": "Lohit Odia",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Kinnari-Oblique.ttf",
+      "name": "Kinnari",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusMonoPS-Italic.otf",
+      "name": "Nimbus Mono PS",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-deva-extra/samanata.ttf",
+      "name": "Samanata",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-SemiboldIt.ttf",
+      "name": "Source Code Pro",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
+      "name": "Noto Sans CJK JP",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSerifCondensed-Italic.ttf",
+      "name": "DejaVu Serif",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation2/LiberationMono-Regular.ttf",
+      "name": "Liberation Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/C059-Italic.otf",
+      "name": "C059",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstTitle.ttf",
+      "name": "KacstTitle",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/malayalam/Gayathri-Bold.otf",
+      "name": "Gayathri",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationMono-Italic.ttf",
+      "name": "Liberation Mono",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuMathTeXGyre.ttf",
+      "name": "DejaVu Math TeX Gyre",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/seguisb.ttf",
+      "name": "Segoe UI",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/malayalam/Rachana-Bold.ttf",
+      "name": "Rachana",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Purisa-Oblique.ttf",
+      "name": "Purisa",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Loma-Bold.ttf",
+      "name": "Loma",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/font-awesome/FontAwesome.otf",
+      "name": "FontAwesome",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-gujr-extra/aakar-medium.ttf",
+      "name": "aakar",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/RaviPrakash.ttf",
+      "name": "RaviPrakash",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+      "name": "Noto Sans CJK JP",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgMono-Bold.ttf",
+      "name": "Tlwg Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation2/LiberationSans-Bold.ttf",
+      "name": "Liberation Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation2/LiberationMono-Bold.ttf",
+      "name": "Liberation Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/Ubuntu-R.ttf",
+      "name": "Ubuntu",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/Navilu/Navilu.ttf",
+      "name": "Navilu",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/Ubuntu-MI.ttf",
+      "name": "Ubuntu",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-beng-extra/Mukti.ttf",
+      "name": "Mukti",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusRoman-Bold.otf",
+      "name": "Nimbus Roman",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-Medium.ttf",
+      "name": "Lato",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstLetter.ttf",
+      "name": "KacstLetter",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/freefont/FreeSansBoldOblique.ttf",
+      "name": "FreeSans",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/Ubuntu-LI.ttf",
+      "name": "Ubuntu",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Yrsa-SemiBold.ttf",
+      "name": "Yrsa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusSans-BoldItalic.otf",
+      "name": "Nimbus Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/noto/NotoSerifCJK-Bold.ttc",
+      "name": "Noto Serif CJK JP",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-gujr-extra/padmaa-Bold.1.1.ttf",
+      "name": "padmaa-Bold.1.1",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/URWBookman-DemiItalic.otf",
+      "name": "URW Bookman",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSerifCondensed-Bold.ttf",
+      "name": "DejaVu Serif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-telu-extra/Pothana2000.ttf",
+      "name": "Pothana2000",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/URWGothic-DemiOblique.otf",
+      "name": "URW Gothic",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-BoldItalic.ttf",
+      "name": "Lato",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lyx/cmex10.ttf",
+      "name": "cmex10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/Ubuntu-BI.ttf",
+      "name": "Ubuntu",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lyx/cmmi10.ttf",
+      "name": "cmmi10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/malayalam/Uroob-Regular.ttf",
+      "name": "Uroob",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Norasi-Bold.ttf",
+      "name": "Norasi",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/noto/NotoMono-Regular.ttf",
+      "name": "Noto Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-beng-extra/MitraMono.ttf",
+      "name": "Mitra ",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusSansNarrow-BoldOblique.otf",
+      "name": "Nimbus Sans Narrow",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationMono-BoldItalic.ttf",
+      "name": "Liberation Mono",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/3segoeuii.ttf",
+      "name": "Segoe UI",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-deva-extra/chandas1-2.ttf",
+      "name": "Chandas",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/mry_KacstQurn.ttf",
+      "name": "mry_KacstQurn",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/segoeuisl.ttf",
+      "name": "Segoe UI",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 350,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-BoldIt.ttf",
+      "name": "Source Code Pro",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/Ubuntu-RI.ttf",
+      "name": "Ubuntu",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/segoeui.ttf",
+      "name": "Segoe UI",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Laksaman-BoldItalic.ttf",
+      "name": "Laksaman",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstDigital.ttf",
+      "name": "KacstDigital",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/Gargi/Gargi.ttf",
+      "name": "Gargi",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgTypewriter-Bold.ttf",
+      "name": "Tlwg Typewriter",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgTypewriter-BoldOblique.ttf",
+      "name": "Tlwg Typewriter",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lyx/cmr10.ttf",
+      "name": "cmr10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation2/LiberationSerif-Bold.ttf",
+      "name": "Liberation Serif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/Ubuntu-RI.ttf",
+      "name": "Ubuntu",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Size1-Regular.otf",
+      "name": "MathJax_Size1",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/freefont/FreeSerif.ttf",
+      "name": "FreeSerif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf",
+      "name": "Liberation Serif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/URWGothic-Book.otf",
+      "name": "URW Gothic",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Waree-Bold.ttf",
+      "name": "Waree",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/UbuntuMono-R.ttf",
+      "name": "Ubuntu Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstPen.ttf",
+      "name": "KacstPen",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lohit-tamil/Lohit-Tamil.ttf",
+      "name": "Lohit Tamil",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Waree-BoldOblique.ttf",
+      "name": "Waree",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/malayalam/Manjari-Bold.otf",
+      "name": "Manjari",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/Peddana-Regular.ttf",
+      "name": "Peddana",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/Ubuntu-R.ttf",
+      "name": "Ubuntu",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusMonoPS-Bold.otf",
+      "name": "Nimbus Mono PS",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+      "name": "DejaVu Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/open-sans/OpenSans-CondLightItalic.ttf",
+      "name": "Open Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/Ramaraja-Regular.ttf",
+      "name": "Ramaraja",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/URWBookman-Demi.otf",
+      "name": "URW Bookman",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/Nakula/nakula.ttf",
+      "name": "Nakula",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/pagul/Pagul.ttf",
+      "name": "Pagul",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgTypist-Bold.ttf",
+      "name": "Tlwg Typist",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstFarsi.ttf",
+      "name": "KacstFarsi",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgTypist.ttf",
+      "name": "Tlwg Typist",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf",
+      "name": "DejaVu Sans Mono",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgTypo-Oblique.ttf",
+      "name": "Tlwg Typo",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusSansNarrow-Regular.otf",
+      "name": "Nimbus Sans Narrow",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/Suravaram.ttf",
+      "name": "Suravaram",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Kinnari-Italic.ttf",
+      "name": "Kinnari",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Kinnari-BoldItalic.ttf",
+      "name": "Kinnari",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/seguili.ttf",
+      "name": "Segoe UI",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/malayalam/Gayathri-Regular.otf",
+      "name": "Gayathri",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/segoepr.ttf",
+      "name": "Segoe Print",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ttf-khmeros-core/KhmerOSsys.ttf",
+      "name": "Khmer OS System",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/open-sans/OpenSans-LightItalic.ttf",
+      "name": "Open Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/malayalam/Keraleeyam-Regular.ttf",
+      "name": "Keraleeyam",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Norasi.ttf",
+      "name": "Norasi",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation2/LiberationSans-Italic.ttf",
+      "name": "Liberation Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Size2-Regular.otf",
+      "name": "MathJax_Size2",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/open-sans/OpenSans-Bold.ttf",
+      "name": "Open Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf",
+      "name": "FreeSans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-gujr-extra/padmaa.ttf",
+      "name": "padmaa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Yrsa-SemiBoldItalic.ttf",
+      "name": "Yrsa",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/freefont/FreeSans.ttf",
+      "name": "FreeSans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/PottiSreeramulu.ttf",
+      "name": "Potti Sreeramulu",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-Regular.ttf",
+      "name": "Source Code Pro",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/URWBookman-Light.otf",
+      "name": "URW Bookman",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/URWGothic-BookOblique.otf",
+      "name": "URW Gothic",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/libreoffice/opens___.ttf",
+      "name": "OpenSymbol",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-gujr-extra/Rekha.ttf",
+      "name": "Rekha",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed-Oblique.ttf",
+      "name": "DejaVu Sans",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/malayalam/Manjari-Regular.otf",
+      "name": "Manjari",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lohit-kannada/Lohit-Kannada.ttf",
+      "name": "Lohit Kannada",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-ThinItalic.ttf",
+      "name": "Lato",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 200,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusSansNarrow-Bold.otf",
+      "name": "Nimbus Sans Narrow",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/1seguibl.ttf",
+      "name": "Segoe UI",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 900,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/samyak-fonts/Samyak-Gujarati.ttf",
+      "name": "Samyak Gujarati",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Caligraphic-Regular.otf",
+      "name": "MathJax_Caligraphic",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_SansSerif-Bold.otf",
+      "name": "MathJax_SansSerif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/UbuntuMono-BI.ttf",
+      "name": "Ubuntu Mono",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/malayalam/Meera-Regular.ttf",
+      "name": "Meera",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusSans-Italic.otf",
+      "name": "Nimbus Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/ramabhadra.ttf",
+      "name": "Ramabhadra",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lohit-assamese/Lohit-Assamese.ttf",
+      "name": "Lohit Assamese",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_WinIE6-Regular.otf",
+      "name": "MathJax_WinIE6",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/freefont/FreeSansOblique.ttf",
+      "name": "FreeSans",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Kinnari.ttf",
+      "name": "Kinnari",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/Ubuntu-B.ttf",
+      "name": "Ubuntu",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Loma-Oblique.ttf",
+      "name": "Loma",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Umpush.ttf",
+      "name": "Umpush",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Sawasdee.ttf",
+      "name": "Sawasdee",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusMonoPS-BoldItalic.otf",
+      "name": "Nimbus Mono PS",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/Ubuntu-LI.ttf",
+      "name": "Ubuntu",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Norasi-Italic.ttf",
+      "name": "Norasi",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/Inconsolata-Bold.ttf",
+      "name": "Inconsolata",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/StandardSymbolsPS.otf",
+      "name": "Standard Symbols PS",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Typewriter-Regular.otf",
+      "name": "MathJax_Typewriter",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lyx/cmsy10.ttf",
+      "name": "cmsy10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation2/LiberationMono-Italic.ttf",
+      "name": "Liberation Mono",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/URWBookman-LightItalic.otf",
+      "name": "URW Bookman",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Kinnari-Bold.ttf",
+      "name": "Kinnari",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf",
+      "name": "DejaVu Serif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/SreeKrushnadevaraya.ttf",
+      "name": "Sree Krushnadevaraya",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstTitleL.ttf",
+      "name": "KacstTitleL",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Rasa-Regular.ttf",
+      "name": "Rasa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/Sarai/Sarai.ttf",
+      "name": "Sarai",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lyx/eufm10.ttf",
+      "name": "eufm10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Umpush-Light.ttf",
+      "name": "Umpush",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 300,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/open-sans/OpenSans-SemiboldItalic.ttf",
+      "name": "Open Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Garuda-Oblique.ttf",
+      "name": "Garuda",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/Gubbi/Gubbi.ttf",
+      "name": "Gubbi",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgMono-Oblique.ttf",
+      "name": "Tlwg Mono",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationSans-BoldItalic.ttf",
+      "name": "Liberation Sans",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/Gurajada.ttf",
+      "name": "Gurajada",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lyx/esint10.ttf",
+      "name": "esint10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/padauk/Padauk-Bold.ttf",
+      "name": "Padauk",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-yrsa-rasa/Rasa-SemiBold.ttf",
+      "name": "Rasa",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusRoman-Regular.otf",
+      "name": "Nimbus Roman",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/UbuntuMono-RI.ttf",
+      "name": "Ubuntu Mono",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/seguisbi.ttf",
+      "name": "Segoe UI",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+      "name": "Liberation Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-BlackItalic.ttf",
+      "name": "Lato",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 900,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/anaconda3/fonts/SourceCodePro-MediumIt.ttf",
+      "name": "Source Code Pro",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lohit-telugu/Lohit-Telugu.ttf",
+      "name": "Lohit Telugu",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Norasi-Oblique.ttf",
+      "name": "Norasi",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-beng-extra/JamrulNormal.ttf",
+      "name": "Jamrul",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/seguiemj.ttf",
+      "name": "Segoe UI Emoji",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/C059-Roman.otf",
+      "name": "C059",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-Italic.ttf",
+      "name": "Lato",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationSansNarrow-BoldItalic.ttf",
+      "name": "Liberation Sans Narrow",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/P052-Italic.otf",
+      "name": "P052",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lyx/msbm10.ttf",
+      "name": "msbm10",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lato/Lato-Thin.ttf",
+      "name": "Lato",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 200,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/fonts-beng-extra/LikhanNormal.ttf",
+      "name": "Likhan",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/P052-BoldItalic.otf",
+      "name": "P052",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSerifCondensed-BoldItalic.ttf",
+      "name": "DejaVu Serif",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/NimbusRoman-BoldItalic.otf",
+      "name": "Nimbus Roman",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Garuda-Bold.ttf",
+      "name": "Garuda",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/P052-Bold.otf",
+      "name": "P052",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgMono-BoldOblique.ttf",
+      "name": "Tlwg Mono",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Sawasdee-Bold.ttf",
+      "name": "Sawasdee",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/Norasi-BoldOblique.ttf",
+      "name": "Norasi",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_Vector-Regular.otf",
+      "name": "MathJax_Vector",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/ubuntu/Ubuntu-C.ttf",
+      "name": "Ubuntu Condensed",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/home/marco/.local/share/fonts/seguibl.ttf",
+      "name": "Segoe UI",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 900,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstOffice.ttf",
+      "name": "KacstOffice",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf",
+      "name": "DejaVu Sans",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/urw-base35/URWGothic-Demi.otf",
+      "name": "URW Gothic",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 600,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/teluguvijayam/Mandali-Regular.ttf",
+      "name": "Mandali",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/freefont/FreeSerifBoldItalic.ttf",
+      "name": "FreeSerif",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstArt.ttf",
+      "name": "KacstArt",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Italic.ttf",
+      "name": "DejaVu Serif",
+      "style": "italic",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/malayalam/AnjaliOldLipi-Regular.ttf",
+      "name": "AnjaliOldLipi",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/lohit-malayalam/Lohit-Malayalam.ttf",
+      "name": "Lohit Malayalam",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/tlwg/TlwgTypo-BoldOblique.ttf",
+      "name": "Tlwg Typo",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/malayalam/Manjari-Thin.otf",
+      "name": "Manjari",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 100,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/opentype/mathjax/MathJax_SansSerif-Regular.otf",
+      "name": "MathJax_SansSerif",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 400,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/kacst/KacstBook.ttf",
+      "name": "KacstBook",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 500,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/dejavu/DejaVuSans-ExtraLight.ttf",
+      "name": "DejaVu Sans",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 200,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/liberation/LiberationSansNarrow-Bold.ttf",
+      "name": "Liberation Sans Narrow",
+      "style": "normal",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "condensed",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    },
+    {
+      "fname": "/usr/share/fonts/truetype/freefont/FreeMonoBoldOblique.ttf",
+      "name": "FreeMono",
+      "style": "oblique",
+      "variant": "normal",
+      "weight": 700,
+      "stretch": "normal",
+      "size": "scalable",
+      "__class__": "FontEntry"
+    }
+  ],
+  "__class__": "FontManager"
+}

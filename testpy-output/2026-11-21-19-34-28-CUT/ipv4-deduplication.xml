@@ -1,0 +1,20 @@
+<Test>
+  <Name>ipv4-deduplication</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.000" system="0.000"/>
+  <Test>
+    <Name>IP v4 RFC 6621 De-duplication: enabled, expire = 1000ms</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>IP v4 RFC 6621 De-duplication: disabled, expire = 1000ms</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>IP v4 RFC 6621 De-duplication: degenerate, expire = 0.05ms</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+</Test>

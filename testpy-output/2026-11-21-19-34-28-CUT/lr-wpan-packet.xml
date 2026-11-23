@@ -1,0 +1,10 @@
+<Test>
+  <Name>lr-wpan-packet</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Test the 802.15.4 MAC header and trailer classes</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

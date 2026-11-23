@@ -1,0 +1,45 @@
+<Test>
+  <Name>nr-phy-patterns</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.010" system="0.000"/>
+  <Test>
+    <Name>LTE TDD Pattern 1 test</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>LTE TDD Pattern 2 test</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>LTE TDD Pattern 3 test</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>LTE TDD Pattern 4 test</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>LTE TDD Pattern 5 test</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>LTE TDD Pattern 6 test</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>LTE TDD Pattern 0 test</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>LTE TDD Pattern NR test</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

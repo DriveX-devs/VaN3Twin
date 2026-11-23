@@ -1,0 +1,25 @@
+<Test>
+  <Name>tcp-dctcp-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.010" system="0.000"/>
+  <Test>
+    <Name>DCTCP falls to New Reno for slowstart</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>ECT Test : Check if ECT is set on Syn, Syn+Ack, Ack and Data packets for DCTCP packets</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>ECT Test : Check if ECT is not set on Syn, Syn+Ack and Ack but set on Data packets for non-DCTCP but ECN enabled traffic</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>ECE Functionality Test: ECE should only be sent by receiver when it receives CE flags</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+</Test>

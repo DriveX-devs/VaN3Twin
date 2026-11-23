@@ -1,0 +1,10 @@
+<Test>
+  <Name>ipv6-fragmentation</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Verify the IPv6 layer 3 protocol fragmentation and reassembly</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+</Test>

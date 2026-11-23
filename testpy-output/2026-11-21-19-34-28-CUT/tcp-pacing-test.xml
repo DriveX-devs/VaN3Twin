@@ -1,0 +1,35 @@
+<Test>
+  <Name>tcp-pacing-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.020" user="0.020" system="0.000"/>
+  <Test>
+    <Name>Pacing case 1: Slow start only, no initial pacing</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Pacing case 2: Slow start only, initial pacing</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Pacing case 3: Slow start, followed by transition to Congestion avoidance, no initial pacing</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Pacing case 4: Slow start only, no initial pacing, delayed ACKs</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Pacing case 5: Slow start only, initial pacing, delayed ACKs</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Pacing case 6: Slow start, followed by transition to Congestion avoidance, no initial pacing, delayed ACKs</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

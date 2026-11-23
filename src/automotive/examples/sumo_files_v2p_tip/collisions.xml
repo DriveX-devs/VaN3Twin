@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2026-10-16T16:29:29.467223+01:00 by Eclipse SUMO GUI 1.26.0
+<!-- generated on 2026-11-12T19:24:16.941108+01:00 by Eclipse SUMO GUI 1.26.0
 <sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
@@ -44,3 +44,8 @@
     </gui_only>
 
 </sumoConfiguration>
+-->
+
+<collisions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/collision_file.xsd">
+    <collision time="49.64" type="crossing" lane=":2498888370_0_0" pos="1.61" collider="veh12" victim="ped1014" colliderType="AggressiveCar" victimType="DEFAULT_PEDTYPE" colliderSpeed="8.88" victimSpeed="0.00" colliderFront="785.55,1590.78" colliderBack="787.89,1595.13" victimFront="785.52,1590.59" victimBack="785.52,1590.59"/>
+</collisions>

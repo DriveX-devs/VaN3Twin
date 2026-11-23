@@ -1,0 +1,10 @@
+<Test>
+  <Name>trickle-timer</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.010" system="0.000"/>
+  <Test>
+    <Name>Check the Trickle Timer algorithm</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+</Test>

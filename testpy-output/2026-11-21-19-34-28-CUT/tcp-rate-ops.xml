@@ -1,0 +1,45 @@
+<Test>
+  <Name>tcp-rate-ops</Name>
+  <Result>PASS</Result>
+  <Time real="0.060" user="0.060" system="0.000"/>
+  <Test>
+    <Name>Testing SkbDelivered and SkbSent</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Testing SkbDelivered and SkbSent with app limited data</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Checking Rate sample value without SACK, one drop</Name>
+    <Result>PASS</Result>
+    <Time real="0.020" user="0.020" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Checking Rate sample value with SACK, one drop</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Checking Rate sample value without SACK, two drop</Name>
+    <Result>PASS</Result>
+    <Time real="0.020" user="0.020" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Checking Rate sample value with SACK, two drop</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Checking rate sample values with arbitary SACK Block</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Checking rate sample values with arbitary SACK Block</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

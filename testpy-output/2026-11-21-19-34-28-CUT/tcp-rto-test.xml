@@ -1,0 +1,25 @@
+<Test>
+  <Name>tcp-rto-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.020" user="0.020" system="0.000"/>
+  <Test>
+    <Name>ns3::TcpNewReno RTO retransmit testing</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>ns3::TcpNewReno RTO ssthresh testing, set to 2*MSL</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>ns3::TcpNewReno RTO ssthresh testing, set to half of BytesInFlight</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>ns3::TcpNewReno RTO timing testing</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+</Test>

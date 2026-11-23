@@ -1,0 +1,25 @@
+<Test>
+  <Name>tcp-illinois-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Illinois test on cWnd and ssThresh when in slow start</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Illinois test on cWnd and ssThresh when avg queueing delay is at minimum</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Illinois test on cWnd and ssThresh when avg queueing delay is at maximum</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Illinois test on cWnd and ssThresh when avg queueing delay is in between its min &amp; max</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

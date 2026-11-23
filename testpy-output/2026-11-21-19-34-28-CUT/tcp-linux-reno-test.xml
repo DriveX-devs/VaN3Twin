@@ -1,0 +1,45 @@
+<Test>
+  <Name>tcp-linux-reno-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.010" user="0.010" system="0.000"/>
+  <Test>
+    <Name>Slow Start MSS = 524, socket send size = 524, delack = 1 ns3::TcpLinuxReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Slow Start MSS = 524, socket send size = 524, delack = 2 ns3::TcpLinuxReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Slow Start MSS = 1500, socket send size = 524, delack = 1 ns3::TcpLinuxReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Slow Start MSS = 1500, socket send size = 524, delack = 2 ns3::TcpLinuxReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Congestion Avoidance MSS = 524, socket send size = 524, delack = 1 ns3::TcpLinuxReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Congestion Avoidance MSS = 524, socket send size = 524, delack = 2 ns3::TcpLinuxReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Congestion Avoidance MSS = 1500, socket send size = 1500, delack = 1 ns3::TcpLinuxReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Congestion Avoidance MSS = 1500, socket send size = 1500, delack = 2 ns3::TcpLinuxReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

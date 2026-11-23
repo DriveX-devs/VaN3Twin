@@ -1,0 +1,20 @@
+<Test>
+  <Name>tcp-lp-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>LP falls to New Reno if the cwd is within threshold</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>LP enters Inference phase when cwd exceeds threshold for the first time</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>LP reduces cWnd to 1 if cwd exceeds threshold in inference phase</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

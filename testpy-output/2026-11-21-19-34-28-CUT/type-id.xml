@@ -1,0 +1,18 @@
+<Test>
+  <Name>type-id</Name>
+  <Result>FAIL</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Check uniqueness of all TypeIds</Name>
+    <Result>FAIL</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+      <FailureDetails>
+        <Condition>tid.GetUid () (actual) == TypeId::LookupByName (tid.GetName ()).GetUid () (limit)</Condition>
+        <Actual>587</Actual>
+        <Limit>427</Limit>
+        <Message>LookupByName returned different TypeId for ns3::RssiTag</Message>
+        <File>/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/src/core/test/type-id-test-suite.cc</File>
+        <Line>109</Line>
+      </FailureDetails>
+  </Test>
+</Test>

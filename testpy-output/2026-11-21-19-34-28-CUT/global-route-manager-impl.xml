@@ -1,0 +1,10 @@
+<Test>
+  <Name>global-route-manager-impl</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>GlobalRouteManagerImplTestCase</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

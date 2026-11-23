@@ -1,0 +1,26 @@
+{
+  "tip_dcc_checks": {
+    "checks": 69,
+    "passed": 69,
+    "failed": 0,
+    "exit_code": 0
+  },
+  "finding4_boundary": {
+    "checks": 288,
+    "passed": 288,
+    "failed": 0,
+    "exit_code": 0
+  },
+  "heading_boundary": {
+    "checks": 30,
+    "passed": 30,
+    "failed": 0,
+    "exit_code": 0
+  },
+  "stc_boundary": {
+    "checks": 36,
+    "passed": 36,
+    "failed": 0,
+    "exit_code": 0
+  }
+}

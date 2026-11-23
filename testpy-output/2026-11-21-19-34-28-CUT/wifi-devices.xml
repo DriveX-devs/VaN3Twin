@@ -1,0 +1,86 @@
+<Test>
+  <Name>wifi-devices</Name>
+  <Result>FAIL</Result>
+  <Time real="0.450" user="0.440" system="0.000"/>
+  <Test>
+    <Name>Wifi</Name>
+    <Result>PASS</Result>
+    <Time real="0.050" user="0.050" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>QosUtilsIsOldPacket</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>InterferenceHelperSequence</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test case for DCF immediate access with broadcast frames</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test case for Bug 730</Name>
+    <Result>PASS</Result>
+    <Time real="0.050" user="0.060" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test case for fragmentation with QoS stations</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test case for setting WifiPhy channel and frequency</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test case for Bug 2222</Name>
+    <Result>PASS</Result>
+    <Time real="0.050" user="0.050" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test case for Bug 2843</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test case for Bug 2831</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test case for StaWifiMac scanning capability</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.020" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test case for Bug 2470</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Test case for issue #40</Name>
+    <Result>FAIL</Result>
+    <Time real="0.250" user="0.240" system="0.000"/>
+      <FailureDetails>
+        <Condition>m_rxCount (actual) == (useAmpdu ? 12 : 6) (limit)</Condition>
+        <Actual>1</Actual>
+        <Limit>6</Limit>
+        <Message>Incorrect number of successfully received packets</Message>
+        <File>/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/src/wifi/test/wifi-test.cc</File>
+        <Line>2478</Line>
+      </FailureDetails>
+      <FailureDetails>
+        <Condition>m_rxCount (actual) == (useAmpdu ? 12 : 6) (limit)</Condition>
+        <Actual>0</Actual>
+        <Limit>12</Limit>
+        <Message>Incorrect number of successfully received packets</Message>
+        <File>/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/src/wifi/test/wifi-test.cc</File>
+        <Line>2478</Line>
+      </FailureDetails>
+  </Test>
+</Test>

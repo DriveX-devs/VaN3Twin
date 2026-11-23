@@ -1,0 +1,10 @@
+<Test>
+  <Name>ipv4-protocol</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Verify the IPv4 layer 3 protocol</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

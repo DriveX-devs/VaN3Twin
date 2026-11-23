@@ -1,0 +1,45 @@
+<Test>
+  <Name>csma-system</Name>
+  <Result>PASS</Result>
+  <Time real="0.310" user="0.300" system="0.010"/>
+  <Test>
+    <Name>Bridge example for Carrier Sense Multiple Access (CSMA) networks</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Broadcast example for Carrier Sense Multiple Access (CSMA) networks</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Multicast example for Carrier Sense Multiple Access (CSMA) networks</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>One subnet example for Carrier Sense Multiple Access (CSMA) networks</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Packet socket example for Carrier Sense Multiple Access (CSMA) networks</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Ping example for Carrier Sense Multiple Access (CSMA) networks</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Raw internet protocol socket example for Carrier Sense Multiple Access (CSMA) networks</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Star example for Carrier Sense Multiple Access (CSMA) networks</Name>
+    <Result>PASS</Result>
+    <Time real="0.290" user="0.290" system="0.010"/>
+  </Test>
+</Test>

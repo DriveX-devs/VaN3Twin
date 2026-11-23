@@ -1,0 +1,289 @@
+{
+  "file_summary": {
+    "pcap": {
+      "files": 280,
+      "exact_matches": 60
+    },
+    "VAM_triggering": {
+      "files": 100,
+      "exact_matches": 64
+    },
+    "CAM_triggering": {
+      "files": 120,
+      "exact_matches": 120
+    }
+  },
+  "native_project_decoder": {
+    "comparisons": [
+      {
+        "case": "0_no_TIP",
+        "baseline_generated_VAMs": 678,
+        "current_generated_VAMs": 678,
+        "baseline_VAMs_with_TIP": 0,
+        "current_VAMs_with_TIP": 0,
+        "common_generation_identities": 678,
+        "changed_TIP_messages_on_common_identities": 0,
+        "removed_generation_identities": 0,
+        "added_generation_identities": 0,
+        "identical_TIP_messages": true,
+        "identical_decoded_observations": true
+      },
+      {
+        "case": "1_TIP_ped1003",
+        "baseline_generated_VAMs": 684,
+        "current_generated_VAMs": 682,
+        "baseline_VAMs_with_TIP": 7,
+        "current_VAMs_with_TIP": 7,
+        "common_generation_identities": 674,
+        "changed_TIP_messages_on_common_identities": 1,
+        "removed_generation_identities": 10,
+        "added_generation_identities": 8,
+        "identical_TIP_messages": false,
+        "identical_decoded_observations": false
+      },
+      {
+        "case": "2_TIP_ped1014",
+        "baseline_generated_VAMs": 694,
+        "current_generated_VAMs": 692,
+        "baseline_VAMs_with_TIP": 21,
+        "current_VAMs_with_TIP": 20,
+        "common_generation_identities": 686,
+        "changed_TIP_messages_on_common_identities": 3,
+        "removed_generation_identities": 8,
+        "added_generation_identities": 6,
+        "identical_TIP_messages": false,
+        "identical_decoded_observations": false
+      },
+      {
+        "case": "3_TIP_all_VRUs",
+        "baseline_generated_VAMs": 812,
+        "current_generated_VAMs": 800,
+        "baseline_VAMs_with_TIP": 179,
+        "current_VAMs_with_TIP": 168,
+        "common_generation_identities": 746,
+        "changed_TIP_messages_on_common_identities": 25,
+        "removed_generation_identities": 66,
+        "added_generation_identities": 54,
+        "identical_TIP_messages": false,
+        "identical_decoded_observations": false
+      }
+    ],
+    "decode_failures": 0,
+    "baseline_generated_VAMs": 2868,
+    "current_generated_VAMs": 2852,
+    "deduplicated_capture_observations": 12070,
+    "changed_TIP_examples": [
+      {
+        "case": "1_TIP_ped1003",
+        "station": 1003,
+        "generation_ms": 47636,
+        "baseline": [
+          "",
+          "",
+          ""
+        ],
+        "current": [
+          "1022",
+          "33",
+          "3"
+        ]
+      },
+      {
+        "case": "2_TIP_ped1014",
+        "station": 1014,
+        "generation_ms": 51271,
+        "baseline": [
+          "",
+          "",
+          ""
+        ],
+        "current": [
+          "1006",
+          "35",
+          "3"
+        ]
+      },
+      {
+        "case": "2_TIP_ped1014",
+        "station": 1014,
+        "generation_ms": 59471,
+        "baseline": [
+          "",
+          "",
+          ""
+        ],
+        "current": [
+          "14",
+          "47",
+          "3"
+        ]
+      },
+      {
+        "case": "2_TIP_ped1014",
+        "station": 1014,
+        "generation_ms": 70771,
+        "baseline": [
+          "1022",
+          "31",
+          "3"
+        ],
+        "current": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "case": "3_TIP_all_VRUs",
+        "station": 1003,
+        "generation_ms": 29636,
+        "baseline": [
+          "0",
+          "25",
+          "3"
+        ],
+        "current": [
+          "1006",
+          "50",
+          "3"
+        ]
+      },
+      {
+        "case": "3_TIP_all_VRUs",
+        "station": 1003,
+        "generation_ms": 47636,
+        "baseline": [
+          "1022",
+          "31",
+          "3"
+        ],
+        "current": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "case": "3_TIP_all_VRUs",
+        "station": 1004,
+        "generation_ms": 99879,
+        "baseline": [
+          "",
+          "",
+          ""
+        ],
+        "current": [
+          "1005",
+          "32",
+          "3"
+        ]
+      },
+      {
+        "case": "3_TIP_all_VRUs",
+        "station": 1005,
+        "generation_ms": 43817,
+        "baseline": [
+          "",
+          "",
+          ""
+        ],
+        "current": [
+          "16",
+          "39",
+          "3"
+        ]
+      },
+      {
+        "case": "3_TIP_all_VRUs",
+        "station": 1005,
+        "generation_ms": 47417,
+        "baseline": [
+          "",
+          "",
+          ""
+        ],
+        "current": [
+          "1015",
+          "41",
+          "3"
+        ]
+      },
+      {
+        "case": "3_TIP_all_VRUs",
+        "station": 1006,
+        "generation_ms": 44402,
+        "baseline": [
+          "",
+          "",
+          ""
+        ],
+        "current": [
+          "1007",
+          "50",
+          "3"
+        ]
+      },
+      {
+        "case": "3_TIP_all_VRUs",
+        "station": 1006,
+        "generation_ms": 51102,
+        "baseline": [
+          "13",
+          "22",
+          "3"
+        ],
+        "current": [
+          "1014",
+          "33",
+          "3"
+        ]
+      },
+      {
+        "case": "3_TIP_all_VRUs",
+        "station": 1006,
+        "generation_ms": 52702,
+        "baseline": [
+          "13",
+          "35",
+          "3"
+        ],
+        "current": [
+          "",
+          "",
+          ""
+        ]
+      },
+      {
+        "case": "3_TIP_all_VRUs",
+        "station": 1007,
+        "generation_ms": 44376,
+        "baseline": [
+          "",
+          "",
+          ""
+        ],
+        "current": [
+          "1006",
+          "50",
+          "3"
+        ]
+      },
+      {
+        "case": "3_TIP_all_VRUs",
+        "station": 1007,
+        "generation_ms": 63076,
+        "baseline": [
+          "",
+          "",
+          ""
+        ],
+        "current": [
+          "1022",
+          "41",
+          "3"
+        ]
+      }
+    ]
+  },
+  "note": "Native ASN.1 decoding covers TIP subject/probability/confidence, station, generation time and capture time. It is not a complete payload comparison. Raw GeoNetworking timestamps also depend on wall-clock time. Duplicate observations at the same capture time and payload are removed before decoding."
+}

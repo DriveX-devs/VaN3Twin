@@ -1,0 +1,55 @@
+<Test>
+  <Name>tcp-cong-avoid-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.030" user="0.030" system="0.000"/>
+  <Test>
+    <Name>cong avoid MSS=500, pkt_size=500,ns3::TcpNewReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>cong avoid MSS=500, pkt_size=1000,ns3::TcpNewReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>cong avoid MSS=500, pkt_size=500,ns3::TcpNewReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>cong avoid MSS=500, pkt_size=1000,ns3::TcpNewReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>cong avoid MSS=500, pkt_size=500,ns3::TcpNewReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>cong avoid MSS=500, pkt_size=1000,ns3::TcpNewReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>cong avoid MSS=500, pkt_size=500,ns3::TcpNewReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>cong avoid MSS=500, pkt_size=1000,ns3::TcpNewReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>cong avoid MSS=500, pkt_size=500,ns3::TcpNewReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.010" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>cong avoid MSS=500, pkt_size=1000,ns3::TcpNewReno</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+</Test>

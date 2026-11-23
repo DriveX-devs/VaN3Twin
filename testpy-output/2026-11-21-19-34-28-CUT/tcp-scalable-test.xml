@@ -1,0 +1,35 @@
+<Test>
+  <Name>tcp-scalable-test</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Scalable increment test on cWnd = 38 segments and segmentSize = 536 bytes</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Scalable increment test on cWnd = 38 segments and segmentSize = 1 byte</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Scalable increment test on cWnd = 53 segments and segmentSize = 1446 bytes</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Scalable decrement test on cWnd = 38 segments and segmentSize = 1 byte</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Scalable decrement test on cWnd = 100 segments and segmentSize = 536 bytes</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+  <Test>
+    <Name>Scalable decrement test on cWnd = 40 segments and segmentSize = 1446 bytes</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

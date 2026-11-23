@@ -95,6 +95,7 @@ namespace ns3
     GnDataRequest.GNTraClass = dataRequest.GNTraClass;
     GnDataRequest.data = dataRequest.data;
     GnDataRequest.lenght = dataRequest.lenght + 4;
+    GnDataRequest.onTxSuccess = dataRequest.onTxSuccess;
 
     std::tuple<GNDataConfirm_t, MessageId_t> status = m_geonet->sendGN(GnDataRequest, priority, message_id);
     dataConfirm = std::get<0>(status);

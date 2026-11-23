@@ -1,0 +1,10 @@
+<Test>
+  <Name>rocketfuel-topology-reader</Name>
+  <Result>PASS</Result>
+  <Time real="0.140" user="0.140" system="0.000"/>
+  <Test>
+    <Name>RocketfuelTopologyReaderTest</Name>
+    <Result>PASS</Result>
+    <Time real="0.140" user="0.140" system="0.000"/>
+  </Test>
+</Test>

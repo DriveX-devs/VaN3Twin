@@ -1,0 +1,10 @@
+<Test>
+  <Name>queue-disc-traces</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Sanity check on the queue disc traces and statistics</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

@@ -1,0 +1,10 @@
+<Test>
+  <Name>prio-queue-disc</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.000" system="0.000"/>
+  <Test>
+    <Name>Sanity check on the prio queue disc implementation</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.000" system="0.000"/>
+  </Test>
+</Test>

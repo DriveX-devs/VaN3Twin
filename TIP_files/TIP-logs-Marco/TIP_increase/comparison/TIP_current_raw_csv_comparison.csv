@@ -1,0 +1,16 @@
+case,file,baseline_rows,current_rows,same_headers,exact_parsed_match
+0_no_TIP,VAM_metrics.csv,678,678,True,True
+0_no_TIP,CBR.csv,70000,70000,True,True
+0_no_TIP,PRR_latency_CBR_summary.csv,1,1,True,True
+1_TIP_ped1003,VAM_metrics.csv,684,682,True,False
+1_TIP_ped1003,TIP_metrics.csv,695,695,True,False
+1_TIP_ped1003,CBR.csv,70000,70000,True,False
+1_TIP_ped1003,PRR_latency_CBR_summary.csv,1,1,True,False
+2_TIP_ped1014,VAM_metrics.csv,694,692,True,False
+2_TIP_ped1014,TIP_metrics.csv,1145,1144,True,False
+2_TIP_ped1014,CBR.csv,70000,70000,True,False
+2_TIP_ped1014,PRR_latency_CBR_summary.csv,1,1,True,False
+3_TIP_all_VRUs,VAM_metrics.csv,812,800,True,False
+3_TIP_all_VRUs,TIP_metrics.csv,18692,18644,True,False
+3_TIP_all_VRUs,CBR.csv,70000,70000,True,False
+3_TIP_all_VRUs,PRR_latency_CBR_summary.csv,1,1,True,False

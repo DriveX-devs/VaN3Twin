@@ -1,0 +1,10 @@
+<Test>
+  <Name>double-probe</Name>
+  <Result>PASS</Result>
+  <Time real="0.000" user="0.010" system="0.000"/>
+  <Test>
+    <Name>basic probe test case</Name>
+    <Result>PASS</Result>
+    <Time real="0.000" user="0.010" system="0.000"/>
+  </Test>
+</Test>
