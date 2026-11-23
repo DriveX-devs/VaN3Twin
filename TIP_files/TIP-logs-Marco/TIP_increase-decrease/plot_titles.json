@@ -1,0 +1,394 @@
+[
+  {
+    "file": "0_no_TIP/plots/VAM_dissemination_AllPed.png",
+    "titles": [
+      "VAM dissemination \u2014 No TIP - AllPed"
+    ]
+  },
+  {
+    "file": "0_no_TIP/plots/VAM_occurrences_AllPed.png",
+    "titles": [
+      "VAM occurrences \u2014 No TIP - AllPed"
+    ]
+  },
+  {
+    "file": "0_no_TIP/plots/VAM_dissemination_ped1003.png",
+    "titles": [
+      "VAM dissemination \u2014 No TIP - ped1003"
+    ]
+  },
+  {
+    "file": "0_no_TIP/plots/VAM_occurrences_ped1003.png",
+    "titles": [
+      "VAM occurrences \u2014 No TIP - ped1003"
+    ]
+  },
+  {
+    "file": "0_no_TIP/plots/VAM_dissemination_ped1014.png",
+    "titles": [
+      "VAM dissemination \u2014 No TIP - ped1014"
+    ]
+  },
+  {
+    "file": "0_no_TIP/plots/VAM_occurrences_ped1014.png",
+    "titles": [
+      "VAM occurrences \u2014 No TIP - ped1014"
+    ]
+  },
+  {
+    "file": "0_no_TIP/plots/CBR_over_time.png",
+    "titles": [
+      "Channel Busy Ratio \u2014 No TIP - all stations"
+    ]
+  },
+  {
+    "file": "1_TIP_ped1003/plots/VAM_dissemination_AllPed.png",
+    "titles": [
+      "VAM dissemination \u2014 TIP on ped1003 - AllPed"
+    ]
+  },
+  {
+    "file": "1_TIP_ped1003/plots/VAM_occurrences_AllPed.png",
+    "titles": [
+      "VAM occurrences \u2014 TIP on ped1003 - AllPed"
+    ]
+  },
+  {
+    "file": "1_TIP_ped1003/plots/VAM_dissemination_ped1003.png",
+    "titles": [
+      "VAM dissemination \u2014 TIP on ped1003 - ped1003"
+    ]
+  },
+  {
+    "file": "1_TIP_ped1003/plots/VAM_occurrences_ped1003.png",
+    "titles": [
+      "VAM occurrences \u2014 TIP on ped1003 - ped1003"
+    ]
+  },
+  {
+    "file": "1_TIP_ped1003/plots/VAM_dissemination_ped1014.png",
+    "titles": [
+      "VAM dissemination \u2014 TIP on ped1003 - ped1014"
+    ]
+  },
+  {
+    "file": "1_TIP_ped1003/plots/VAM_occurrences_ped1014.png",
+    "titles": [
+      "VAM occurrences \u2014 TIP on ped1003 - ped1014"
+    ]
+  },
+  {
+    "file": "1_TIP_ped1003/plots/CBR_over_time.png",
+    "titles": [
+      "Channel Busy Ratio \u2014 TIP on ped1003 - all stations"
+    ]
+  },
+  {
+    "file": "2_TIP_ped1014/plots/VAM_dissemination_AllPed.png",
+    "titles": [
+      "VAM dissemination \u2014 TIP on ped1014 - AllPed"
+    ]
+  },
+  {
+    "file": "2_TIP_ped1014/plots/VAM_occurrences_AllPed.png",
+    "titles": [
+      "VAM occurrences \u2014 TIP on ped1014 - AllPed"
+    ]
+  },
+  {
+    "file": "2_TIP_ped1014/plots/VAM_dissemination_ped1003.png",
+    "titles": [
+      "VAM dissemination \u2014 TIP on ped1014 - ped1003"
+    ]
+  },
+  {
+    "file": "2_TIP_ped1014/plots/VAM_occurrences_ped1003.png",
+    "titles": [
+      "VAM occurrences \u2014 TIP on ped1014 - ped1003"
+    ]
+  },
+  {
+    "file": "2_TIP_ped1014/plots/VAM_dissemination_ped1014.png",
+    "titles": [
+      "VAM dissemination \u2014 TIP on ped1014 - ped1014"
+    ]
+  },
+  {
+    "file": "2_TIP_ped1014/plots/VAM_occurrences_ped1014.png",
+    "titles": [
+      "VAM occurrences \u2014 TIP on ped1014 - ped1014"
+    ]
+  },
+  {
+    "file": "2_TIP_ped1014/plots/CBR_over_time.png",
+    "titles": [
+      "Channel Busy Ratio \u2014 TIP on ped1014 - all stations"
+    ]
+  },
+  {
+    "file": "3_TIP_all_VRUs/plots/VAM_dissemination_AllPed.png",
+    "titles": [
+      "VAM dissemination \u2014 TIP on all VRUs - AllPed"
+    ]
+  },
+  {
+    "file": "3_TIP_all_VRUs/plots/VAM_occurrences_AllPed.png",
+    "titles": [
+      "VAM occurrences \u2014 TIP on all VRUs - AllPed"
+    ]
+  },
+  {
+    "file": "3_TIP_all_VRUs/plots/VAM_dissemination_ped1003.png",
+    "titles": [
+      "VAM dissemination \u2014 TIP on all VRUs - ped1003"
+    ]
+  },
+  {
+    "file": "3_TIP_all_VRUs/plots/VAM_occurrences_ped1003.png",
+    "titles": [
+      "VAM occurrences \u2014 TIP on all VRUs - ped1003"
+    ]
+  },
+  {
+    "file": "3_TIP_all_VRUs/plots/VAM_dissemination_ped1014.png",
+    "titles": [
+      "VAM dissemination \u2014 TIP on all VRUs - ped1014"
+    ]
+  },
+  {
+    "file": "3_TIP_all_VRUs/plots/VAM_occurrences_ped1014.png",
+    "titles": [
+      "VAM occurrences \u2014 TIP on all VRUs - ped1014"
+    ]
+  },
+  {
+    "file": "3_TIP_all_VRUs/plots/CBR_over_time.png",
+    "titles": [
+      "Channel Busy Ratio \u2014 TIP on all VRUs - all stations"
+    ]
+  },
+  {
+    "file": "comparison/VAM_dissemination_all_scenarios.png",
+    "titles": [
+      "Dissemination of the triggered VAMs per cause \u2014 all pedestrians",
+      "No TIP",
+      "TIP on ped1003",
+      "TIP on ped1014",
+      "TIP on all VRUs"
+    ]
+  },
+  {
+    "file": "comparison/VAM_occurrences_all_scenarios.png",
+    "titles": [
+      "VAM occurrences vs. periodicity \u2014 all pedestrians",
+      "No TIP",
+      "TIP on ped1003",
+      "TIP on ped1014",
+      "TIP on all VRUs"
+    ]
+  },
+  {
+    "file": "comparison/VAM_counts_per_cause.png",
+    "titles": [
+      "Triggered VAMs per cause \u2014 all pedestrians, 100 s"
+    ]
+  },
+  {
+    "file": "comparison/VAM_dissemination_all_scenarios_ped1003.png",
+    "titles": [
+      "Dissemination of the triggered VAMs per cause \u2014 ped1003 only (reference VRU)",
+      "No TIP",
+      "TIP on ped1003",
+      "TIP on ped1014",
+      "TIP on all VRUs"
+    ]
+  },
+  {
+    "file": "comparison/VAM_occurrences_all_scenarios_ped1003.png",
+    "titles": [
+      "VAM occurrences vs. periodicity \u2014 ped1003 only (reference VRU)",
+      "No TIP",
+      "TIP on ped1003",
+      "TIP on ped1014",
+      "TIP on all VRUs"
+    ]
+  },
+  {
+    "file": "comparison/VAM_counts_per_cause_ped1003.png",
+    "titles": [
+      "Triggered VAMs per cause \u2014 ped1003 only (reference VRU), 100 s"
+    ]
+  },
+  {
+    "file": "comparison/CBR_over_time.png",
+    "titles": [
+      "Channel Busy Ratio over time",
+      "Mean over all stations",
+      "Measured by ped1003",
+      "Measured by ped1014"
+    ]
+  },
+  {
+    "file": "comparison/CBR_summary.png",
+    "titles": [
+      "Mean CBR (all stations, whole run)",
+      "Peak CBR (worst station, 100 ms window)"
+    ]
+  },
+  {
+    "file": "1_TIP_ped1003/plots/TTC_TIP_evolution_ped1003.png",
+    "titles": [
+      "TTC towards the stations on a collision course \u2014 ped1003, TIP on ped1003\ndots: computed by the VRU from received CAMs/VAMs; lines: same formula on the SUMO positions every 100 ms",
+      "TIP = min(1, exp(-0.27\u00b7(TTC - 1))); a TIP VAM needs an increase \u2265 0.1 since the last VAM sent\nvertical orange lines: the 6 TIP-triggered VAMs",
+      "VAMs sent by ped1003 from t = 23 s, per triggering cause"
+    ]
+  },
+  {
+    "file": "2_TIP_ped1014/plots/TTC_TIP_evolution_ped1014.png",
+    "titles": [
+      "TTC towards the stations on a collision course \u2014 ped1014, TIP on ped1014\ndots: computed by the VRU from received CAMs/VAMs; lines: same formula on the SUMO positions every 100 ms",
+      "TIP = min(1, exp(-0.27\u00b7(TTC - 1))); a TIP VAM needs an increase \u2265 0.1 since the last VAM sent\nvertical orange lines: the 19 TIP-triggered VAMs",
+      "VAMs sent by ped1014 from t = 32 s, per triggering cause"
+    ]
+  },
+  {
+    "file": "3_TIP_all_VRUs/plots/TTC_TIP_evolution_ped1003.png",
+    "titles": [
+      "TTC towards the stations on a collision course \u2014 ped1003, TIP on all VRUs\ndots: computed by the VRU from received CAMs/VAMs; lines: same formula on the SUMO positions every 100 ms",
+      "TIP = min(1, exp(-0.27\u00b7(TTC - 1))); a TIP VAM needs an increase \u2265 0.1 since the last VAM sent\nvertical orange lines: the 8 TIP-triggered VAMs",
+      "VAMs sent by ped1003 from t = 23 s, per triggering cause"
+    ]
+  },
+  {
+    "file": "3_TIP_all_VRUs/plots/TTC_TIP_evolution_ped1014.png",
+    "titles": [
+      "TTC towards the stations on a collision course \u2014 ped1014, TIP on all VRUs\ndots: computed by the VRU from received CAMs/VAMs; lines: same formula on the SUMO positions every 100 ms",
+      "TIP = min(1, exp(-0.27\u00b7(TTC - 1))); a TIP VAM needs an increase \u2265 0.1 since the last VAM sent\nvertical orange lines: the 22 TIP-triggered VAMs",
+      "VAMs sent by ped1014 from t = 32 s, per triggering cause"
+    ]
+  },
+  {
+    "file": "0_no_TIP/plots/VAM_map_ped1003.png",
+    "titles": [
+      "VAMs sent by ped1003 \u2014 No TIP \u2014 19 VAMs"
+    ],
+    "pedestrians": {
+      "0_no_TIP": 1003
+    }
+  },
+  {
+    "file": "0_no_TIP/plots/VAM_map_ped1014.png",
+    "titles": [
+      "VAMs sent by ped1014 \u2014 No TIP \u2014 35 VAMs"
+    ],
+    "pedestrians": {
+      "0_no_TIP": 1014
+    }
+  },
+  {
+    "file": "1_TIP_ped1003/plots/VAM_map_ped1003.png",
+    "titles": [
+      "VAMs sent by ped1003 \u2014 TIP on ped1003 \u2014 24 VAMs"
+    ],
+    "pedestrians": {
+      "1_TIP_ped1003": 1003
+    }
+  },
+  {
+    "file": "2_TIP_ped1014/plots/VAM_map_ped1014.png",
+    "titles": [
+      "VAMs sent by ped1014 \u2014 TIP on ped1014 \u2014 50 VAMs"
+    ],
+    "pedestrians": {
+      "2_TIP_ped1014": 1014
+    }
+  },
+  {
+    "file": "3_TIP_all_VRUs/plots/VAM_map_ped1003.png",
+    "titles": [
+      "VAMs sent by ped1003 \u2014 TIP on all VRUs \u2014 26 VAMs"
+    ],
+    "pedestrians": {
+      "3_TIP_all_VRUs": 1003
+    }
+  },
+  {
+    "file": "3_TIP_all_VRUs/plots/VAM_map_ped1014.png",
+    "titles": [
+      "VAMs sent by ped1014 \u2014 TIP on all VRUs \u2014 52 VAMs"
+    ],
+    "pedestrians": {
+      "3_TIP_all_VRUs": 1014
+    }
+  },
+  {
+    "file": "comparison/VAM_map_all_scenarios.png",
+    "titles": [
+      "VAM maps \u2014 No TIP and individual TIP triggering",
+      "No TIP: map of ped1003 \u2014 19 VAMs",
+      "TIP on ped1003: map of ped1003 \u2014 24 VAMs",
+      "No TIP: map of ped1014 \u2014 35 VAMs",
+      "TIP on ped1014: map of ped1014 \u2014 50 VAMs"
+    ],
+    "pedestrians": {
+      "0_no_TIP": [
+        1003,
+        1014
+      ],
+      "1_TIP_ped1003": [
+        1003
+      ],
+      "2_TIP_ped1014": [
+        1014
+      ]
+    },
+    "panels": [
+      {
+        "position": "upper_left",
+        "scenario": "0_no_TIP",
+        "pedestrian": 1003,
+        "vam_count": 19,
+        "title": "No TIP: map of ped1003"
+      },
+      {
+        "position": "upper_right",
+        "scenario": "1_TIP_ped1003",
+        "pedestrian": 1003,
+        "vam_count": 24,
+        "title": "TIP on ped1003: map of ped1003"
+      },
+      {
+        "position": "lower_left",
+        "scenario": "0_no_TIP",
+        "pedestrian": 1014,
+        "vam_count": 35,
+        "title": "No TIP: map of ped1014"
+      },
+      {
+        "position": "lower_right",
+        "scenario": "2_TIP_ped1014",
+        "pedestrian": 1014,
+        "vam_count": 50,
+        "title": "TIP on ped1014: map of ped1014"
+      }
+    ]
+  },
+  {
+    "file": "SUMO_scenario.png",
+    "titles": [
+      "SUMO scenario of v2p-TIP-80211p (sumo_files_v2p_tip) \u2014 network and trajectories over the 100 s run",
+      "Whole network",
+      "Crossing used by ped1003 and ped1014 (dashed box on the left)"
+    ]
+  },
+  {
+    "file": "comparison/TIP_increase_comparison.png",
+    "titles": [
+      "TIP increases and decreases - comparison with TIP_increase",
+      "Triggered VAMs",
+      "TIP-triggered VAMs",
+      "Mean channel busy ratio",
+      "Packet reception ratio"
+    ]
+  }
+]

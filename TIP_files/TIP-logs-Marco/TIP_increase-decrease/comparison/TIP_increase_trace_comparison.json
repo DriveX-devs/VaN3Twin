@@ -1,0 +1,94 @@
+{
+  "file_summary": {
+    "pcap": {
+      "files": 280,
+      "exact_matches": 60
+    },
+    "VAM_triggering": {
+      "files": 100,
+      "exact_matches": 80
+    },
+    "CAM_triggering": {
+      "files": 120,
+      "exact_matches": 120
+    }
+  },
+  "native_project_decoder": {
+    "comparisons": [
+      {
+        "case": "0_no_TIP",
+        "baseline_generated_VAMs": 678,
+        "current_generated_VAMs": 678,
+        "baseline_VAMs_with_TIP": 0,
+        "current_VAMs_with_TIP": 0,
+        "common_generation_identities": 678,
+        "changed_TIP_messages_on_common_identities": 0,
+        "removed_generation_identities": 0,
+        "added_generation_identities": 0,
+        "identical_TIP_messages": true,
+        "identical_decoded_observations": true
+      },
+      {
+        "case": "1_TIP_ped1003",
+        "baseline_generated_VAMs": 682,
+        "current_generated_VAMs": 682,
+        "baseline_VAMs_with_TIP": 7,
+        "current_VAMs_with_TIP": 7,
+        "common_generation_identities": 682,
+        "changed_TIP_messages_on_common_identities": 0,
+        "removed_generation_identities": 0,
+        "added_generation_identities": 0,
+        "identical_TIP_messages": true,
+        "identical_decoded_observations": true
+      },
+      {
+        "case": "2_TIP_ped1014",
+        "baseline_generated_VAMs": 692,
+        "current_generated_VAMs": 693,
+        "baseline_VAMs_with_TIP": 20,
+        "current_VAMs_with_TIP": 21,
+        "common_generation_identities": 691,
+        "changed_TIP_messages_on_common_identities": 0,
+        "removed_generation_identities": 1,
+        "added_generation_identities": 2,
+        "identical_TIP_messages": false,
+        "identical_decoded_observations": false
+      },
+      {
+        "case": "3_TIP_all_VRUs",
+        "baseline_generated_VAMs": 800,
+        "current_generated_VAMs": 809,
+        "baseline_VAMs_with_TIP": 168,
+        "current_VAMs_with_TIP": 177,
+        "common_generation_identities": 796,
+        "changed_TIP_messages_on_common_identities": 1,
+        "removed_generation_identities": 4,
+        "added_generation_identities": 13,
+        "identical_TIP_messages": false,
+        "identical_decoded_observations": false
+      }
+    ],
+    "decode_failures": 0,
+    "baseline_generated_VAMs": 2852,
+    "current_generated_VAMs": 2862,
+    "deduplicated_capture_observations": 12060,
+    "changed_TIP_examples": [
+      {
+        "case": "3_TIP_all_VRUs",
+        "station": 1008,
+        "generation_ms": 62140,
+        "baseline": [
+          "",
+          "",
+          ""
+        ],
+        "current": [
+          "7",
+          "36",
+          "3"
+        ]
+      }
+    ]
+  },
+  "note": "Native ASN.1 decoding covers TIP subject/probability/confidence, station, generation time and capture time. It is not a complete payload comparison. Raw GeoNetworking timestamps also depend on wall-clock time. Duplicate observations at the same capture time and payload are removed before decoding."
+}

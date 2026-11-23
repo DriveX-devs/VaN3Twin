@@ -934,7 +934,7 @@ void VRUBasicService::updatePreviousSentTIPOnMap(uint64_t id, double previous_se
 
 void VRUBasicService::searchFirstEightTIPs() {
   // Find the first weight station IDs and the associated TIP
-  // Focus on the difference between latest registered TIP and previous TIP (>= DELTA_TIP)
+  // Select TIP increases and, optionally, decreases relative to the last reported TIP.
   m_tip_array.clear();
   for (const auto& entry : m_tip_map) {
     uint64_t id = entry.first;
@@ -944,7 +944,10 @@ void VRUBasicService::searchFirstEightTIPs() {
       continue;
     }
     double previous_sent_tip = std::get<2>(entry.second);
-    if (tip - previous_sent_tip >= DELTA_TIP) {
+    const double delta_tip = tip - previous_sent_tip;
+    // Apply rounding tolerance only to the optional decrease comparison.
+    if (delta_tip >= DELTA_TIP ||
+        (m_tip_decrease && delta_tip <= -DELTA_TIP + 1e-12)) {
       m_tip_array.push_back(std::make_tuple(id, tip));
     }
   }

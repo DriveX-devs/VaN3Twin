@@ -1,0 +1,9 @@
+dataset,case,evaluations,valid_evaluations,valid_to_invalid_transitions
+TIP_increase,0_no_TIP,0,0,0
+TIP_increase-decrease,0_no_TIP,0,0,0
+TIP_increase,1_TIP_ped1003,695,14,4
+TIP_increase-decrease,1_TIP_ped1003,695,14,4
+TIP_increase,2_TIP_ped1014,1144,68,8
+TIP_increase-decrease,2_TIP_ped1014,1144,68,8
+TIP_increase,3_TIP_all_VRUs,18644,412,68
+TIP_increase-decrease,3_TIP_all_VRUs,18691,412,68

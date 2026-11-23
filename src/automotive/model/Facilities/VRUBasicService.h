@@ -127,6 +127,7 @@ public:
     void VRUreceivedNewMessageForTIP(BTPDataIndication_t dataIndication, bool veh);
     std::tuple<double, double> compute_ttc_stc(vehicleData_t vehdata);
     void setUseTIP() {m_use_tip = true;};
+    void setTIPDecrease(bool enabled) {m_tip_decrease = enabled;}
     // Set the name of a .csv file in which all the computed TIP values are logged (no logging if the name is empty)
     void setTIPLogFile(std::string file_name) {m_tip_log_filename = file_name;}
 
@@ -238,6 +239,7 @@ private:
     uint8_t m_tip_map_size = 0;
     std::vector<std::tuple<uint64_t, double>> m_tip_array;
     bool m_use_tip = false;
+    bool m_tip_decrease = false;
     // Weak callbacks must not outlive this dissemination session.
     std::shared_ptr<int> m_tip_tx_lifetime = std::make_shared<int>(0);
     int64_t m_last_vam_tx_ms = -1;

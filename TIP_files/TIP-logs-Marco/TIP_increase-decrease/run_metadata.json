@@ -1,0 +1,179 @@
+{
+  "started": "2026-11-23T16:30:43.819111+00:00",
+  "root": "/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev",
+  "output": "/home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/TIP-logs-Marco/TIP_increase-decrease",
+  "git_head": "3e3680e105e9ca285ee2ff8c29b505447ad1b77d",
+  "sumo_version": "Eclipse SUMO sumo 1.26.0",
+  "duration_s": 100,
+  "desync": true,
+  "source_diff_sha256": "b5fa8da903d1359d42dbefe82ee87cbac8d752268cb835efac872c66c02a7044",
+  "runs": [
+    {
+      "case": "0_no_TIP",
+      "mode": "none",
+      "ped": 1003,
+      "desync": true,
+      "returncode": 0,
+      "wall_clock_s": 42.553,
+      "vams_including_start": 678,
+      "triggered_vams": 653,
+      "trigger_counts": {
+        "3": 545,
+        "4": 8,
+        "2": 63,
+        "5": 37
+      },
+      "tip_evaluations": 0,
+      "valid_tip_evaluations": 0,
+      "cbr_records": 70000,
+      "last_sumo_time": 99.9,
+      "collisions": [
+        {
+          "time": "49.64",
+          "type": "crossing",
+          "lane": ":2498888370_0_0",
+          "pos": "1.61",
+          "collider": "veh12",
+          "victim": "ped1014",
+          "colliderType": "AggressiveCar",
+          "victimType": "DEFAULT_PEDTYPE",
+          "colliderSpeed": "8.88",
+          "victimSpeed": "0.00",
+          "colliderFront": "785.55,1590.78",
+          "colliderBack": "787.89,1595.13",
+          "victimFront": "785.52,1590.59",
+          "victimBack": "785.52,1590.59"
+        }
+      ]
+    },
+    {
+      "case": "1_TIP_ped1003",
+      "mode": "single",
+      "ped": 1003,
+      "desync": true,
+      "returncode": 0,
+      "wall_clock_s": 40.049,
+      "vams_including_start": 682,
+      "triggered_vams": 657,
+      "trigger_counts": {
+        "3": 543,
+        "4": 8,
+        "2": 63,
+        "5": 37,
+        "6": 6
+      },
+      "tip_evaluations": 695,
+      "valid_tip_evaluations": 14,
+      "cbr_records": 70000,
+      "last_sumo_time": 99.9,
+      "collisions": [
+        {
+          "time": "49.64",
+          "type": "crossing",
+          "lane": ":2498888370_0_0",
+          "pos": "1.61",
+          "collider": "veh12",
+          "victim": "ped1014",
+          "colliderType": "AggressiveCar",
+          "victimType": "DEFAULT_PEDTYPE",
+          "colliderSpeed": "8.88",
+          "victimSpeed": "0.00",
+          "colliderFront": "785.55,1590.78",
+          "colliderBack": "787.89,1595.13",
+          "victimFront": "785.52,1590.59",
+          "victimBack": "785.52,1590.59"
+        }
+      ]
+    },
+    {
+      "case": "2_TIP_ped1014",
+      "mode": "single",
+      "ped": 1014,
+      "desync": true,
+      "returncode": 0,
+      "wall_clock_s": 40.501,
+      "vams_including_start": 693,
+      "triggered_vams": 668,
+      "trigger_counts": {
+        "3": 541,
+        "4": 8,
+        "2": 63,
+        "5": 37,
+        "6": 19
+      },
+      "tip_evaluations": 1144,
+      "valid_tip_evaluations": 68,
+      "cbr_records": 70000,
+      "last_sumo_time": 99.9,
+      "collisions": [
+        {
+          "time": "49.64",
+          "type": "crossing",
+          "lane": ":2498888370_0_0",
+          "pos": "1.61",
+          "collider": "veh12",
+          "victim": "ped1014",
+          "colliderType": "AggressiveCar",
+          "victimType": "DEFAULT_PEDTYPE",
+          "colliderSpeed": "8.88",
+          "victimSpeed": "0.00",
+          "colliderFront": "785.55,1590.78",
+          "colliderBack": "787.89,1595.13",
+          "victimFront": "785.52,1590.59",
+          "victimBack": "785.52,1590.59"
+        }
+      ]
+    },
+    {
+      "case": "3_TIP_all_VRUs",
+      "mode": "all",
+      "ped": 1003,
+      "desync": true,
+      "returncode": 0,
+      "wall_clock_s": 43.71,
+      "vams_including_start": 809,
+      "triggered_vams": 784,
+      "trigger_counts": {
+        "3": 511,
+        "4": 8,
+        "2": 63,
+        "6": 160,
+        "5": 42
+      },
+      "tip_evaluations": 18691,
+      "valid_tip_evaluations": 412,
+      "cbr_records": 70000,
+      "last_sumo_time": 99.9,
+      "collisions": [
+        {
+          "time": "49.64",
+          "type": "crossing",
+          "lane": ":2498888370_0_0",
+          "pos": "1.61",
+          "collider": "veh12",
+          "victim": "ped1014",
+          "colliderType": "AggressiveCar",
+          "victimType": "DEFAULT_PEDTYPE",
+          "colliderSpeed": "8.88",
+          "victimSpeed": "0.00",
+          "colliderFront": "785.55,1590.78",
+          "colliderBack": "787.89,1595.13",
+          "victimFront": "785.52,1590.59",
+          "victimBack": "785.52,1590.59"
+        }
+      ]
+    }
+  ],
+  "TIP_decrease": true,
+  "TIP_decrease_argument": "true",
+  "sumo_executable": "/home/marco/.local/bin/sumo",
+  "sumo_home": "/home/marco/.local/share/van3twin/sumo",
+  "completed": "2026-11-23T16:33:31.938087+00:00",
+  "mobility_sha256": {
+    "0_no_TIP": "7129d5ee2b2dde5ed351b7dec19b8b6ee6ae8fdf58da4c3ed7765ecffa8de2aa",
+    "1_TIP_ped1003": "7129d5ee2b2dde5ed351b7dec19b8b6ee6ae8fdf58da4c3ed7765ecffa8de2aa",
+    "2_TIP_ped1014": "7129d5ee2b2dde5ed351b7dec19b8b6ee6ae8fdf58da4c3ed7765ecffa8de2aa",
+    "3_TIP_all_VRUs": "7129d5ee2b2dde5ed351b7dec19b8b6ee6ae8fdf58da4c3ed7765ecffa8de2aa"
+  },
+  "identical_mobility_across_cases": true
+}

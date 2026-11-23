@@ -1,0 +1,172 @@
+Optional TIP decrease triggering - validation and comparison
+
+The accepted patch adds --TIP-decrease, default false. Only three production files changed:
+- VRUBasicService.h: public setTIPDecrease(bool) setter and private bool initialized false.
+- VRUBasicService.cc: extend the existing selection predicate with an optional decrease comparison.
+- v2p-TIP-80211p.cc: false CLI default, register the option, pass it to each TIP-enabled pedestrian.
+The complete source patch has 10 added lines and 2 removed lines and is appended to this report.
+
+When false or omitted, the current increase-only comparison is unchanged.
+When true, the selection also includes a valid current TIP at least 0.1 below that station's last reported TIP.
+The 0.1 threshold is an absolute probability difference (10 percentage points).
+A 1e-12 tolerance applies only to decreases, so decimal 0.70 -> 0.60 passes despite binary rounding.
+The existing increase comparison retains its original strict floating-point behavior.
+The reference remains the last actually submitted encoded probability (integer / 50).
+Unavailable (-1), NaN and infinite predictions are excluded. Invalid predictions are not converted to zero.
+Selection still sorts by current probability, limits the list to eight, and respects TIP mode ownership.
+Existing generation pacing, redundancy mitigation and DCC queue/timing controls remain active.
+Packet-specific confirmation updates reporting history after successful socket submission, including delayed
+packets. Socket submission does not guarantee actual PHY transmission or peer reception.
+
+Validation results:
+tip_decrease_checks: 108/108 checks passed; failed=0.
+tip_dcc_checks: 69/69 checks passed; failed=0.
+finding4_boundary: 288/288 checks passed; failed=0.
+heading_boundary: 30/30 checks passed; failed=0.
+stc_boundary: 36/36 checks passed; failed=0.
+Total: 531/531 focused checks passed. The v2p-TIP-80211p build passed.
+The new 108 checks cover omitted/false/true selection, valid decreases below/at/above 0.1, invalid data,
+both constructors, unchanged eight-entry sorting, actual TIP-triggered generation, motion-triggered VAMs,
+quantized payloads and reactive/adaptive queued decrease snapshots, drops and expiry.
+The prior 423 DCC, invalidation, heading and STC boundary checks were recompiled and passed.
+The deliberately closed-socket regression produces the expected GeoNetworking send-error log.
+All probes use the production implementation; test-only -fno-access-control allows state inspection.
+CLI help confirms --TIP-decrease defaults to false.
+
+Simulation runs:
+Four fresh 100-second main runs use --TIP-decrease=true and --desync=true.
+Four explicit-false control runs reproduce all four TIP_increase scenarios.
+An additional all-VRU run omits --TIP-decrease and reproduces the same baseline.
+All nine runs exited successfully and reached 99.9 seconds in their mobility traces.
+All 19 raw CSV comparisons for the five compatibility controls are exactly equal to the baseline.
+Each main run contains the expected 25 pedestrians, 70 packet captures, and 70,000 CBR records.
+Mobility and collision records match TIP_increase in all main/control runs.
+Recorded simulator: Eclipse SUMO sumo 1.26.0
+All 754 files in TIP_increase retain their original hashes.
+
+Scenario | Triggered VAMs: increases -> increases/decreases | TIP-triggered VAMs: increases -> increases/decreases
+No TIP | 653 -> 653 | 0 -> 0
+TIP on ped1003 | 657 -> 657 | 6 -> 6
+TIP on ped1014 | 667 -> 668 | 18 -> 19
+TIP on all VRUs | 775 -> 784 | 152 -> 160
+
+Counts above exclude one initial VAM per pedestrian (25 initial VAMs per case). Maps include initial VAMs.
+The main no-TIP CSV results remain identical because the new parameter only affects TIP-enabled services.
+Changed summary metrics: 18/44; unchanged: 26/44.
+Identical parsed main CSV pairs: 8/15.
+
+Scenario | Mean CBR [%]: increases -> increases/decreases | PRR: increases -> increases/decreases
+No TIP | 0.14428 -> 0.14428 | 0.45489 -> 0.45489
+TIP on ped1003 | 0.14469 -> 0.14469 | 0.45495 -> 0.45495
+TIP on ped1014 | 0.14498 -> 0.14506 | 0.45511 -> 0.45511
+TIP on all VRUs | 0.14874 -> 0.14904 | 0.45505 -> 0.45512
+
+Native packet validation:
+All captured VAMs decode with the project ASN.1 definitions. Encoded TIP probabilities remain in [0,50],
+lists contain at most eight entries, and unique generated message counts match the VAM CSVs.
+0_no_TIP: generated 678 -> 678; with TIP 0 -> 0; changed TIP fields on common generation identities=0.
+1_TIP_ped1003: generated 682 -> 682; with TIP 7 -> 7; changed TIP fields on common generation identities=0.
+2_TIP_ped1014: generated 692 -> 693; with TIP 20 -> 21; changed TIP fields on common generation identities=0.
+3_TIP_all_VRUs: generated 800 -> 809; with TIP 168 -> 177; changed TIP fields on common generation identities=1.
+Raw GeoNetworking packets also contain wall-clock timestamps; raw byte differences alone are not treated
+as changes to TIP behavior. Native semantic comparisons cover station, generation identity and TIP fields.
+
+Saved outputs:
+- 49 validated figures, including the required six pedestrian maps and the ordered comparison map.
+- comparison/TIP_increase_comparison.png: VAM totals, TIP-triggered totals, mean CBR and PRR.
+- comparison/TIP_increase_metrics_comparison.csv: all 44 summary metrics and differences.
+- comparison/TIP_increase_per_station_VAM_comparison.csv: all 25 pedestrian counts in each scenario.
+- comparison/TIP_increase_raw_csv_comparison.csv: all 15 main raw CSV pairs.
+- comparison/TIP_increase_compatibility_checks.csv: all 19 default/false raw CSV control checks.
+- comparison/TIP_increase_trace_comparison.csv/json: trace hashes and native payload comparisons.
+- comparison/TIP_increase_comparison.json: complete comparison and verification metadata.
+- validation/: test sources, build commands/logs, passing checks, CLI help and compatibility runs.
+- TIP_decrease.patch: complete isolated three-file source changes.
+- run_metadata.json: exact settings, timings, source diff hash, counts and mobility hashes.
+All existing map selections and comparison panel positions are preserved.
+Synchronization and simulator-version wording are omitted from plot titles.
+
+The executable default stays false. This reproduction script explicitly enables the parameter for the new results.
+Reproduce main runs: /usr/bin/python3 scripts/reproduce.py (use a fresh --output folder).
+Regenerate plots: /home/marco/anaconda3/bin/python scripts/plot_all.py
+Compare traces: /usr/bin/python3 scripts/compare_traces.py
+Regenerate comparison/report: /home/marco/anaconda3/bin/python scripts/compare_increase.py
+
+Results: /home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/TIP-logs-Marco/TIP_increase-decrease
+Baseline: /home/marco/Desktop/GitHub_projects/VaN3Twin/ns-3-dev/TIP_files/TIP-logs-Marco/TIP_increase
+
+Complete source diff:
+diff --git a/src/automotive/examples/v2p-TIP-80211p.cc b/src/automotive/examples/v2p-TIP-80211p.cc
+index 3842110a..68b55dc3 100644
+--- a/src/automotive/examples/v2p-TIP-80211p.cc
++++ b/src/automotive/examples/v2p-TIP-80211p.cc
+@@ -117,6 +117,7 @@ int main (int argc, char *argv[])
+   // "none": TIP disabled for all the VRUs; "single": TIP enabled only for the VRU specified with --tip-ped; "all": TIP enabled for all the VRUs
+   std::string tip_mode = "single";
+   unsigned long tip_ped = 1003;
++  bool tip_decrease = false;
+ 
+   // If true, the CAM/VAM dissemination of each station starts after a random time between 0 and 1 s (as in the other examples),
+   // to avoid that all the stations check their triggering conditions (and thus transmit) at the very same instants
+@@ -160,6 +161,7 @@ int main (int argc, char *argv[])
+   /* Cmd Line options for TIP and logging */
+   cmd.AddValue("tip-mode", "TIP-based VAM triggering: 'none' (disabled), 'single' (only for the VRU set with --tip-ped), 'all' (all the VRUs)", tip_mode);
+   cmd.AddValue("tip-ped", "Station ID of the VRU for which TIP is enabled when --tip-mode=single", tip_ped);
++  cmd.AddValue("TIP-decrease", "Also trigger VAMs for TIP decreases of at least 0.1", tip_decrease);
+   cmd.AddValue("desync", "Start the CAM/VAM dissemination of each station after a random time between 0 and 1 s, to desynchronize the transmissions", desync_enabled);
+   cmd.AddValue("log-dir", "Directory where all the logs and PCAP traces are stored (it must already exist, with the VAM_triggering, CAM_triggering, pcap and sumo subfolders)", log_dir);
+   cmd.AddValue("cbr-window", "CBR computation window [ms]", cbr_window);
+@@ -471,6 +473,7 @@ int main (int argc, char *argv[])
+           if (tip_mode == "all" || (tip_mode == "single" && nodeID == tip_ped))
+             {
+               bs_container->getVRUBasicService ()->setUseTIP(); // Activate TIP mechanism (for all the VRUs or only for the selected one)
++              bs_container->getVRUBasicService ()->setTIPDecrease(tip_decrease);
+               bs_container->getVRUBasicService ()->setTIPLogFile (full_csv_TIP_name);
+               bs_container->getVRUBasicService ()->setTTCMax (4.0);
+               bs_container->getVRUBasicService ()->setTTCMin (1.0);
+diff --git a/src/automotive/model/Facilities/VRUBasicService.cc b/src/automotive/model/Facilities/VRUBasicService.cc
+index 15a38c4d..fdf92714 100644
+--- a/src/automotive/model/Facilities/VRUBasicService.cc
++++ b/src/automotive/model/Facilities/VRUBasicService.cc
+@@ -934,7 +934,7 @@ void VRUBasicService::updatePreviousSentTIPOnMap(uint64_t id, double previous_se
+ 
+ void VRUBasicService::searchFirstEightTIPs() {
+   // Find the first weight station IDs and the associated TIP
+-  // Focus on the difference between latest registered TIP and previous TIP (>= DELTA_TIP)
++  // Select TIP increases and, optionally, decreases relative to the last reported TIP.
+   m_tip_array.clear();
+   for (const auto& entry : m_tip_map) {
+     uint64_t id = entry.first;
+@@ -944,7 +944,10 @@ void VRUBasicService::searchFirstEightTIPs() {
+       continue;
+     }
+     double previous_sent_tip = std::get<2>(entry.second);
+-    if (tip - previous_sent_tip >= DELTA_TIP) {
++    const double delta_tip = tip - previous_sent_tip;
++    // Apply rounding tolerance only to the optional decrease comparison.
++    if (delta_tip >= DELTA_TIP ||
++        (m_tip_decrease && delta_tip <= -DELTA_TIP + 1e-12)) {
+       m_tip_array.push_back(std::make_tuple(id, tip));
+     }
+   }
+diff --git a/src/automotive/model/Facilities/VRUBasicService.h b/src/automotive/model/Facilities/VRUBasicService.h
+index 803745c8..a012ed8a 100644
+--- a/src/automotive/model/Facilities/VRUBasicService.h
++++ b/src/automotive/model/Facilities/VRUBasicService.h
+@@ -127,6 +127,7 @@ public:
+     void VRUreceivedNewMessageForTIP(BTPDataIndication_t dataIndication, bool veh);
+     std::tuple<double, double> compute_ttc_stc(vehicleData_t vehdata);
+     void setUseTIP() {m_use_tip = true;};
++    void setTIPDecrease(bool enabled) {m_tip_decrease = enabled;}
+     // Set the name of a .csv file in which all the computed TIP values are logged (no logging if the name is empty)
+     void setTIPLogFile(std::string file_name) {m_tip_log_filename = file_name;}
+ 
+@@ -238,6 +239,7 @@ private:
+     uint8_t m_tip_map_size = 0;
+     std::vector<std::tuple<uint64_t, double>> m_tip_array;
+     bool m_use_tip = false;
++    bool m_tip_decrease = false;
+     // Weak callbacks must not outlive this dissemination session.
+     std::shared_ptr<int> m_tip_tx_lifetime = std::make_shared<int>(0);
+     int64_t m_last_vam_tx_ms = -1;
+

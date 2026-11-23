@@ -1,0 +1,45 @@
+scenario,metric,TIP_increase,TIP_increase_decrease,difference,relative_change_percent,unchanged
+No TIP,total_VAMs,653.0,653.0,0.0,0.0,True
+No TIP,TIP_VAMs,0.0,0.0,0.0,0,True
+No TIP,mean_CBR_all_stations_percent,0.14428,0.14428,0.0,0.0,True
+No TIP,mean_CBR_pedestrians_percent,0.12048,0.12048,0.0,0.0,True
+No TIP,mean_CBR_vehicles_percent,0.17622,0.17622,0.0,0.0,True
+No TIP,peak_CBR_100ms_window_percent,0.84,0.84,0.0,0.0,True
+No TIP,mean_CBR_ped1003_percent,0.14388,0.14388,0.0,0.0,True
+No TIP,mean_CBR_ped1014_percent,0.19967,0.19967,0.0,0.0,True
+No TIP,avg_PRR_150m_baseline,0.45489,0.45489,0.0,0.0,True
+No TIP,received_CAMs_by_pedestrians,16225.0,16225.0,0.0,0.0,True
+No TIP,received_VAMs_by_vehicles,2125.0,2125.0,0.0,0.0,True
+TIP on ped1003,total_VAMs,657.0,657.0,0.0,0.0,True
+TIP on ped1003,TIP_VAMs,6.0,6.0,0.0,0.0,True
+TIP on ped1003,mean_CBR_all_stations_percent,0.14469,0.14469,0.0,0.0,True
+TIP on ped1003,mean_CBR_pedestrians_percent,0.1209,0.1209,0.0,0.0,True
+TIP on ped1003,mean_CBR_vehicles_percent,0.1766,0.1766,0.0,0.0,True
+TIP on ped1003,peak_CBR_100ms_window_percent,0.84,0.84,0.0,0.0,True
+TIP on ped1003,mean_CBR_ped1003_percent,0.14484,0.14484,0.0,0.0,True
+TIP on ped1003,mean_CBR_ped1014_percent,0.20006,0.20006,0.0,0.0,True
+TIP on ped1003,avg_PRR_150m_baseline,0.45495,0.45495,0.0,0.0,True
+TIP on ped1003,received_CAMs_by_pedestrians,16225.0,16225.0,0.0,0.0,True
+TIP on ped1003,received_VAMs_by_vehicles,2141.0,2141.0,0.0,0.0,True
+TIP on ped1014,total_VAMs,667.0,668.0,1.0,0.14992503748125938,False
+TIP on ped1014,TIP_VAMs,18.0,19.0,1.0,5.555555555555555,False
+TIP on ped1014,mean_CBR_all_stations_percent,0.14498,0.14506,7.999999999999674e-05,0.05518002483100892,False
+TIP on ped1014,mean_CBR_pedestrians_percent,0.12109,0.1212,0.00010999999999999899,0.09084152283425467,False
+TIP on ped1014,mean_CBR_vehicles_percent,0.17704,0.17708,3.999999999998449e-05,0.022593764121093818,False
+TIP on ped1014,peak_CBR_100ms_window_percent,0.924,0.924,0.0,0.0,True
+TIP on ped1014,mean_CBR_ped1003_percent,0.1463,0.1463,0.0,0.0,True
+TIP on ped1014,mean_CBR_ped1014_percent,0.20335,0.20329,-6.0000000000004494e-05,-0.029505778214902627,False
+TIP on ped1014,avg_PRR_150m_baseline,0.45511,0.45511,0.0,0.0,True
+TIP on ped1014,received_CAMs_by_pedestrians,16225.0,16225.0,0.0,0.0,True
+TIP on ped1014,received_VAMs_by_vehicles,2222.0,2229.0,7.0,0.31503150315031503,False
+TIP on all VRUs,total_VAMs,775.0,784.0,9.0,1.1612903225806452,False
+TIP on all VRUs,TIP_VAMs,152.0,160.0,8.0,5.263157894736842,False
+TIP on all VRUs,mean_CBR_all_stations_percent,0.14874,0.14904,0.0002999999999999947,0.20169423154497426,False
+TIP on all VRUs,mean_CBR_pedestrians_percent,0.12442,0.12466,0.0002400000000000041,0.19289503295290475,False
+TIP on all VRUs,mean_CBR_vehicles_percent,0.18138,0.18176,0.00037999999999999146,0.20950490682544462,False
+TIP on all VRUs,peak_CBR_100ms_window_percent,0.84,0.92,0.08000000000000007,9.523809523809533,False
+TIP on all VRUs,mean_CBR_ped1003_percent,0.15244,0.15288,0.00043999999999999595,0.28863815271582,False
+TIP on all VRUs,mean_CBR_ped1014_percent,0.20774,0.2088,0.0010600000000000054,0.5102532011167832,False
+TIP on all VRUs,avg_PRR_150m_baseline,0.45505,0.45512,7.00000000000145e-05,0.01538292495330502,False
+TIP on all VRUs,received_CAMs_by_pedestrians,16224.0,16225.0,1.0,0.00616370808678501,False
+TIP on all VRUs,received_VAMs_by_vehicles,2737.0,2794.0,57.0,2.0825721592985023,False

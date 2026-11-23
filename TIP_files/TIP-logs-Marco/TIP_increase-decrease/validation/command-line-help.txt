@@ -1,0 +1,35 @@
+ [Program Options] [General Arguments]
+
+Program Options:
+    --realtime:            Use the realtime scheduler or not [false]
+    --sumo-gui:            Use SUMO gui or not [true]
+    --sumo-updates:        SUMO granularity [0.01]
+    --sumo-folder:         Position of sumo config files [src/automotive/examples/sumo_files_v2p_tip/]
+    --mob-trace-veh:       Name of the mobility trace file for vehicles [vehicles.rou.xml]
+    --mob-trace-ped:       Name of the mobility trace file for pedestrians [pedestrians.rou.xml]
+    --sumo-config:         Location and name of SUMO configuration file [src/automotive/examples/sumo_files_v2p_tip/v2p_map.sumo.cfg]
+    --csv-log:             Name of the CSV log file [VAM_metrics]
+    --csv-log-cumulative:  Name of the CSV log file for the cumulative (average) PRR and latency data [VAM_PRR_latency]
+    --vehicle-visualizer:  Activate the web-based vehicle visualizer for ms-van3t [false]
+    --send-cam:            Turn on or off the transmission of CAMs, thus turning on or off the whole V2X application [true]
+    --baseline:            Baseline for PRR calculation [150]
+    --met-sup:             Use the Metric Supervisor or not [false]
+    --tx-power:            OBUs transmission power [dBm] [23]
+    --datarate:            802.11p channel data rate [Mbit/s] [12]
+    --sim-time:            Total duration of the simulation [s] [250]
+    --tip-mode:            TIP-based VAM triggering: 'none' (disabled), 'single' (only for the VRU set with --tip-ped), 'all' (all the VRUs) [single]
+    --tip-ped:             Station ID of the VRU for which TIP is enabled when --tip-mode=single [1003]
+    --TIP-decrease:        Also trigger VAMs for TIP decreases of at least 0.1 [false]
+    --desync:              Start the CAM/VAM dissemination of each station after a random time between 0 and 1 s, to desynchronize the transmissions [true]
+    --log-dir:             Directory where all the logs and PCAP traces are stored (it must already exist, with the VAM_triggering, CAM_triggering, pcap and sumo subfolders)
+    --cbr-window:          CBR computation window [ms] [100]
+
+General Arguments:
+    --PrintGlobals:              Print the list of globals.
+    --PrintGroups:               Print the list of groups.
+    --PrintGroup=[group]:        Print all TypeIds of group.
+    --PrintTypeIds:              Print all TypeIds.
+    --PrintAttributes=[typeid]:  Print all attributes of typeid.
+    --PrintVersion:              Print the ns-3 version.
+    --PrintHelp:                 Print this help message.
+

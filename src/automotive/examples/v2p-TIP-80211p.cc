@@ -117,6 +117,7 @@ int main (int argc, char *argv[])
   // "none": TIP disabled for all the VRUs; "single": TIP enabled only for the VRU specified with --tip-ped; "all": TIP enabled for all the VRUs
   std::string tip_mode = "single";
   unsigned long tip_ped = 1003;
+  bool tip_decrease = false;
 
   // If true, the CAM/VAM dissemination of each station starts after a random time between 0 and 1 s (as in the other examples),
   // to avoid that all the stations check their triggering conditions (and thus transmit) at the very same instants
@@ -160,6 +161,7 @@ int main (int argc, char *argv[])
   /* Cmd Line options for TIP and logging */
   cmd.AddValue("tip-mode", "TIP-based VAM triggering: 'none' (disabled), 'single' (only for the VRU set with --tip-ped), 'all' (all the VRUs)", tip_mode);
   cmd.AddValue("tip-ped", "Station ID of the VRU for which TIP is enabled when --tip-mode=single", tip_ped);
+  cmd.AddValue("TIP-decrease", "Also trigger VAMs for TIP decreases of at least 0.1", tip_decrease);
   cmd.AddValue("desync", "Start the CAM/VAM dissemination of each station after a random time between 0 and 1 s, to desynchronize the transmissions", desync_enabled);
   cmd.AddValue("log-dir", "Directory where all the logs and PCAP traces are stored (it must already exist, with the VAM_triggering, CAM_triggering, pcap and sumo subfolders)", log_dir);
   cmd.AddValue("cbr-window", "CBR computation window [ms]", cbr_window);
@@ -471,6 +473,7 @@ int main (int argc, char *argv[])
           if (tip_mode == "all" || (tip_mode == "single" && nodeID == tip_ped))
             {
               bs_container->getVRUBasicService ()->setUseTIP(); // Activate TIP mechanism (for all the VRUs or only for the selected one)
+              bs_container->getVRUBasicService ()->setTIPDecrease(tip_decrease);
               bs_container->getVRUBasicService ()->setTIPLogFile (full_csv_TIP_name);
               bs_container->getVRUBasicService ()->setTTCMax (4.0);
               bs_container->getVRUBasicService ()->setTTCMin (1.0);
