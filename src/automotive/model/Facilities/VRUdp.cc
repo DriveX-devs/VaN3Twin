@@ -198,7 +198,7 @@ namespace ns3
     VRUDP_position_cartesian_t vdppos;
 
     libsumo::TraCIPosition pos;
-    pos=m_traci_client->TraCIAPI::simulation.convertLonLattoXY (lon,lat);
+    pos=m_traci_client->TraCIAPI::simulation.convertLonLattoXY (lon, lat);
 
     vdppos.x=pos.x;
     vdppos.y=pos.y;
