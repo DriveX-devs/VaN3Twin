@@ -116,6 +116,11 @@ namespace ns3
                    StringValue("CARLA_0.9.12"),
                    MakeStringAccessor (&OpenCDAClient::m_carla_home),
                    MakeStringChecker ())
+    .AddAttribute ("CARLAVersion",
+                   "CARLA version passed to OpenCDA",
+                   StringValue("0.9.12"),
+                   MakeStringAccessor (&OpenCDAClient::m_carla_version),
+                   MakeStringChecker ())
       .AddAttribute("CARLAGUI",
                     "CARLA GUI",
                     BooleanValue(true),
@@ -160,6 +165,10 @@ namespace ns3
       m_openCDA_gpu = 0;
       m_opencda_manual = false;
       m_carla_manual = false;
+      m_pid = -1;
+      m_carla_pid = -1;
+      m_opencda_pid = -1;
+      m_processesStopped = false;
       m_randVar = CreateObject<UniformRandomVariable>();
       m_randVar->SetAttribute("Min", DoubleValue(0.0));
       m_randVar->SetAttribute("Max", DoubleValue(1.0));
@@ -175,18 +184,29 @@ namespace ns3
   void
   OpenCDAClient::stopSimulation ()
   {
-      if (m_opencda_host == "localhost") {
+      if (m_processesStopped)
+        {
+          return;
+        }
+      m_processesStopped = true;
+
+      if (m_executeOneTimestepTrigger.IsRunning ())
+        {
+          m_executeOneTimestepTrigger.Cancel ();
+        }
+
+      if (!m_opencda_manual && m_opencda_pid > 0 && m_opencda_host == "localhost") {
           kill(-m_opencda_pid, SIGKILL);
       }
-      else {
+      else if (!m_opencda_manual && m_opencda_pid > 0) {
           std::string kill_cmd = "ssh " + m_opencda_user + "@" + m_opencda_host + " 'kill -9 " +
               std::to_string(m_opencda_pid) + "'";
           system(kill_cmd.c_str());
       }
-      if (m_carla_host == "localhost") {
+      if (!m_carla_manual && m_carla_pid > 0 && m_carla_host == "localhost") {
           kill(-m_carla_pid, SIGKILL);
       }
-      else {
+      else if (!m_carla_manual && m_carla_pid > 0) {
           std::string kill_cmd = "ssh " + m_carla_user + "@" + m_carla_host + " 'kill -9 " +
               std::to_string(m_carla_pid) + "'";
           system(kill_cmd.c_str());
@@ -207,7 +227,7 @@ namespace ns3
 
               if (m_carla_pid == 0) {
 
-                  std::string carla_command = "cd "+ m_carla_home +" && ./CarlaUE4.sh -prefernvidia -carla-port=" + std::to_string(m_carla_port) ;
+                  std::string carla_command = "cd "+ m_carla_home +" && ./CarlaUE4.sh -prefernvidia -carla-rpc-port=" + std::to_string(m_carla_port) ;
                   if (!m_carla_gui) {
                       carla_command += " -RenderOffScreen";
                   }
@@ -286,7 +306,7 @@ namespace ns3
 
               if (m_opencda_pid == 0) {
 
-                  std::string opencda_command = "cd " + m_opencda_home +" && " + m_python_interpreter +" -u opencda.py -t " + m_opencda_config + " -v 0.9.12";
+                  std::string opencda_command = "cd " + m_opencda_home +" && " + m_python_interpreter +" -u opencda.py -t " + m_opencda_config + " -v " + m_carla_version;
                   opencda_command += " -p "
                                   + std::to_string(m_carla_port)
                                   + " -g " + std::to_string(m_openCDA_gpu)
@@ -667,26 +687,11 @@ namespace ns3
 
       }
       else {
-          if (m_opencda_host == "localhost") {
-              kill(-m_opencda_pid, SIGKILL);
-          }
-          else {
-              std::string kill_cmd = "ssh " + m_opencda_user + "@" + m_opencda_host + " 'kill -9 " +
-                  std::to_string(m_opencda_pid) + "'";
-              system(kill_cmd.c_str());
-          }
-          if (m_carla_host == "localhost") {
-              kill(-m_carla_pid, SIGKILL);
-          }
-          else {
-              std::string kill_cmd = "ssh " + m_carla_user + "@" + m_carla_host + " 'kill -9 " +
-                  std::to_string(m_carla_pid) + "'";
-              system(kill_cmd.c_str());
-          }
+          stopSimulation ();
           Simulator::Stop ();
 
           std::string file_name = "/tmp/opencda_output_" + std::to_string(m_opencda_port) + ".txt";
-          std::cout << "OpenCDA simulation finished unexpectedly, check " << file_name.c_str() <<" to see OpenCDA logs" << std::endl;
+          std::cout << "OpenCDA simulation finished; check " << file_name.c_str() <<" to see OpenCDA logs" << std::endl;
         }
   }
 
@@ -1010,4 +1015,3 @@ OpenCDAClient::getNextWaypoint(Vector location) {
   }
 
 }
-

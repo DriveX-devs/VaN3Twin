@@ -16,6 +16,8 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#include <bitset>
+
 #include "ns3/carla-module.h"
 //#include "ns3/automotive-module.h"
 #include "ns3/cooperativePerception-helper.h"
@@ -102,12 +104,14 @@ main (int argc, char *argv[])
    * OpenCDA_HOME=/path/to/OpenCDA/
    * CARLA_HOME=/path/to/CARLA_0.9.12
    * Python_Interpreter=/path/to/anaconda3/envs/opencda/bin/python3
+   * CARLA_Version=0.9.12
    *
    * If installation was done without anaconda -> Python_Interpreter=python3.7
   */
   std::string carla_opencda_config="CARLA-OpenCDA.conf";
 
   std::string OpenCDA_HOME, CARLA_HOME, Python_Interpreter;
+  std::string CARLA_Version = "0.9.12";
 
   int numberOfNodes;
   uint32_t nodeCounter = 0;
@@ -290,7 +294,8 @@ main (int argc, char *argv[])
   std::unordered_map<std::string, std::string*> configMap = {
       {"OpenCDA_HOME", &OpenCDA_HOME},
       {"CARLA_HOME", &CARLA_HOME},
-      {"Python_Interpreter", &Python_Interpreter}
+      {"Python_Interpreter", &Python_Interpreter},
+      {"CARLA_Version", &CARLA_Version}
   };
 
   while (std::getline(configFile, line)) {
@@ -699,6 +704,7 @@ main (int argc, char *argv[])
   opencda_client->SetAttribute ("OpenCDA_config", StringValue(opencda_config));
   opencda_client->SetAttribute ("OpenCDA_HOME", StringValue(OpenCDA_HOME));
   opencda_client->SetAttribute ("CARLA_HOME", StringValue(CARLA_HOME));
+  opencda_client->SetAttribute ("CARLAVersion", StringValue(CARLA_Version));
   opencda_client->SetAttribute ("PythonInterpreter", StringValue(Python_Interpreter));
   /* If active perception is specified in OpenCDA's config YAML (eg. ms_van3t_example_ml). Default -> false */
   opencda_client->SetAttribute ("ApplyML", BooleanValue(opencda_ml));
@@ -798,5 +804,3 @@ main (int argc, char *argv[])
 
   return 0;
 }
-
-

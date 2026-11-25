@@ -12,11 +12,35 @@ is_anaconda_installed() {
 
 ns_3_dir=$(pwd)
 
-
 config_file="CARLA-OpenCDA.conf"
+
+get_config_value() {
+    local key="$1"
+    grep -E "^${key}=" "$config_file" | tail -n 1 | cut -d "=" -f 2-
+}
+
+apply_opencda_compatibility_patch() {
+    local opencda_dir="$1"
+    local patcher="${ns_3_dir}/src/carla/patch_opencda_compat.py"
+
+    if [ -z "$opencda_dir" ]; then
+        return
+    fi
+    if [ ! -d "$opencda_dir/opencda" ]; then
+        echo "WARNING: OpenCDA package not found at $opencda_dir; skipping compatibility patch."
+        return
+    fi
+    if [ ! -f "$patcher" ]; then
+        echo "WARNING: OpenCDA compatibility patcher not found at $patcher; skipping."
+        return
+    fi
+
+    python3 "$patcher" "$opencda_dir"
+}
 
 carla_found=false
 opencda_found=false
+opencda_home=""
 
 
 
@@ -29,6 +53,7 @@ if [ -f "$config_file" ]; then
     fi
     if grep -q "OpenCDA_HOME" "$config_file"; then
         opencda_found=true
+        opencda_home=$(get_config_value "OpenCDA_HOME")
 	echo "OpenCDA installation found."
     fi
 fi
@@ -137,6 +162,7 @@ if [ "$opencda_found" = false ]; then
 				cd ..
 
 				echo "OpenCDA_HOME=$ns_3_dir/OpenCDA" >> "$config_file"
+				opencda_home="$ns_3_dir/OpenCDA"
 				echo "Python_Interpreter=$interpreter_path" >> "$config_file"
 				echo "OpenCDA installation completed."	
 
@@ -186,6 +212,7 @@ if [ "$opencda_found" = false ]; then
 				cd ..
 
 				echo "OpenCDA_HOME=$ns_3_dir/OpenCDA" >> "$config_file"
+				opencda_home="$ns_3_dir/OpenCDA"
 				echo "Python_Interpreter=python3.7" >> "$config_file"
 				echo "OpenCDA installation completed."
 
@@ -197,6 +224,10 @@ if [ "$opencda_found" = false ]; then
         esac
 fi
 
+if [ -z "$opencda_home" ] && [ -f "$config_file" ]; then
+	opencda_home=$(get_config_value "OpenCDA_HOME")
+fi
+apply_opencda_compatibility_patch "$opencda_home"
 
 
 

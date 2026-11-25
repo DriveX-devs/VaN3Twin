@@ -204,7 +204,7 @@ In addition to SUMO and GPS traces VaN3Twin supports the use of CARLA for mobili
 **System requirements**
 
 We highly recommend running VaN3Twin-CARLA on Ubuntu 20.04 (used for developing the framework), Ubuntu 18.04, or Ubuntu 22.04, while Ubuntu 24.04 is not officially supported by CARLA. If both CARLA and OpenCDA need to be installed we recommend at least 35GB of free space on your system. For smooth execution of simulation (especially if AI/ML models are leveraged for the perception simulation) we recommend using a GPU with at least 8GB of memory.
-The version of CARLA supported by VaN3Twin-CARLA is CARLA 0.9.12.
+The default CARLA version for VaN3Twin-CARLA is CARLA 0.9.12. Compatible CARLA versions such as CARLA 0.9.16 can be selected explicitly in `CARLA-OpenCDA.conf`.
 
 **Installing VaN3Twin-CARLA**
 
@@ -217,7 +217,17 @@ The script will try to find the path of your CARLA and OpenCDA installation to b
 
 `Python_Interpreter=/path/to/anaconda3/envs/msvan3t_carla/bin/python3` if using conda or `Python_Interpreter=python3.7` otherwise.
 
+`CARLA_Version=0.9.12`
+
 In case this is the first time using either CARLA or OpenCDA, the script will install them, prompting for confirmation in each case. It is highly recommended to install OpenCDA with conda.
+
+The installation and switch scripts apply VaN3Twin's OpenCDA compatibility patch automatically to the configured OpenCDA checkout. If OpenCDA is installed or updated manually, the patch can be re-applied with:
+
+```sh
+python3 src/carla/patch_opencda_compat.py /path/to/OpenCDA
+```
+
+If you use CARLA 0.9.16 with the stock VaN3Twin OpenCDA scenario, install CARLA 0.9.16 AdditionalMaps as well because the scenario uses `Town06`, which is not included in the base CARLA 0.9.16 package.
 
 Once the script finishes its execution, it is recommended to build only the simulation scripts for CARLA's usage instead of the whole project (i.e., run `./ns3 build "name-of-CARLA-example"` instead of `./ns3 build`).
 This permits avoiding libraries and dependency issues coming from other parts of the simulator, so that the CARLA simulations can be properly run.

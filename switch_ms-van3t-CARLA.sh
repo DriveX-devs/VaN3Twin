@@ -11,6 +11,31 @@ is_anaconda_installed() {
 
 
 ns_3_dir=$(pwd)
+config_file="CARLA-OpenCDA.conf"
+
+get_config_value() {
+    local key="$1"
+    grep -E "^${key}=" "$config_file" | tail -n 1 | cut -d "=" -f 2-
+}
+
+apply_opencda_compatibility_patch() {
+    local opencda_dir="$1"
+    local patcher="${ns_3_dir}/src/carla/patch_opencda_compat.py"
+
+    if [ -z "$opencda_dir" ]; then
+        return
+    fi
+    if [ ! -d "$opencda_dir/opencda" ]; then
+        echo "WARNING: OpenCDA package not found at $opencda_dir; skipping compatibility patch."
+        return
+    fi
+    if [ ! -f "$patcher" ]; then
+        echo "WARNING: OpenCDA compatibility patcher not found at $patcher; skipping."
+        return
+    fi
+
+    python3 "$patcher" "$opencda_dir"
+}
 
 mode_file="src/automotive/aux-files/current-mode.txt" 
 
@@ -23,10 +48,9 @@ mode=$(head -n 1 "$mode_file")
 if [ "$mode" = "base" ]; then
 	read -p "Current mode is 'base', do you wish to switch to ms-van3t-CARLA? (WARNING: GPS-TC and Emulation capabilities are disabled in this mode)."
 
-	config_file="CARLA-OpenCDA.conf"
-
 	carla_found=false
 	opencda_found=false
+	opencda_home=""
 
 
 
@@ -39,6 +63,7 @@ if [ "$mode" = "base" ]; then
 	    fi
 	    if grep -q "OpenCDA_HOME" "$config_file"; then
 	        opencda_found=true
+	        opencda_home=$(get_config_value "OpenCDA_HOME")
 		echo "OpenCDA installation found."
 	    fi
 	fi
@@ -175,6 +200,7 @@ if [ "$mode" = "base" ]; then
 					cd ..
 
 					echo "OpenCDA_HOME=$ns_3_dir/OpenCDA" >> "$config_file"
+					opencda_home="$ns_3_dir/OpenCDA"
 					echo "Python_Interpreter=$interpreter_path" >> "$config_file"
 					echo "OpenCDA installation completed."
 
@@ -224,6 +250,7 @@ if [ "$mode" = "base" ]; then
 					cd ..
 
 					echo "OpenCDA_HOME=$ns_3_dir/OpenCDA" >> "$config_file"
+					opencda_home="$ns_3_dir/OpenCDA"
 					echo "Python_Interpreter=python3.7" >> "$config_file"
 					echo "OpenCDA installation completed."
 
@@ -234,6 +261,11 @@ if [ "$mode" = "base" ]; then
 	                ;;
 	        esac
 	fi
+
+	if [ -z "$opencda_home" ] && [ -f "$config_file" ]; then
+		opencda_home=$(get_config_value "OpenCDA_HOME")
+	fi
+	apply_opencda_compatibility_patch "$opencda_home"
 
 	python3.7 adapt_files.py CARLA
 
@@ -250,7 +282,6 @@ if [ "$mode" = "CARLA" ]; then
 	# Re-configure
 	./ns3 configure --build-profile=optimized --enable-examples --enable-tests --disable-python --disable-werror
 fi
-
 
 
 
