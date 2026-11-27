@@ -407,7 +407,7 @@ void
 OcbWifiMac::ConfigureStandard (enum WifiStandard standard)
 {
   NS_LOG_FUNCTION (this << standard);
-  NS_ASSERT (standard == WIFI_STANDARD_80211p);
+  NS_ASSERT (standard == WIFI_STANDARD_80211p || standard == WIFI_STANDARD_80211bd);
 
   uint32_t cwmin = 15;
   uint32_t cwmax = 1023;
@@ -421,8 +421,7 @@ OcbWifiMac::ConfigureStandard (enum WifiStandard standard)
   else
     {
       // Now we configure the EDCA functions
-      // see IEEE802.11p-2010 section 7.3.2.29
-      // Wave CCH and SCHs set default 802.11p EDCA
+      // Wave CCH and SCHs set the default vehicular OCB EDCA parameters.
       ConfigureEdca (cwmin, cwmax, 2, AC_VO);
       ConfigureEdca (cwmin, cwmax, 3, AC_VI);
       ConfigureEdca (cwmin, cwmax, 6, AC_BE);
